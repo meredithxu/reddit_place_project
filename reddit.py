@@ -15,11 +15,20 @@ with open('tile_placements.csv','r') as file:
             lineCount = lineCount+1
     print(lineCount)
 
-#extract the first 1000 records in the original dataset as a subset. Stored in 'tile_placements_sub.csv'.
+# extract the first 1000 records in the original dataset as a subset. Stored in 'tile_placements_sub.csv'.
 with open('tile_placements_sub.csv','w') as fileOut:
     writer = csv.writer(fileOut)
     writer.writerows(subData)
 
+# a helper function that organizes coordinates retrieved from JSON file as list of tuples given an ID
+def coordHelper(picId,locations):
+    coordinates=[]
+    for i in range(0,len(locations.get(picId))-1,2):
+        coord=(locations.get(picId)[i],locations.get(picId)[i+1])
+        coordinates.append(coord)
+    return coordinates
+
+# extract path values from JSON file and store them in a dictionary whose key is the picture ID(string) and value is a list of coordinates(string) indicating the location of a picture
 locations = dict()
 read = False
 numOfPic = 0
@@ -53,6 +62,12 @@ with open('atlasTest2.js') as atlasJS:
 print(locations)
 print(len(locations))
 print(numOfPic)
+
+# test code for the helper function
+for pId in range(21):
+    coordinates=coordHelper(str(pId),locations)
+    print(coordinates)
+
 
 
 
