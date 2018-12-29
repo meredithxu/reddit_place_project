@@ -8,11 +8,7 @@ def pixel_is_in_image(x_coord, y_coord, path):
         path is a list of the path coordinates of the edge
 
     """
-    #Separate out path, which is a list of floats, into a list of (x,y) tuples
-    points = dict()
-    while i < len(path):
-        
-        i += 2
+
 
     # Do horizontal line test
     # If line passes through odd number of edges, it is inside the image
@@ -32,20 +28,36 @@ def pixel_is_in_image(x_coord, y_coord, path):
         if x_coord == start_x or x_coord == end_x or y_coord == start_y or y_coord == end_y:
             return True
 
-    
-        if (y_coord <= end_y and y_coord >= start_y) or (y_coord >= end_y and y_coord <= start_y):
-            
-            if (x_coord >= start_x or x_coord >= end_x):
-            
-                num_intersections += 1
-        # else:
-        #     print("x,y:" + str(x_coord) + ", " + str(y_coord))
-        #     print("start x: " + str(start_x))
-        #     print("end x: " + str(end_x))
-        #     print("start y: " + str(start_y))
-        #     print("end y: " + str(end_y))
+        # Either the start_x and start_y or the end_x and end_y points of the edge must be the same. If they are not, then 
 
-        i += 4
+        
+        if (y_coord <= end_y and y_coord >= start_y) or (y_coord >= end_y and y_coord <= start_y):
+
+
+            # Check that start_x is to the left of end_x. If not, then swap them
+            if end_x < start_x:
+                end_x = end_x + start_x
+                start_x = end_x - start_x
+                end_x = end_x - start_x
+            
+            # If x_coord is to the left of start_x and/or end_x, then the horizontal line test will cross it
+            
+            if (x_coord <= start_x and x_coord <= end_x):
+                num_intersections += 1
+
+            # If x_coord is greater than start_x but less than end_x, then the edge is a diagonal and I need to compute which side of the line the point is on
+            elif (x_coord >= start_x and x_coord <= end_x):
+
+                d = ((x_coord - start_x)*(end_y - start_y)) - ((y_coord - start_y)*(end_x - start_x))
+
+                left = (- 1)*(end_y - start_y)
+                # If d and left are both positive or both negative, then the point is on the left side of the line
+
+                if (d < 0 and left < 0) or (d > 0 and left > 0):
+                    num_intersections += 1
+
+
+        i += 2
 
     return (num_intersections % 2 == 1)
 
