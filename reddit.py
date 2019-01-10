@@ -62,7 +62,19 @@ def pixel_is_in_image(x_coord, y_coord, path):
     return (num_intersections % 2 == 1)
 
 
+# a helper function that organizes coordinates retrieved from JSON file as list of tuples given an ID
+def coordHelper(picId,locations):
+    coordinates=[]
+    for i in range(0,len(locations.get(picId))-1,2):
+        coord=(locations.get(picId)[i],locations.get(picId)[i+1])
+        coordinates.append(coord)
+    return coordinates
+
+
+
+
 def store_locations():
+    # extract path values from JSON file and store them in a dictionary whose key is the picture ID(string) and value is a list of coordinates(string) indicating the location of a picture
     locations = dict()
     read = False
     numOfPic = 0
@@ -94,9 +106,13 @@ def store_locations():
                  if "}" in line:
                      read = False
 
+    print(locations)
+    print(len(locations))
+    print(numOfPic)
     return locations
 
 if __name__ == "__main__":
+
     subData = []
     with open('tile_placements.csv','r') as file:
         reader = csv.reader(file)
@@ -112,16 +128,20 @@ if __name__ == "__main__":
                 lineCount = lineCount+1
         print(lineCount)
 
-    #extract the first 1000 records in the original dataset as a subset. Stored in 'tile_placements_sub.csv'.
+    # extract the first 1000 records in the original dataset as a subset. Stored in 'tile_placements_sub.csv'.
     with open('tile_placements_sub.csv','w') as fileOut:
         writer = csv.writer(fileOut)
         writer.writerows(subData)
 
-    locations = store_locations()
 
-    print(locations)
-    print(len(locations))
-    # print(numOfPic)
+    locations = store_locations()
+    
+
+    # test code for the helper function
+    for pId in range(21):
+        coordinates=coordHelper(str(pId),locations)
+        print(coordinates)
+
 
 
 
