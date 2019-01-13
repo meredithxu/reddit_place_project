@@ -7,37 +7,6 @@ from reddit import *
 
 # extract path values from JSON file and store them in a dictionary whose key is the picture ID(string) and value is a list of coordinates(string) indicating the location of a picture
 
-# locations = dict()
-# read = False
-# numOfPic = 0
-# picId = -1
-# with open('atlasTest2.js') as atlasJS:
-#   for line in atlasJS:
-#     if '"id":' in line:
-#       picId = re.findall('\d+',line)[0]
-#       #print(picId)
-#     if '"path"' in line:
-#       read = True
-#       numOfPic = numOfPic + 1
-#       #print(numOfPic)
-#     if read:
-#       if len(locations) < numOfPic:
-#         l = []
-#         locations[picId] = l
-#         coord = re.findall(r"[-+]?[0-9]*\.?[0-9]+",line)
-#         for co in coord:
-#           locations.get(picId).append(co)
-#     else:
-#       coord = re.findall(r"[-+]?[0-9]*\.?[0-9]+",line)
-#       #print(coord)
-#       if picId not in locations:
-#         print("ERROR!!!!!!!!!!")
-#         print(picId)
-#       for co in coord:
-#         locations.get(picId).append(co)
-#     if "}" in line:
-#        read = False
-
 locations = store_locations()
 
 # Add a simple triangle for testing purposes
