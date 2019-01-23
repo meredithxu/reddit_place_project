@@ -22,22 +22,22 @@ def store_locations():
     numOfPic = 0
     picId = -1
     with open('atlasTest2.js') as atlasJS:
-         for line in atlasJS:
-             if '"id":' in line:
-                 picId = re.findall('\d+',line)[0]
-                 #print(picId)
-             if '"path"' in line:
-                 read = True
-                 numOfPic = numOfPic + 1
-                 #print(numOfPic)
-             if read:
-                 if len(locations) < numOfPic:
+        for line in atlasJS:
+            if '"id":' in line:
+                picId = re.findall('\d+',line)[0]
+                #print(picId)
+            if '"path"' in line:
+                read = True
+                numOfPic = numOfPic + 1
+                #print(numOfPic)
+            if read:
+                if len(locations) < numOfPic:
                     l = []
                     locations[picId] = l
                     coord = re.findall(r"[-+]?[0-9]*\.?[0-9]+",line)
                     for co in coord:
                         locations.get(picId).append(co)
-                 else:
+                else:
                     coord = re.findall(r"[-+]?[0-9]*\.?[0-9]+",line)
                     #print(coord)
                     if picId not in locations:
@@ -45,12 +45,40 @@ def store_locations():
                         print(picId)
                     for co in coord:
                         locations.get(picId).append(co)
-                 if "}" in line:
-                     read = False
+                if "}" in line:
+                    read = False
 
-    print(locations)
-    print(len(locations))
-    print(numOfPic)
+    # print(locations)
+    # print(len(locations))
+    # print(numOfPic)
+
+    # # Add a simple triangle for testing purposes
+    # # REMOVE THIS LINE WHEN TESTING IS DONE
+    # locations['triangle'] = ['0','0','3','3','3','0']
+
+    # Parse the data into the point, line, and path objects
+    for pic_id in locations:
+      path = Path(pic_id)
+      path_points = locations.get(pic_id)
+      i = 0
+      while i < len(path_points):
+        start_x = float(path_points[i])
+        start_y = float(path_points[i + 1])
+        end_x = float(path_points[0])
+        end_y = float(path_points[1]) 
+        if i != len(path_points) - 2:
+            end_x = float(path_points[i + 2])
+            end_y = float(path_points[i + 3])
+
+        point1 = Point(start_x, start_y)
+        point2 = Point(end_x, end_y)
+        line = Line(point1, point2)
+        path.add_line(line)
+        i += 2
+
+      # Replace the list of numbers with the Path object
+      locations[pic_id] = path
+
     return locations
 
 
@@ -107,10 +135,10 @@ if __name__ == "__main__":
     locations = store_locations()
     
 
-    # test code for the helper function
-    for pId in range(21):
-        coordinates=coordHelper(str(pId),locations)
-        print(coordinates)
+    # # test code for the helper function
+    # for pId in range(21):
+    #     coordinates=coordHelper(str(pId),locations)
+    #     print(coordinates)
     print("TEST SUB DATA!!!!!!!!!!!!!!!!")
     print(spatialData(locations,Point(500,0),Point(500,500),Point(0,0),Point(0,500)))
 
