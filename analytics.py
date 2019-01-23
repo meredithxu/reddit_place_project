@@ -48,6 +48,7 @@ def write_users_per_project(locations, filename, write_to_file = False):
         writer.writerow([num, user_count.get(num)])
 
 
+  return user_count
 
 if __name__ == "__main__":
   locations = store_locations()
