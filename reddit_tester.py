@@ -84,5 +84,4 @@ if italyFlag.pixel_is_in_image(Point(120, 360)):
   print("FAILED 120,360")
 
 
-
 print("SUCCESS")
