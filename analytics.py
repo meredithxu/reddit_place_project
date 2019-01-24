@@ -72,7 +72,7 @@ def get_time_per_project(locations, filename, write_to_file = True):
         y = float(r[3])
 
         # If this pixel is inside the image, then this user has contributed to the image
-        if ( path.pixel_is_in_image(Point(x,y))):
+        if ( path.pixel_is_in_image(Point(x,y)) ):
           if time > max_time:
             max_time = time
           if time < min_time:
@@ -81,7 +81,12 @@ def get_time_per_project(locations, filename, write_to_file = True):
 
     time_alive = max_time - min_time
 
-    times_count[pic_id] = (min_time, max_time, time_alive)
+    if min_time > max_time:
+
+      times_count[pic_id] = ("NA", "NA", 0)
+    else:
+      times_count[pic_id] = (min_time, max_time, time_alive)
+
 
   if write_to_file:
     # Write these results in a CSV file
