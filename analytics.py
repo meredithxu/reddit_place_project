@@ -99,11 +99,39 @@ def get_time_per_project(locations, filename, write_to_file = True):
 
   return times_count
 
+def write_updates_per_project(locations,filename,write_to_file):
+  # Find the number of updates for every project
+  # project_updates is a dictionary with the project ID is key and number of updates as value
+  project_updates = dict()
+  for pic_id in locations:
+    project_updates[pic_id] = 0
+    path = locations.get(pic_id)
+
+    with open(filename,'r') as file:
+      next(file, None)
+      reader = csv.reader(file)
+      
+      for r in reader:
+        x = float(r[2])
+        y = float(r[3])
+        if ( path.pixel_is_in_image(Point(x,y))):
+          project_updates[pic_id] += 1
+
+  if write_to_file:
+    with open('updates_per_project.csv','w') as fileOut:
+      writer = csv.writer(fileOut, delimiter = ",")
+      writer.writerow(["Project ID", "Number of updates"])
+      for proj in project_updates:
+        writer.writerow([proj, project_updates.get(proj)])
+  return project_updates
+
+
 if __name__ == "__main__":
   locations = store_locations()
   print(locations)
   write_users_per_project(locations, "tile_placements_sub.csv", True)
   get_time_per_project(locations, "tile_placements_sub.csv", True)
+  write_updates_per_project(locations,"tile_placements_sub.csv",True)
 
 
 
