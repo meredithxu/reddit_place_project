@@ -101,7 +101,7 @@ def get_time_per_project(locations, filename, write_to_file = True):
 
 def write_updates_per_project(locations,filename,write_to_file):
   # Find the number of updates for every project
-  # project_updates is a dictionary with the project ID is key and number of updates as value
+  # project_updates is a dictionary with the project ID as key and number of updates as value
   project_updates = dict()
   for pic_id in locations:
     project_updates[pic_id] = 0
@@ -126,6 +126,8 @@ def write_updates_per_project(locations,filename,write_to_file):
   return project_updates
 
 def write_projects_per_user(locations,filename,write_to_file):
+  # Find all the projects that each user has contributed to 
+  # user_projects is a dictionary with the user ID as key and list of projects that a particular user has contributed to as value
   user_projects = dict()
   with open(filename,'r') as file:
     next(file, None)
