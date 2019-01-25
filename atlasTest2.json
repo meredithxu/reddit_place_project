@@ -1,0 +1,1145 @@
+{
+	"atlas": [
+		{
+		    "id": 0,
+			"name": "Tux (Linux Mascot)",
+			"description": "Tux is the official mascot of the Linux operating system.",
+			"website": "",
+			"subreddit": "linux",
+			"center": [
+				   862.5,
+				   449.5
+				   ],
+			"path": [
+				 [
+				  838.5,
+				  415.5
+				  ],
+				 [
+				  838.5,
+				  483.5
+				  ],
+				 [
+				  886.5,
+				  483.5
+				  ],
+				 [
+				  886.5,
+				  415.5
+				  ]
+				 ]
+			},
+		{
+		    "id": 1,
+			"name": "Flag of Switzerland",
+			"description": "",
+			"website": "",
+			"subreddit": "/r/switzerland, /r/SwissNeutralityZone",
+			"center": [
+				   403.5,
+				   503.5
+				   ],
+			"path": [
+				 [
+				  390.5,
+				  490.5
+				  ],
+				 [
+				  390.5,
+				  516.5
+				  ],
+				 [
+				  416.5,
+				  516.5
+				  ],
+				 [
+				  416.5,
+				  490.5
+				  ]
+				 ]
+			},
+		{
+		    "id": 2,
+			"name": "Mona Lisa",
+			"description": "In order to prove the point that reddit users are a cultured bunch, a group of them set out to recreate Leonardo da Vinci's Mona Lisa.",
+			"website": "",
+			"subreddit": "monalisaclan",
+			"center": [
+				   374.5,
+				   451.5
+				   ],
+			"path": [
+				 [
+				  324.5,
+				  374.5
+				  ],
+				 [
+				  394.5,
+				  374.5
+				  ],
+				 [
+				  392.5,
+				  380.5
+				  ],
+				 [
+				  396.5,
+				  380.5
+				  ],
+				 [
+				  403.5,
+				  374.5
+				  ],
+				 [
+				  430.5,
+				  373.5
+				  ],
+				 [
+				  426.5,
+				  387.5
+				  ],
+				 [
+				  427.5,
+				  399.5
+				  ],
+				 [
+				  430.5,
+				  405.5
+				  ],
+				 [
+				  426.5,
+				  405.5
+				  ],
+				 [
+				  423.5,
+				  415.5
+				  ],
+				 [
+				  416.5,
+				  409.5
+				  ],
+				 [
+				  414.5,
+				  411.5
+				  ],
+				 [
+				  416.5,
+				  419.5
+				  ],
+				 [
+				  413.5,
+				  419.5
+				  ],
+				 [
+				  418.5,
+				  425.5
+				  ],
+				 [
+				  417.5,
+				  427.5
+				  ],
+				 [
+				  418.5,
+				  432.5
+				  ],
+				 [
+				  409.5,
+				  432.5
+				  ],
+				 [
+				  409.5,
+				  443.5
+				  ],
+				 [
+				  418.5,
+				  443.5
+				  ],
+				 [
+				  418.5,
+				  449.5
+				  ],
+				 [
+				  430.5,
+				  457.5
+				  ],
+				 [
+				  430.5,
+				  490.5
+				  ],
+				 [
+				  390.5,
+				  490.5
+				  ],
+				 [
+				  390.5,
+				  516.5
+				  ],
+				 [
+				  416.5,
+				  516.5
+				  ],
+				 [
+				  416.5,
+				  491.5
+				  ],
+				 [
+				  430.5,
+				  491.5
+				  ],
+				 [
+				  430.5,
+				  530.5
+				  ],
+				 [
+				  324.5,
+				  530.5
+				  ]
+				 ]
+			},
+		{
+		    "id": 3,
+			"name": "Dwarf Fortress",
+			"description": "Dwarf Fortress is a part construction and management simulation, part roguelike, indie video game created by Tarn and Zach Adams.",
+			"website": "http://www.bay12games.com/dwarves/",
+			"subreddit": "dwarffortress",
+			"center": [
+				   84.5,
+				   643.5
+				   ],
+			"path": [
+				 [
+				  3.5,
+				  637.5
+				  ],
+				 [
+				  107.5,
+				  637.5
+				  ],
+				 [
+				  107.5,
+				  625.5
+				  ],
+				 [
+				  150.5,
+				  625.5
+				  ],
+				 [
+				  150.5,
+				  641.5
+				  ],
+				 [
+				  155.5,
+				  641.5
+				  ],
+				 [
+				  155.5,
+				  647.5
+				  ],
+				 [
+				  118.5,
+				  647.5
+				  ],
+				 [
+				  118.5,
+				  656.5
+				  ],
+				 [
+				  89.5,
+				  656.5
+				  ],
+				 [
+				  89.5,
+				  658.5
+				  ],
+				 [
+				  28.5,
+				  658.5
+				  ],
+				 [
+				  28.5,
+				  648.5
+				  ],
+				 [
+				  3.5,
+				  648.5
+				  ]
+				 ]
+			},
+		{
+		    "id": 4,
+			"name": "The Void Prism",
+			"description": "The void was an ever-expanding area of darkness, until it was filled with the Prism from the album art of Pink FLoyd's Dark Side of the Moon.",
+			"website": "",
+			"subreddit": "/r/FloydVsVoid, /r/LeagueOfLegends, /r/SwissNeutralityZone",
+			"center": [
+				   404.5,
+				   563.5
+				   ],
+			"path": [
+				 [
+				  361.5,
+				  567.5
+				  ],
+				 [
+				  400.5,
+				  538.5
+				  ],
+				 [
+				  446.5,
+				  563.5
+				  ],
+				 [
+				  443.5,
+				  578.5
+				  ],
+				 [
+				  363.5,
+				  578.5
+				  ]
+				 ]
+			},
+		{
+		    "id": 5,
+			"name": "Arch Linux",
+			"description": "Arch Linux is a distribution of the Linux operating system.",
+			"website": "https://www.archlinux.org/",
+			"subreddit": "/r/archlinux",
+			"center": [
+				   603.5,
+				   130.5
+				   ],
+			"path": [
+				 [
+				  574.5,
+				  117.5
+				  ],
+				 [
+				  654.5,
+				  117.5
+				  ],
+				 [
+				  654.5,
+				  127.5
+				  ],
+				 [
+				  610.5,
+				  127.5
+				  ],
+				 [
+				  610.5,
+				  150.5
+				  ],
+				 [
+				  574.5,
+				  150.5
+				  ]
+				 ]
+			},
+		{
+		    "id": 6,
+			"name": "Flag of Latvia",
+			"description": "",
+			"website": "",
+			"subreddit": "/r/latvia",
+			"center": [
+				   635.5,
+				   136.5
+				   ],
+			"path": [
+				 [
+				  611.5,
+				  128.5
+				  ],
+				 [
+				  611.5,
+				  144.5
+				  ],
+				 [
+				  659.5,
+				  144.5
+				  ],
+				 [
+				  659.5,
+				  128.5
+				  ]
+				 ]
+			},
+		{
+		    "id": 7,
+			"name": "Flag of Lithuania",
+			"description": "",
+			"website": "",
+			"subreddit": "/r/lithuania",
+			"center": [
+				   635.5,
+				   152.5
+				   ],
+			"path": [
+				 [
+				  611.5,
+				  144.5
+				  ],
+				 [
+				  611.5,
+				  160.5
+				  ],
+				 [
+				  659.5,
+				  160.5
+				  ],
+				 [
+				  659.5,
+				  144.5
+				  ]
+				 ]
+			},
+		{
+		    "id": 8,
+			"name": "Lego",
+			"description": "Lego is a line of plastic construction toys made in Denmark.",
+			"website": "https://www.lego.com/",
+			"subreddit": "/r/lego, /r/denmark",
+			"center": [
+				   725.5,
+				   287.5
+				   ],
+			"path": [
+				 [
+				  702.5,
+				  276.5
+				  ],
+				 [
+				  702.5,
+				  298.5
+				  ],
+				 [
+				  748.5,
+				  298.5
+				  ],
+				 [
+				  748.5,
+				  276.5
+				  ]
+				 ]
+			},
+		{
+		    "id": 9,
+			"name": "Flag of Romania",
+			"description": "",
+			"website": "",
+			"subreddit": "/r/romania",
+			"center": [
+				   735.5,
+				   352.5
+				   ],
+			"path": [
+				 [
+				  719.5,
+				  381.5
+				  ],
+				 [
+				  749.5,
+				  381.5
+				  ],
+				 [
+				  749.5,
+				  322.5
+				  ],
+				 [
+				  727.5,
+				  322.5
+				  ],
+				 [
+				  719.5,
+				  332.5
+				  ],
+				 [
+				  719.5,
+				  346.5
+				  ],
+				 [
+				  725.5,
+				  350.5
+				  ],
+				 [
+				  725.5,
+				  359.5
+				  ],
+				 [
+				  719.5,
+				  365.5
+				  ]
+				 ]
+			},
+		{
+		    "id": 10,
+			"name": "Trogdor the Burninator",
+			"description": "Trogdor the Burninator is a figure from the Homestar Runner internet cartoon series.",
+			"website": "",
+			"subreddit": "/r/HomestarRunner",
+			"center": [
+				   675.5,
+				   339.5
+				   ],
+			"path": [
+				 [
+				  660.5,
+				  356.5
+				  ],
+				 [
+				  690.5,
+				  356.5
+				  ],
+				 [
+				  690.5,
+				  322.5
+				  ],
+				 [
+				  660.5,
+				  322.5
+				  ]
+				 ]
+			},
+		{
+		    "id": 11,
+			"name": "Swiss Cheese and Mountains",
+			"description": "CH stands for Confoederatio Helvetica, which is latin for Swiss Confederation. It is used as the country code and for the Swiss Top Level Domain (TLD), which is .ch",
+			"website": "",
+			"subreddit": "/r/switzerland, /r/SwissNeutralityZone",
+			"center": [
+				   361.5,
+				   541.5
+				   ],
+			"path": [
+				 [
+				  314.5,
+				  571.5
+				  ],
+				 [
+				  314.5,
+				  530.5
+				  ],
+				 [
+				  431.5,
+				  530.5
+				  ],
+				 [
+				  431.5,
+				  545.5
+				  ],
+				 [
+				  409.5,
+				  545.5
+				  ],
+				 [
+				  401.5,
+				  536.5
+				  ],
+				 [
+				  391.5,
+				  545.5
+				  ],
+				 [
+				  352.5,
+				  545.5
+				  ]
+				 ]
+			},
+		{
+		    "id": 12,
+			"name": "Flag of the United Kingdom",
+			"description": "",
+			"website": "",
+			"subreddit": "/r/unitedkingdom",
+			"center": [
+				   179.5,
+				   340.5
+				   ],
+			"path": [
+				 [
+				  139.5,
+				  311.5
+				  ],
+				 [
+				  221.5,
+				  311.5
+				  ],
+				 [
+				  221.5,
+				  370.5
+				  ],
+				 [
+				  139.5,
+				  370.5
+				  ],
+				 [
+				  139.5,
+				  349.5
+				  ],
+				 [
+				  131.5,
+				  342.5
+				  ],
+				 [
+				  129.5,
+				  336.5
+				  ],
+				 [
+				  132.5,
+				  332.5
+				  ],
+				 [
+				  136.5,
+				  333.5
+				  ],
+				 [
+				  139.5,
+				  335.5
+				  ]
+				 ]
+			},
+		{
+		    "id": 13,
+			"name": "Flag of Italy",
+			"description": "After some early squabbling with r/TFLS and r/EmpireDidNothingWrong, Italy estabilished peaceful relations with its Communist and Imperial neighbours and went on to forge a mutual assistance pact with the Brits mantaining the UK flag cluster to the right. The Italian flag also hosted for a long time a picture of a Koi fish (nicknamed \"the carp\") curated by /r/OrderoftheKoi, which was eventually overwritten a few hours before the end.<br>A royal crest from the pre-WW2 flag also briefly appeared at the very bottom and resisted for a few hours.",
+			"website": "",
+			"subreddit": "/r/italy",
+			"center": [
+				   124.5,
+				   401.5
+				   ],
+			"path": [
+				 [
+				  108.5,
+				  311.5
+				  ],
+				 [
+				  139.5,
+				  311.5
+				  ],
+				 [
+				  139.5,
+				  335.5
+				  ],
+				 [
+				  143.5,
+				  332.5
+				  ],
+				 [
+				  146.5,
+				  332.5
+				  ],
+				 [
+				  149.5,
+				  335.5
+				  ],
+				 [
+				  149.5,
+				  340.5
+				  ],
+				 [
+				  139.5,
+				  349.5
+				  ],
+				 [
+				  139.5,
+				  358.5
+				  ],
+				 [
+				  135.5,
+				  358.5
+				  ],
+				 [
+				  132.5,
+				  352.5
+				  ],
+				 [
+				  119.5,
+				  349.5
+				  ],
+				 [
+				  114.5,
+				  350.5
+				  ],
+				 [
+				  111.5,
+				  361.5
+				  ],
+				 [
+				  114.5,
+				  364.5
+				  ],
+				 [
+				  132.5,
+				  364.5
+				  ],
+				 [
+				  136.5,
+				  359.5
+				  ],
+				 [
+				  139.5,
+				  359.5
+				  ],
+				 [
+				  139.5,
+				  376.5
+				  ],
+				 [
+				  129.5,
+				  376.5
+				  ],
+				 [
+				  129.5,
+				  367.5
+				  ],
+				 [
+				  120.5,
+				  367.5
+				  ],
+				 [
+				  114.5,
+				  380.5
+				  ],
+				 [
+				  112.5,
+				  386.5
+				  ],
+				 [
+				  114.5,
+				  390.5
+				  ],
+				 [
+				  114.5,
+				  398.5
+				  ],
+				 [
+				  125.5,
+				  398.5
+				  ],
+				 [
+				  125.5,
+				  382.5
+				  ],
+				 [
+				  128.5,
+				  382.5
+				  ],
+				 [
+				  128.5,
+				  377.5
+				  ],
+				 [
+				  139.5,
+				  377.5
+				  ],
+				 [
+				  139.5,
+				  440.5
+				  ],
+				 [
+				  135.5,
+				  440.5
+				  ],
+				 [
+				  135.5,
+				  481.5
+				  ],
+				 [
+				  132.5,
+				  483.5
+				  ],
+				 [
+				  132.5,
+				  506.5
+				  ],
+				 [
+				  139.5,
+				  510.5
+				  ],
+				 [
+				  139.5,
+				  520.5
+				  ],
+				 [
+				  106.5,
+				  520.5
+				  ],
+				 [
+				  106.5,
+				  518.5
+				  ],
+				 [
+				  118.5,
+				  465.5
+				  ],
+				 [
+				  108.5,
+				  465.5
+				  ],
+				 [
+				  108.5,
+				  449.5
+				  ],
+				 [
+				  111.5,
+				  449.5
+				  ],
+				 [
+				  111.5,
+				  441.5
+				  ],
+				 [
+				  108.5,
+				  441.5
+				  ]
+				 ]
+			},
+		{
+		    "id": 14,
+			"name": "Flag of the Ukraine",
+			"description": "",
+			"website": "",
+			"subreddit": "/r/ukraine",
+			"center": [
+				   23.5,
+				   393.5
+				   ],
+			"path": [
+				 [
+				  0.5,
+				  378.5
+				  ],
+				 [
+				  44.5,
+				  378.5
+				  ],
+				 [
+				  44.5,
+				  386.5
+				  ],
+				 [
+				  48.5,
+				  384.5
+				  ],
+				 [
+				  50.5,
+				  385.5
+				  ],
+				 [
+				  51.5,
+				  389.5
+				  ],
+				 [
+				  44.5,
+				  395.5
+				  ],
+				 [
+				  44.5,
+				  409.5
+				  ],
+				 [
+				  0.5,
+				  409.5
+				  ]
+				 ]
+			},
+		{
+		    "id": 15,
+			"name": "The Empire",
+			"description": "Emblem of the Galactic Empire from the Star Wars franchise.",
+			"website": "",
+			"subreddit": "/r/EmpireDidNothingWrong",
+			"center": [
+				   107.5,
+				   494.5
+				   ],
+			"path": [
+				 [
+				  108.5,
+				  472.5
+				  ],
+				 [
+				  97.5,
+				  473.5
+				  ],
+				 [
+				  89.5,
+				  480.5
+				  ],
+				 [
+				  85.5,
+				  490.5
+				  ],
+				 [
+				  85.5,
+				  501.5
+				  ],
+				 [
+				  91.5,
+				  510.5
+				  ],
+				 [
+				  100.5,
+				  516.5
+				  ],
+				 [
+				  111.5,
+				  515.5
+				  ],
+				 [
+				  123.5,
+				  511.5
+				  ],
+				 [
+				  129.5,
+				  503.5
+				  ],
+				 [
+				  130.5,
+				  490.5
+				  ],
+				 [
+				  126.5,
+				  479.5
+				  ],
+				 [
+				  118.5,
+				  473.5
+				  ]
+				 ]
+			},
+		{
+		    "id": 16,
+			"name": "Factorio",
+			"description": "Factorio is a real-time strategy video game with base-building and management elements developed by Wube Software.",
+			"website": "",
+			"subreddit": "/r/factorio",
+			"center": [
+				   48.5,
+				   609.5
+				   ],
+			"path": [
+				 [
+				  24.5,
+				  614.5
+				  ],
+				 [
+				  72.5,
+				  614.5
+				  ],
+				 [
+				  72.5,
+				  604.5
+				  ],
+				 [
+				  24.5,
+				  604.5
+				  ]
+				 ]
+			},
+			{
+		    	"id": 17,
+		    	"name": "Factorio",
+		    	"description": "Factorio is a real-time strategy video game with base-building and management elements developed by Wube Software.",
+		    	"website": "",
+		    	"subreddit": "/r/factorio",
+		    	"center": [
+		    		505.5,
+		    		142.5
+		    	],
+		    	"path": [
+		    		[
+		    			459.5,
+		    			148.5
+		    		],
+		    		[
+		    			573.5,
+		    			148.5
+		    		],
+		    		[
+		    			573.5,
+		    			133.5
+		    		],
+		    		[
+		    			512.5,
+		    			134.5
+		    		],
+		    		[
+		    			511.5,
+		    			143.5
+		    		],
+		    		[
+		    			465.5,
+		    			143.5
+		    		],
+		    		[
+		    			465.5,
+		    			138.5
+		    		],
+		    		[
+		    			439.5,
+		    			140.5
+		    		],
+		    		[
+		    			439.5,
+		    			143.5
+		    		],
+		    		[
+		    			410.5,
+		    			143.5
+		    		],
+		    		[
+		    			410.5,
+		    			133.5
+		    		],
+		    		[
+		    			405.5,
+		    			133.5
+		    		],
+		    		[
+		    			405.5,
+		    			148.5
+		    		],
+		    		[
+		    			439.5,
+		    			148.5
+		    		],
+		    		[
+		    			439.5,
+		    			158.5
+		    		],
+		    		[
+		    			443.5,
+		    			158.5
+		    		],
+		    		[
+		    			443.5,
+		    			144.5
+		    		],
+		    		[
+		    			459.5,
+		    			144.5
+		    		]
+		    	]
+		    },
+		{
+		    "id": 18,
+			"name": "Ethereum",
+			"description": "Ethereum is an open-source, blockchain-based distributed computing platform.",
+			"website": "https://www.ethereum.org/",
+			"subreddit": "/r/ethereum",
+			"center": [
+				   529.5,
+				   683.5
+				   ],
+			"path": [
+				 [
+				  508.5,
+				  671.5
+				  ],
+				 [
+				  552.5,
+				  671.5
+				  ],
+				 [
+				  552.5,
+				  679.5
+				  ],
+				 [
+				  562.5,
+				  679.5
+				  ],
+				 [
+				  562.5,
+				  687.5
+				  ],
+				 [
+				  535.5,
+				  687.5
+				  ],
+				 [
+				  535.5,
+				  695.5
+				  ],
+				 [
+				  522.5,
+				  695.5
+				  ],
+				 [
+				  519.5,
+				  702.5
+				  ],
+				 [
+				  513.5,
+				  702.5
+				  ],
+				 [
+				  513.5,
+				  697.5
+				  ],
+				 [
+				  508.5,
+				  697.5
+				  ]
+				 ]
+			},
+		{
+		    "id": 19,
+			"name": "European Union",
+			"description": "After a long battle between /r/france and /r/de, both parties negotiated peace and placed the flag of the EU with a dove of peace on the disputed territory.",
+			"website": "",
+			"subreddit": "/r/europe",
+			"center": [
+				   406.5,
+				   836.5
+				   ],
+			"path": [
+				 [
+				  375.5,
+				  809.5
+				  ],
+				 [
+				  375.5,
+				  863.5
+				  ],
+				 [
+				  436.5,
+				  863.5
+				  ],
+				 [
+				  436.5,
+				  809.5
+				  ]
+				 ]
+			},
+		{
+		    "id": 20,
+			"name": "Flag of Germany",
+			"description": "",
+			"website": "",
+			"subreddit": "/r/de, /r/placeDE",
+			"center": [
+				   496.5,
+				   836.5
+				   ],
+			"path": [
+				 [
+				  436.5,
+				  863.5
+				  ],
+				 [
+				  556.5,
+				  863.5
+				  ],
+				 [
+				  556.5,
+				  809.5
+				  ],
+				 [
+				  436.5,
+				  809.5
+				  ]
+				 ]
+			}
+	]
+}
