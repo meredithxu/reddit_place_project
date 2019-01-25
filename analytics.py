@@ -6,6 +6,38 @@ from line import *
 from point import *
 from path import *
 
+def get_canvas_region(locations):
+
+  # Returns a canvas that covers all the projects in the dataset
+
+  min_x = sys.maxsize
+  max_x = -sys.maxsize
+  min_y = sys.maxsize
+  max_y = -sys.maxsize
+  for pic_id in locations:
+    path = locations.get(pic_id)
+    for l in path.get_all_lines():
+      if l.get_point1().get_x() < min_x:
+        min_x = l.get_point1().get_x()
+      if l.get_point1().get_x() > max_x:
+        max_x = l.get_point1().get_x()
+      if l.get_point2().get_x() < min_x:
+        min_x = l.get_point2().get_x()
+      if l.get_point2().get_x() > max_x:
+        max_x = l.get_point2().get_x()
+      if l.get_point1().get_y() < min_y:
+        min_y = l.get_point1().get_y()
+      if l.get_point1().get_y() > max_y:
+        max_y = l.get_point1().get_y()
+      if l.get_point2().get_y() < min_y:
+        min_y = l.get_point2().get_y()
+      if l.get_point2().get_y() > max_y:
+        max_y = l.get_point2().get_y()
+  region = [min_x, max_x, min_y, max_y]
+  #vertices = [(min_x,min_y), (min_x,max_y), (max_x,min_y), (max_x,max_y)]
+  return region
+
+
 def write_users_per_project(locations, filename, write_to_file = False, write_file = "users_per_project.csv"):
 
   # Project count will count the number of users assigned to each project
@@ -204,10 +236,10 @@ def write_projects_per_user(locations,filename,write_to_file):
         if ( path.pixel_is_in_image(Point(x,y))):
           if user in user_projects:
             if pic_id not in user_projects[user]:
-              user_projects[user].append(pic_id)
+              user_projects[user].add(pic_id)
           else:
-            user_projects[user] = []
-            user_projects[user].append(pic_id)
+            user_projects[user] = set()
+            user_projects[user].add(pic_id)
 
   if write_to_file:
     with open('prjects_per_user.csv','w') as fileOut:
@@ -217,14 +249,43 @@ def write_projects_per_user(locations,filename,write_to_file):
         writer.writerow([u, user_projects.get(u), len(user_projects.get(u))])
   return user_projects
 
+def write_pixels_per_project(locations,write_to_file):
+  # Find the number of pixels in each image
+  # project_pixels is a dictionary with the project ID as key and number of pixels in that project as value
+  project_pixels = dict()
+  region = get_canvas_region(locations)
+  min_x = int(region[0])
+  max_x = int(region[1]+0.5)
+  min_y = int(region[2])
+  max_y = int(region[3]+0.5)
+  for pic_id in locations:
+    path = locations.get(pic_id)
+    project_pixels[pic_id] = 0
+    for x in [float(j) / 2 for j in range(min_x, max_x, 1)]:
+      for y in [float(i) / 2 for i in range(min_y, max_y, 1)]:
+        if ( path.pixel_is_in_image(Point(x,y))):
+          project_pixels[pic_id] += 1
+  if write_to_file:
+    with open('pixels_per_project.csv','w') as fileOut:
+      writer = csv.writer(fileOut, delimiter = ",")
+      writer.writerow(["Project", "Number of pixels"])
+      for proj in project_pixels:
+        writer.writerow([proj, project_pixels.get(proj)])
+  return project_pixels
+
+
 
 if __name__ == "__main__":
   locations = store_locations()
+
+  print(locations)
+  print(get_canvas_region(locations))
   write_users_per_project(locations, "tile_placements_sub.csv", True)
   get_time_per_project(locations, "tile_placements_sub.csv", True)
   get_color_per_project(locations, "tile_placements_sub.csv", True)
   write_updates_per_project(locations,"tile_placements_sub.csv", True)
   write_projects_per_user(locations,"tile_placements_sub.csv", True)
+  write_pixels_per_project(locations, True)
 
 
 
