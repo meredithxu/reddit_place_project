@@ -142,10 +142,10 @@ def write_projects_per_user(locations,filename,write_to_file):
         if ( path.pixel_is_in_image(Point(x,y))):
           if user in user_projects:
             if pic_id not in user_projects[user]:
-              user_projects[user].append(pic_id)
+              user_projects[user].add(pic_id)
           else:
-            user_projects[user] = []
-            user_projects[user].append(pic_id)
+            user_projects[user] = set()
+            user_projects[user].add(pic_id)
 
   if write_to_file:
     with open('prjects_per_user.csv','w') as fileOut:
