@@ -125,13 +125,42 @@ def write_updates_per_project(locations,filename,write_to_file):
         writer.writerow([proj, project_updates.get(proj)])
   return project_updates
 
+def write_projects_per_user(locations,filename,write_to_file):
+  user_projects = dict()
+  with open(filename,'r') as file:
+    next(file, None)
+    reader = csv.reader(file)
+      
+    for r in reader:
+      user = r[1]
+      x = float(r[2])
+      y = float(r[3])
+      for pic_id in locations:
+        path = locations.get(pic_id)
+        if ( path.pixel_is_in_image(Point(x,y))):
+          if user in user_projects:
+            if pic_id not in user_projects[user]:
+              user_projects[user].append(pic_id)
+          else:
+            user_projects[user] = []
+            user_projects[user].append(pic_id)
+
+  if write_to_file:
+    with open('prjects_per_user.csv','w') as fileOut:
+      writer = csv.writer(fileOut, delimiter = ",")
+      writer.writerow(["user ID", "list of projects", "number of projects"])
+      for u in user_projects:
+        writer.writerow([u, user_projects.get(u), len(user_projects.get(u))])
+  return user_projects
+
 
 if __name__ == "__main__":
   locations = store_locations()
   print(locations)
   write_users_per_project(locations, "tile_placements_sub.csv", True)
   get_time_per_project(locations, "tile_placements_sub.csv", True)
-  write_updates_per_project(locations,"tile_placements_sub.csv",True)
+  write_updates_per_project(locations,"tile_placements_sub.csv", True)
+  write_projects_per_user(locations,"tile_placements_sub.csv", True)
 
 
 
