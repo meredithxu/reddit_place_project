@@ -7,7 +7,10 @@ from path import *
 
 
 def store_locations(js_filename):
+    # Parse the json file, store the Path objects of every image within the canvas, and return as a dictionary indexed by the picture id.
     locations = dict()
+
+    # Load the file
     with open(js_filename) as f:
         data = json.load(f)
 
