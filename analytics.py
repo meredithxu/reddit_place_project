@@ -38,7 +38,7 @@ def get_canvas_region(locations):
   return region
 
 
-def write_users_per_project(locations, filename, write_to_file = False, write_file = "users_per_project.csv"):
+def write_users_per_project(locations, filename, write_to_file = False):
 
   # Project count will count the number of users assigned to each project
   # project_count is a dictionary of the following format:
@@ -46,10 +46,11 @@ def write_users_per_project(locations, filename, write_to_file = False, write_fi
   #  The value is the number of projects that have the indexed number of users
   # EX: If there are 6 projects that have 10 users contributing, then one element in project_count is: project_count.get(10) = 6
   user_count = {}
+  user_projects = {}
 
   for pic_id in locations:
     path = locations.get(pic_id)
-    users = set()
+    user_projects[pic_id] = set()
 
     with open(filename,'r') as file:
       # Skip first line (header row)
@@ -64,9 +65,9 @@ def write_users_per_project(locations, filename, write_to_file = False, write_fi
 
         # If this pixel is inside the image, then this user has contributed to the image
         if ( path.pixel_is_in_image(Point(x,y))):
-          users.add(user)
+          user_projects[pic_id].add(user)
 
-    num_users = len(users)
+    num_users = len(user_projects[pic_id])
 
     if (user_count.get(num_users) is None):
       user_count[num_users] = 1
@@ -75,12 +76,18 @@ def write_users_per_project(locations, filename, write_to_file = False, write_fi
 
   if write_to_file:
     # Write these results in a CSV file
-    with open(write_file,'w') as fileOut:
+    with open("num_users_per_project.csv",'w') as fileOut:
       writer = csv.writer(fileOut, delimiter = ",")
       writer.writerow(["Number of contributing users x", "Number of projects with x many users"])
       for num in user_count:
         writer.writerow([num, user_count.get(num)])
 
+    with open("users_per_project.csv", "w") as fileOut:
+      writer = csv.writer(fileOut, delimiter = ",")
+      writer.writerow(["Pic Id", "Users"])
+      for pic_id in user_projects:
+        writer.writerow([pic_id] + list(user_projects.get(pic_id)))
+        
 
   return user_count
 
