@@ -219,8 +219,6 @@ def write_analytics(locations, input_filename, write_to_file = True):
         writer.writerow([pic_id, color_count.get(pic_id).get('entropy'), color_count.get(pic_id).get('0'), color_count.get(pic_id).get('1'), color_count.get(pic_id).get('2'), color_count.get(pic_id).get('3'), color_count.get(pic_id).get('4'), color_count.get(pic_id).get('5'), color_count.get(pic_id).get('6'), color_count.get(pic_id).get('7'), color_count.get(pic_id).get('8'), color_count.get(pic_id).get('9'), color_count.get(pic_id).get('10'), color_count.get(pic_id).get('11'), color_count.get(pic_id).get('12'), color_count.get(pic_id).get('13'), color_count.get(pic_id).get('14'), color_count.get(pic_id).get('15') ])
 
 if __name__ == "__main__":
-  locations = store_locations('atlas.js')
-
+  locations = store_locations('atlas.json')
   write_analytics(locations, "tile_placements_sub.csv")
-
   write_pixels_per_project(locations, True)

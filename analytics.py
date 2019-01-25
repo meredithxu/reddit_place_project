@@ -286,7 +286,7 @@ def write_pixels_per_project(locations,write_to_file):
 
 
 if __name__ == "__main__":
-  locations = store_locations()
+  locations = store_locations("atlas.json")
 
   print(locations)
   print(get_canvas_region(locations))
