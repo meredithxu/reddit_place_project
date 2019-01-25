@@ -4,16 +4,6 @@ import json
 from line import *
 from point import *
 from path import *
-from pprint import pprint
-
-# a helper function that organizes coordinates retrieved from JSON file as list of tuples given an ID
-def coordHelper(picId,locations):
-    coordinates=[]
-    for i in range(0,len(locations.get(picId))-1,2):
-        coord=(locations.get(picId)[i],locations.get(picId)[i+1])
-        coordinates.append(coord)
-    return coordinates
-
 
 
 def store_locations(js_filename):
@@ -98,10 +88,6 @@ if __name__ == "__main__":
     locations = store_locations('atlas.json')
     
 
-    # # test code for the helper function
-    # for pId in range(21):
-    #     coordinates=coordHelper(str(pId),locations)
-    #     print(coordinates)
     print("TEST SUB DATA!!!!!!!!!!!!!!!!")
     print(spatialData(locations,Point(500,0),Point(500,500),Point(0,0),Point(0,500)))
 
