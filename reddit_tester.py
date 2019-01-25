@@ -7,7 +7,7 @@ from reddit import *
 
 # extract path values from JSON file and store them in a dictionary whose key is the picture ID(string) and value is a list of coordinates(string) indicating the location of a picture
 
-locations = store_locations()
+locations = store_locations('atlasTest2.js')
 
 
 # Every pixel within square (838,415), (838,483), (886, 486), and (886,415) should be a part of the image 

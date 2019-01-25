@@ -15,13 +15,13 @@ def coordHelper(picId,locations):
 
 
 
-def store_locations():
+def store_locations(js_filename):
     # extract path values from JSON file and store them in a dictionary whose key is the picture ID(string) and value is a list of coordinates(string) indicating the location of a picture
     locations = dict()
     read = False
     numOfPic = 0
     picId = -1
-    with open('atlasTest2.js') as atlasJS:
+    with open(js_filename) as atlasJS:
         for line in atlasJS:
             if '"id":' in line:
                 picId = re.findall('\d+',line)[0]
@@ -132,7 +132,7 @@ if __name__ == "__main__":
         writer.writerows(subData)
 
 
-    locations = store_locations()
+    locations = store_locations('atlasTest2.js')
     
 
     # # test code for the helper function
