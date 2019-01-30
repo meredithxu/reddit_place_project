@@ -21,7 +21,11 @@ class Path:
     """
     return self.lines[index]
 
-
+  def get_all_lines(self):
+    """
+      Return all the lines along the path
+    """
+    return self.lines
 
 
   def pixel_is_in_image(self, point):

@@ -7,35 +7,8 @@ from reddit import *
 
 # extract path values from JSON file and store them in a dictionary whose key is the picture ID(string) and value is a list of coordinates(string) indicating the location of a picture
 
-locations = store_locations()
+locations = store_locations('atlas.json')
 
-# Add a simple triangle for testing purposes
-
-locations['triangle'] = ['0','0','3','3','3','0']
-
-
-# Parse the data into the point, line, and path objects
-for pic_id in locations:
-  path = Path(pic_id)
-  path_points = locations.get(pic_id)
-  i = 0
-  while i < len(path_points):
-    start_x = float(path_points[i])
-    start_y = float(path_points[i + 1])
-    end_x = float(path_points[0])
-    end_y = float(path_points[1]) 
-    if i != len(path_points) - 2:
-        end_x = float(path_points[i + 2])
-        end_y = float(path_points[i + 3])
-
-    point1 = Point(start_x, start_y)
-    point2 = Point(end_x, end_y)
-    line = Line(point1, point2)
-    path.add_line(line)
-    i += 2
-
-  # Replace the list of numbers with the Path object
-  locations[pic_id] = path
 
 # Every pixel within square (838,415), (838,483), (886, 486), and (886,415) should be a part of the image 
 first_image_path = locations.get('0')
@@ -63,12 +36,12 @@ for x in range(887, 1000):
 
 
 
-triangle = locations.get('triangle')
-#Test that pixel_is_in_image correctly returns true for points within across a diagonal
-if triangle.pixel_is_in_image(Point(1, 2)):
-  print("FAILED 1, 2")
-if not triangle.pixel_is_in_image(Point(2, 1)):
-  print("FAILED 2, 1")
+# triangle = locations.get('triangle')
+# #Test that pixel_is_in_image correctly returns true for points within across a diagonal
+# if triangle.pixel_is_in_image(Point(1, 2)):
+#   print("FAILED 1, 2")
+# if not triangle.pixel_is_in_image(Point(2, 1)):
+#   print("FAILED 2, 1")
 
 
 italyFlag = locations.get('13')
