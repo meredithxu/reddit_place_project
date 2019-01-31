@@ -12,5 +12,5 @@ class Point:
   def get_y(self):
   	return self.y
 
-  
+
 
