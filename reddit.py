@@ -34,7 +34,7 @@ def store_locations(js_filename):
                 line = Line(point1, point2)
                 path.add_line(line)
 
-        locations[pic_id] = path
+            locations[pic_id] = path
 
     return locations
 

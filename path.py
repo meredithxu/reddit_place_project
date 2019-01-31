@@ -16,6 +16,8 @@ class Path:
       Adds the line to the end of Path
     """
     self.lines.append(line)
+
+
     if self.left == None or line.get_point1().get_x() < self.left:
       self.left = line.get_point1().get_x()
     if self.left == None or line.get_point2().get_x() < self.left:
