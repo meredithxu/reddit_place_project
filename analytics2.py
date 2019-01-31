@@ -6,6 +6,53 @@ from line import *
 from point import *
 from path import *
 
+def get_time_per_project(locations, filename, write_to_file = False, write_file = "time_per_project.csv"):
+  # Find the oldest and the newest point of every project and return them as a tuple
+  times_count = {}
+
+  for pic_id in locations:
+    path = locations.get(pic_id)
+    min_time = sys.maxsize
+    max_time = -sys.maxsize
+    with open(filename,'r') as file:
+      # Skip first line (header row)
+      next(file, None)
+
+      reader = csv.reader(file)
+      
+      for r in reader:
+        time = int(r[0])
+        x = float(r[2])
+        y = float(r[3])
+
+        # If this pixel is inside the image, then this user has contributed to the image
+        if ( path.pixel_is_in_image(Point(x,y)) ):
+          if time > max_time:
+            max_time = time
+          if time < min_time:
+            min_time = time
+
+
+    time_alive = max_time - min_time
+
+    if min_time > max_time:
+
+      times_count[pic_id] = ("NA", "NA", 0)
+    else:
+      times_count[pic_id] = (min_time, max_time, time_alive)
+
+
+  if write_to_file:
+    # Write these results in a CSV file
+    with open(write_file,'w') as fileOut:
+      writer = csv.writer(fileOut, delimiter = ",")
+      writer.writerow(["Pic ID", "Start Time", "End Time", "Duration"])
+      for pic_id in times_count:
+        writer.writerow([pic_id, times_count.get(pic_id)[0], times_count.get(pic_id)[1], times_count.get(pic_id)[2]])
+
+
+  return times_count
+
 
 def write_users_per_project(locations, filename, write_to_file = False):
 
