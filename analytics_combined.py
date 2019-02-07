@@ -230,8 +230,38 @@ def calculate_color_entropy(color_count):
 
     return entropy
 
-if __name__ == "__main__":
+def get_latest_data(filename):
+    data = dict()
+    with open(filename,'r') as file:
+        # Skip first line (header row)
+        next(file, None)
 
+        reader = csv.reader(file)
+
+        for r in reader:
+            time = int(r[0])
+            user = r[1]
+            x = float(r[2])
+            y = float(r[3])
+            color = r[4]
+
+            if data.get((x,y)) is None:
+                data[(x,y)] = (time, user, x, y, color)
+            else:
+                data_time = data.get((x,y))[0]
+                if time > data_time:
+                    # This tuple is more recent than the one stored in data. Replace it
+                    data[(x,y)] = (time, user, x, y, color)
+
+
+    with open("final_canvas_tile_placements.csv", 'w') as fileOut:
+        writer = csv.writer(fileOut, delimiter = ",")
+        writer.writerow(["ts", "user" ,"x_coordinate" ,"y_coordinate" ,"color"])
+        for item in data:
+            writer.writerow([data.get(item)[0], data.get(item)[1], data.get(item)[2], data.get(item)[3], data.get(item)[4]])
+
+if __name__ == "__main__":
+  get_latest_data("tile_placements.csv")
   locations = store_locations("atlas.json")
   test_point1 = Point(850,460)
   boundary_list = create_sorted_lists(locations)
