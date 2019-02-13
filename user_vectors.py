@@ -51,22 +51,57 @@ def create_user_vectors(filename, locations):
     return project_users_count
 
 
+def create_users_per_project_final_canvas(filename, locations):
+    # The Keys are the Picture Id and the value is a set of usernames
+    projects_users = dict()
+    with open(filename,'r') as file:
+        # Skip first line (header row)
+        next(file, None)
+
+        reader = csv.reader(file)
+
+        for r in reader:
+            time = int(r[0])
+            user = r[1]
+            x = float(r[2])
+            y = float(r[3])
+            color = r[4]
+
+            boundary_list = create_sorted_lists(locations)
+            filter_lists(Point(x,y), boundary_list)
+            for boundary in boundary_list:
+                pic_id = boundary[0]
+                path = locations.get(pic_id)
+
+                if projects_users.get(pic_id) is None:
+                    projects_users[pic_id] = set()
+
+                if ( path.pixel_is_in_image(Point(x,y))):
+                    projects_users[pic_id].add(user)
+
+    with open("final_canvas_users_per_project.csv", "w") as fileOut:
+        writer = csv.writer(fileOut, delimiter = ",")
+        writer.writerow(["Pic Id", "Num Users", "Users"])
+        for pic_id in projects_users:
+            writer.writerow([pic_id, len(projects_users.get(pic_id))] + list(projects_users.get(pic_id)))
+
 if __name__ == "__main__":
-    locations = store_locations("atlas.json")
-    project_users_count = create_user_vectors("final_canvas_tile_placements.csv", locations)
-    num_users = len(project_users_count)
-    num_projects = len(locations)
+    locations = store_locations("atlas_filtered.json")
+    create_users_per_project_final_canvas("final_canvas_tile_placements.csv" ,locations)
+    # project_users_count = create_user_vectors("final_canvas_tile_placements.csv", locations)
+    # num_users = len(project_users_count)
+    # num_projects = len(locations)
 
-    users = list(project_users_count.keys())
-    projects = list(locations.keys())
-    user_project_matrix = np.zeros((num_users, num_projects))
+    # users = list(project_users_count.keys())
+    # projects = list(locations.keys())
+    # user_project_matrix = np.zeros((num_users, num_projects))
 
-    for user in project_users_count:
-        for pic_id in project_users_count.get(user):
-            user_index = users.index(user)
-            project_index = projects.index(pic_id)
-            user_project_matrix[user_index][project_index] = project_users_count.get(user).get(pic_id)
+    # for user in project_users_count:
+    #     for pic_id in project_users_count.get(user):
+    #         user_index = users.index(user)
+    #         project_index = projects.index(pic_id)
+    #         user_project_matrix[user_index][project_index] = project_users_count.get(user).get(pic_id)
 
-    np.save("user_project_matrix.npy", user_project_matrix)
-    np.save("users_array.npy", users)
-    np.save("project_ids_array.npy", projects)
+    # np.save("user_project_matrix.npy", user_project_matrix)
+    # np.save("users_array.npy", users)
+    # np.save("project_ids_array.npy", projects)
