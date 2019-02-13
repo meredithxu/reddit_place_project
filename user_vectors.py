@@ -40,12 +40,13 @@ def create_user_vectors(filename, locations):
                         
     with open("final_canvas_users.csv",'w') as fileOut:
         writer = csv.writer(fileOut, delimiter = ",")
-        writer.writerow(["User", "Project ID : # Updates"])
+        writer.writerow(["User", "Project ID", "# Updates"])
         for user in project_users_count:
             row = [user]
             for pic_id in project_users_count.get(user):
                 
-                row.append( str(pic_id) + ":" + str(project_users_count.get(user).get(pic_id)))
+                row.append( str(pic_id) )
+                row.append( str(project_users_count.get(user).get(pic_id)))
             writer.writerow(row)
     return project_users_count
 
@@ -67,3 +68,5 @@ if __name__ == "__main__":
             user_project_matrix[user_index][project_index] = project_users_count.get(user).get(pic_id)
 
     np.save("user_project_matrix.npy", user_project_matrix)
+    np.save("users_array.npy", users)
+    np.save("project_ids_array.npy", projects)
