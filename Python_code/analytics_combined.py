@@ -262,11 +262,11 @@ def get_latest_data(filename):
 
 if __name__ == "__main__":
   get_latest_data("tile_placements.csv")
-  locations = store_locations("atlas.json")
-  test_point1 = Point(850,460)
-  boundary_list = create_sorted_lists(locations)
-  filter_lists(test_point1, boundary_list)  
+  #locations = store_locations("atlas.json")
+  #test_point1 = Point(850,460)
+  #boundary_list = create_sorted_lists(locations)
+  #filter_lists(test_point1, boundary_list)  
   # print(boundary_list,'\n')
 
-  write_pixels_per_project(locations)
-  write_analytics(locations, "tile_placements_sub.csv")
+  #write_pixels_per_project(locations)
+  #write_analytics(locations, "tile_placements_sub.csv")

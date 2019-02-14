@@ -1,5 +1,3 @@
-*.npy
-*.png
 *.svg
 .DS_Store
 
