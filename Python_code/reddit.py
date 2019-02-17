@@ -5,6 +5,26 @@ from line import *
 from point import *
 from path import *
 
+def read_picture_names_and_descriptions(js_file_name):
+    #Parse the json file, store picture names and descriptions.
+    names = {}
+    descriptions = {}
+
+    # Load the file
+    with open(js_file_name) as f:
+        data = json.load(f)
+
+    for element in data["atlas"]:
+        pic_id = element["id"]
+        pic_name = element["name"]
+        pic_desc = element["description"]
+
+        names[pic_id] = pic_name
+        descriptions[pic_id] = pic_desc
+
+    f.close()
+
+    return names, descriptions
 
 def store_locations(js_filename):
     # Parse the json file, store the Path objects of every image within the canvas, and return as a dictionary indexed by the picture id.
