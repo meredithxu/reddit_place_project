@@ -36,7 +36,8 @@ def store_locations(js_filename):
 
     for element in data["atlas"]:
         pic_id = element["id"]
-        path = Path(pic_id)
+        name = element["name"]
+        path = Path(pic_id, name)
         points = element["path"]
 
         if len(points) > 0:

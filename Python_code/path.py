@@ -1,7 +1,8 @@
 
 class Path:
 
-  def __init__(self, pic_id):
+  def __init__(self, pic_id, name = "Name Unavailable"):
+    self.name = name
     self.lines = []
     self.pic_id = pic_id
     self.left = None
@@ -9,6 +10,8 @@ class Path:
     self.bottom = None
     self.top = None
 
+  def get_name(self):
+    return self.name
 
   def add_line(self, line):
     """
