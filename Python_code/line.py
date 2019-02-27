@@ -37,7 +37,7 @@ class Line:
       left = (- 1)*(self.point2.y - self.point1.y)
       # If d and left are both positive or both negative, then the point is on the left side of the line
 
-      if (d < 0 and left < 0) or (d > 0 and left > 0):
+      if (d < 0 and left < 0) or (d > 0 and left > 0) or d == 0:
         return True
 
 

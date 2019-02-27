@@ -1,3 +1,5 @@
+from line import *
+from point import *
 
 class Path:
 
