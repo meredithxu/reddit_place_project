@@ -84,6 +84,10 @@ class Path:
     num_intersections = 0
     
     for line in self.lines:
+      #Checking for points on the border
+      if (line.point_is_on_the_line(point)):
+        return True
+      
       if (line.point_is_on_leftside_of_line(point)):
         num_intersections += 1
 
