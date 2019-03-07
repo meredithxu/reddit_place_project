@@ -148,31 +148,31 @@ def draw_canvas(canvas, output_file_name):
 	plt.clf()
 
 	#Drawing canvas
-	plt.figure(figsize = (100,100))
+	plt.figure(frameon=False, figsize = (100,100))
 	fig, ax = plt.subplots()
 
-	ax.set_xticks([])
-	ax.set_yticks([])
+	ax.axis('off')
 
 	plt.imshow(canvas)
     
 	#High resolution is important
 	plt.savefig(output_file_name, dpi=400, bbox_inches='tight')
 
-def extract_canvas_color(input_file_name, x_min=0, x_max=1000, y_min=0, y_max=1000,begin_time=0,end_time=sys.maxsize):
+def extract_canvas_color(input_file_name, x_min=0, x_max=1000, y_min=0, y_max=1000,timestamps=np.array([sys.maxsize])):
 	'''
 		Extracts a rectanble section of the canvas at a given time.
 		The input file has the same format as the original file with updates <ts,user,x,y,color>.
 		The section is defined by (x_min-x_max,y_min-y_max) and time end_time is in miliseconds.
 		Updates are assumed to be ordered based on timestamps.
 	'''
-	data = 16 * np.uint8(np.ones((y_max-y_min, x_max-x_min)))
+	data = 16 * np.ones((timestamps.shape[0], y_max-y_min, x_max-x_min))
     
 	with open(input_file_name,'r') as file:
 		# Skip first line (header row)
 		next(file, None)
     
 		reader = csv.reader(file)
+		t = 0
 		
 		for r in reader:
 			ts = int(r[0])
@@ -181,20 +181,26 @@ def extract_canvas_color(input_file_name, x_min=0, x_max=1000, y_min=0, y_max=10
 			y_coordinate = int(r[3])
 			color = int(r[4])
         
-			if ts>=begin_time and ts <= end_time:
-				if x_coordinate >= x_min and x_coordinate <= x_max\
-					and y_coordinate >= y_min and y_coordinate <= y_max:
+			for t in range(timestamps.shape[0]):
+				if ts <= timestamps[t]:
+					if x_coordinate >= x_min and x_coordinate < x_max\
+						and y_coordinate >= y_min and y_coordinate < y_max:
                 
-					data[y_coordinate-y_min-1][x_coordinate-x_min-1] = color
-        
-	return data
+						data[t][y_coordinate-y_min][x_coordinate-x_min] = color
+	
+	data = np.uint8(data) 
+
+	if data.shape[0] == 1:
+		return data[0]
+	else:
+		return data
 
 def extract_canvas_num_updates(input_file_name, x_min=0, x_max=1000, y_min=0, y_max=1000,begin_time=0,end_time=sys.maxsize):
 	"""
 		Extracts number of updates per tile in the canvas within the rectangle (x_min-x_max,y_mim,y_max) 
 		during the time range [begin_time,end_time] from updates (input_file_name).
 	"""
-	data = np.zeros((y_max-y_min, x_max-x_min))
+	data = np.zeros((y_max-y_min+1, x_max-x_min+1))
     
 	with open(input_file_name,'r') as file:
 		# Skip first line (header row)
@@ -213,11 +219,11 @@ def extract_canvas_num_updates(input_file_name, x_min=0, x_max=1000, y_min=0, y_
 				if x_coordinate >= x_min and x_coordinate <= x_max\
 					and y_coordinate >= y_min and y_coordinate <= y_max:
                 
-					data[y_coordinate-y_min-1][x_coordinate-x_min-1] = data[y_coordinate-y_min-1][x_coordinate-x_min-1] + 1
+					data[y_coordinate-y_min][x_coordinate-x_min] = data[y_coordinate-y_min][x_coordinate-x_min] + 1
 	
 	return data
 
-def extract_project_color(input_file_name, filter_id, begin_time=0,end_time=sys.maxsize):
+def extract_project_color(input_file_name, filter_id, timestamps=np.array([sys.maxsize])):
 	'''
 		Extracts pixel colors for a project filter_id based on updates within time 
 		range [begin_time, end_time]. Update file is assumed to have picture ids (pic_id) and
@@ -238,15 +244,11 @@ def extract_project_color(input_file_name, filter_id, begin_time=0,end_time=sys.
 		reader = csv.reader(file)
 		
 		for r in reader:
-			ts = int(r[0])
-			user = r[1]
 			x_coordinate = int(r[2])
 			y_coordinate = int(r[3])
-			color = int(r[4])
 			pic_id = int(r[5])
 
 			if pic_id == filter_id:
-				#print(r)
 				if x_coordinate <= x_min:
 					x_min = x_coordinate
 				if x_coordinate >= x_max:
@@ -258,16 +260,16 @@ def extract_project_color(input_file_name, filter_id, begin_time=0,end_time=sys.
 
 	if x_max < x_min or y_max < y_min:
 		print("Project is empty.")
-		return
+		return None
 
 	#Creating sub-canvas for the project
-	data = 16 * np.uint8(np.ones((y_max-y_min, x_max-x_min)))
+	data = 16 * np.ones((timestamps.shape[0], y_max-y_min+1, x_max-x_min+1))
 	
 	#Writing pixels
 	with open(input_file_name,'r') as file:
 		# Skip first line (header row)
 		next(file, None)
-    
+   		#ts,user,x_coordinate,y_coordinate,color,pic_id,pixel,pixel_color 
 		reader = csv.reader(file)
 		
 		for r in reader:
@@ -277,16 +279,21 @@ def extract_project_color(input_file_name, filter_id, begin_time=0,end_time=sys.
 			y_coordinate = int(r[3])
 			color = int(r[4])
 			pic_id = int(r[5])
-			pixel = int(r[7])
+			pixel = int(r[6])
 			
-			if ts >= begin_time and ts <= end_time:
-				if x_coordinate >= x_min and x_coordinate <= x_max\
-					and y_coordinate >= y_min and y_coordinate <= y_max:
-						if pic_id == filter_id and pixel == 1:
-							data[y_coordinate-y_min-1][x_coordinate-x_min-1] = color
+			for t in range(timestamps.shape[0]):
+				if ts <= timestamps[t]:
+					if x_coordinate >= x_min and x_coordinate <= x_max\
+						and y_coordinate >= y_min and y_coordinate <= y_max:
+							if pic_id == filter_id and pixel == 1:
+								data[t][y_coordinate-y_min][x_coordinate-x_min] = color
 	
-	return data
+	data = np.uint8(data) 
 
+	if data.shape[0] == 1:
+		return data[0]
+	else:
+		return data
 
 if __name__ == "__main__":
 	#Beginning of the experiment

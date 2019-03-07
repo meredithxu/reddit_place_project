@@ -24,22 +24,36 @@ class Line:
 
   def point_is_on_leftside_of_line(self, point):
     """
-      Given coordinates (x,y), check whether drawing a horizontal line rightward from the point will cross this Line object
+      Given coordinates (x,y), checks whether drawing a horizontal line rightward from the point will cross this Line object
       Return True if so and False if not
     """
 
-    if (point.y <= self.point2.y and point.y >= self.point1.y) or (point.y >= self.point2.y and point.y <= self.point1.y):
+    if (point.y < self.point2.y and point.y >= self.point1.y) or (point.y >= self.point2.y and point.y < self.point1.y):
 
       # The equation to determine this comes from here: https://math.stackexchange.com/questions/274712/calculate-on-which-side-of-a-straight-line-is-a-given-point-located
 
       d = ((point.x - self.point1.x)*(self.point2.y - self.point1.y)) - ((point.y - self.point1.y)*(self.point2.x - self.point1.x))
 
-      left = (- 1)*(self.point2.y - self.point1.y)
+      left = (self.point1.y - self.point2.y)
       # If d and left are both positive or both negative, then the point is on the left side of the line
 
-      if (d < 0 and left < 0) or (d > 0 and left > 0) or d == 0:
+      if (d < 0 and left < 0) or (d > 0 and left > 0):
         return True
-
 
       else:
         return False
+
+  def point_is_on_the_line(self, point):
+    """
+      Given coordinates (x,y), checks whether the point is over the line segment.
+      Return True if so and False if not
+    """
+    if (point.y <= self.point2.y and point.y >= self.point1.y) or (point.y >= self.point2.y and point.y <= self.point1.y):
+      if (point.x <= self.point2.x and point.x >= self.point1.x) or (point.x >= self.point2.x and point.x <= self.point1.x):
+        d = ((point.x - self.point1.x)*(self.point2.y - self.point1.y)) - ((point.y - self.point1.y)*(self.point2.x - self.point1.x))
+        
+        if d == 0.:
+          return True
+
+    return False
+
