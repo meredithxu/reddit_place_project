@@ -5,8 +5,12 @@ from reddit import *
 import numpy as np
 
 project_updates = dict()
-projects_to_remove = {'777', '1921', '1240', '1516', '1319'}
-with open('../data/tile_placements_proj.csv','r') as file:
+projects_to_remove = {'777', '1921', '1169', '42', '1066', '1757', '1824', '320', '998', '1870', '1811',\
+                     '1925', '1927', '704', '1085', '1308', '1378', '1412', '1418', '1428', '1455', '1482',\
+                      '1512', '1548', '1589', '1614', '1790', '1319', '939', '1263', '1383', '1155', '1761', 
+                     '1524', '351', '129', '1046', '1073', '1595', '1254', '1528', '1529', '1578', '1616',\
+                     '1721'}
+with open("../data/tile_placements_proj.csv",'r') as file:
 # Skip first line (header row)
 	next(file, None)
 
