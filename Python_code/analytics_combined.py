@@ -121,6 +121,7 @@ def add_atlas_data_to_tile_placements(locations, input_filename, output_filename
           if len(pic_ids) > 0:
             if time >= final_up_time[y][x]:
               pixel = 1
+              final_up_time[y][x] = sys.maxsize
             else:
               pixel = 0
 
