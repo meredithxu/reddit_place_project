@@ -1,3 +1,4 @@
+*.gpickle
 *.npy
 *.png
 *.svg
