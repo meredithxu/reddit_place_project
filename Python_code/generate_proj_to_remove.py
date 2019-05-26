@@ -12,7 +12,7 @@ def get_list_of_overlapping_proj(output_filename):
     projects_to_remove = set()
     project_pixels = dict()
 
-    locations = store_locations("../data/atlas_filtered.json")
+    locations = store_locations("../data/atlas.json")
     # locations = store_locations("../data/test_atlas.json")
 
     for pic_id1 in locations:
@@ -56,6 +56,19 @@ def get_list_of_overlapping_proj(output_filename):
                 pic1_pixel_count = len(project_pixels[pic_id1])     
                 pic2_pixel_count = len(project_pixels[pic_id2])  
                 overlapping_pixels =  len(project_pixels[pic_id1] & project_pixels[pic_id2])
+                
+                # Remove the projects that cover the entire canvas
+                if pic1_pixel_count > 9000 or pic2_pixel_count > 9000:
+
+                    if pic1_pixel_count > 9000:
+                        if pic_id1 not in projects_to_remove:
+                            projects_to_remove.add(pic_id1)
+
+                    if pic2_pixel_count > 9000:
+                        if pic_id2 not in projects_to_remove:
+                            projects_to_remove.add(pic_id2)
+
+                    continue
 
                 if pic1_pixel_count > 0:
                     overlapping_area1 = overlapping_pixels / pic1_pixel_count
@@ -63,9 +76,13 @@ def get_list_of_overlapping_proj(output_filename):
                 if pic2_pixel_count > 0:
                     overlapping_area2 = overlapping_pixels / pic2_pixel_count
 
-                if (overlapping_area1 >= 0.9 and overlapping_area2 >= 0.9):
-                    if pic_id1 not in projects_to_remove and pic_id2 not in projects_to_remove:
-                        projects_to_remove.add(pic_id2)
+                if (overlapping_area1 >= 0.7 and overlapping_area2 >= 0.7):
+                    if pic_id1 not in projects_to_remove or pic_id2 not in projects_to_remove:
+                        
+                        if pic_id2 in projects_to_remove:
+                            projects_to_remove.add(pic_id1)
+                        else:
+                            projects_to_remove.add(pic_id2)
 
     with open(output_filename, 'w') as file:
         writer = csv.writer(file)
@@ -74,4 +91,23 @@ def get_list_of_overlapping_proj(output_filename):
     return projects_to_remove
 
 if __name__ == "__main__":
-    get_list_of_overlapping_proj("../data/proj_to_remove.txt")
+    get_list_of_overlapping_proj("../data/proj_to_remove.txt")    
+
+    crimefile = open("../data/proj_to_remove.txt", 'r')
+    set2 = set()
+    for line in crimefile.readlines():
+        ids = line.split(',')
+        for pic_id in ids:
+            set2.add(pic_id)
+
+    crimefile.close()
+
+
+    set1 = {'777', '1921', '1169', '42', '1066', '1757', '1824', '320', '998', '1870', '1811',\
+                     '1925', '1927', '704', '1085', '1308', '1378', '1412', '1418', '1428', '1455', '1482',\
+                      '1512', '1548', '1589', '1614', '1790', '1319', '939', '1263', '1383', '1155', '1761', 
+                     '1524', '351', '129', '1046', '1073', '1595', '1254', '1528', '1529', '1578', '1616',\
+                     '1721'}
+    
+    print(set1 & set2)
+    
