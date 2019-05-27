@@ -51,6 +51,31 @@
         ]
       },
       {
+        "id": 76,
+        "name": "(Covered) overlapping1",
+        "description": "Tasdfting system.",
+        "website": "",
+        "subreddit": "linux",
+        "center": [
+          862.5,
+          449.5
+        ],
+        "path": [
+          [
+            0,0
+          ],
+          [
+            5,0
+          ],
+          [
+            5,5
+          ],
+          [
+            0,5
+          ]
+        ]
+      },
+      {
         "id": 5,
         "name": "good non overlap",
         "description": "Tasdfting system.",

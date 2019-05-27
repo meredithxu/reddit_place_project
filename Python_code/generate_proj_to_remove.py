@@ -14,8 +14,18 @@ def get_list_of_overlapping_proj(output_filename):
 
     locations = store_locations("../data/atlas.json")
     # locations = store_locations("../data/test_atlas.json")
+    with open(output_filename, 'w') as file:
+        writer = csv.writer(file)
+        writer.writerow(["Kept Projects", "Removed Projects"])
 
     for pic_id1 in locations:
+        if "(covered)" in locations.get(pic_id1).get_name().lower():
+            projects_to_remove.add(pic_id1)
+            with open(output_filename, 'a') as file:
+                writer = csv.writer(file)
+                writer.writerow([pic_id1, locations.get(pic_id1).get_name()])
+
+            continue
         for pic_id2 in locations:
             if (pic_id1 != pic_id2):
 
@@ -76,31 +86,43 @@ def get_list_of_overlapping_proj(output_filename):
                 if pic2_pixel_count > 0:
                     overlapping_area2 = overlapping_pixels / pic2_pixel_count
 
-                if (overlapping_area1 >= 0.7 and overlapping_area2 >= 0.7):
-                    if pic_id1 not in projects_to_remove or pic_id2 not in projects_to_remove:
+                if (overlapping_area1 >= 0.8 and overlapping_area2 >= 0.8):
+                    if pic_id1 not in projects_to_remove and pic_id2 not in projects_to_remove:
                         
-                        if pic_id2 in projects_to_remove:
-                            projects_to_remove.add(pic_id1)
-                        else:
-                            projects_to_remove.add(pic_id2)
+                        with open(output_filename, 'a') as file:
+                            writer = csv.writer(file)
+                            
+                            # Keep the larger one
+                            if pic1_pixel_count >= pic2_pixel_count:
+                                projects_to_remove.add(pic_id2)
+                                writer.writerow([ str(pic_id1) + " " + locations.get(pic_id1).get_name(), str(pic_id2) + " " + locations.get(pic_id2).get_name()  ])
 
-    with open(output_filename, 'w') as file:
+                            else:
+                                projects_to_remove.add(pic_id1)
+                                writer.writerow([ str(pic_id2) + " " + locations.get(pic_id2).get_name(), str(pic_id1) + " " + locations.get(pic_id1).get_name()  ])
+
+
+    with open(output_filename, 'a') as file:
         writer = csv.writer(file)
         writer.writerow(projects_to_remove)
 
     return projects_to_remove
 
 if __name__ == "__main__":
-    get_list_of_overlapping_proj("../data/proj_to_remove.txt")    
+    filename = "../data/proj_to_remove.txt"
+    get_list_of_overlapping_proj(filename)    
 
-    crimefile = open("../data/proj_to_remove.txt", 'r')
+    removed_projects_file = open(filename, 'r')
     set2 = set()
-    for line in crimefile.readlines():
-        ids = line.split(',')
-        for pic_id in ids:
-            set2.add(pic_id)
+    for line in removed_projects_file.readlines():
+        pass
+    last = line
+    removed_projects_file.close()
+   
+    ids = last.split(',')
+    for pic_id in ids:
+        set2.add(pic_id)
 
-    crimefile.close()
 
 
     set1 = {'777', '1921', '1169', '42', '1066', '1757', '1824', '320', '998', '1870', '1811',\
