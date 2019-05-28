@@ -1,328 +1,45 @@
 Kept Projects,Removed Projects
-27 Flag of Argentina,1799 First flag
-57 Flag of Canada,383 National Flag of Canada
-1066 The Blue Empire,67 The Blue Corner
-1281 The sad Remnants of the Nerdcubed logo,78 Northeastern University emblem
-83 DotA 2,683 Dota 2
-83 DotA 2,1043 Dota 2 Logo
-392 Critical Role.,86 Critical Role
-94 Futurama,1928 Bender
-98 Shinobu Oshino,962 Oshino Shinobu
-109 MMA,496 The Rise of MMA
-1318 Halo,116 Halo Franchise
 129 Former Purple Corner,1289 (Former) Void Triangle
-131 Love Live,944 Love Live! School Idol Festival
-165 CounterStrike: Global Offensive,1457 Super Monday Night Combat
-217 Los Angeles Lakers,177 Los Angeles Lakers
 987 BTS,181 BTS
-1907 Xcom logo/subreddit ad,213 XCOM Logo
-220 Drum Corps International,690 Drum Core International
-295 Yogscast's Honeydew,266 Honeydew's avatar
-269 Manchester United Crest,284 /r/reddevils
-271 Liberty guiding the people,343 Marianne
-346 Baguette & Wine,273 Baguette and wine
-274 Dutch Nyan Cat and Gnome Kid,315 Dutch nyan cat
-421 P&D Tamadra,434 Tamadra
 1024 AMD,"285 AMD Radeo, Ryzen, and ATI"
-287 Nintendo Switch Logo,378 Nintendo Switch
-291 Slovakia,449 Flag of Slovakia
-292 World War Commemoration,423 Remembrance Sunday Poppy
-320 The Kekistan/Rainbow Flag,296 The Desecrated flag of Kekistan
-298 TF2,299 Team Fortress 2
-298 TF2,362 TF2 Logo
-416 Team Fortress 2,298 TF2
 303 Silph Road logo,361 The Silph Road
-457 Three bikes in the colors of the Dutch flag.,307 Dutch bicycles
-412 NieR,309 Emil's face
-319 Jerma985,368 Jerma985
-320 The Kekistan/Rainbow Flag,331 kekistan/gay pride flag
-323 Dutch Nyan Cat,1294 Original Nyan Cat
-335 Star Trek,463 Star Trek
 340 OwO,1900 OwO
-342 Hello Internet,448 Hello Internet podcast
-1297 Erase The Place,351 Erase The Place
-355 Crypt of the Necrodancer,379 Crypt of the Necrodancer
-400 Necrodancer fan art,355 Crypt of the Necrodancer
-365 Euler's Identities,464 Euler's Identity
-381 Flag of Chicago,406 Chicago
 1886 The flag of Albania,399 Flag of Albania
-452 Maryland Flag,414 Flag of Maryland
-421 P&D Tamadra,461 Tamadra
 438 Dalecarlian horse,1809 Yung Lean's Wooden Horse
-466 Pusheen the Cat,635 Pusheen the Cat
-469 Berserk,470 Beserk
-631 Superbowl LI Scoreboard,471 ATL 28-NE 3
-532 Nope.avi,485 Team Fortress 2: nope.avi
-540 Major League Soccer,486 Major League Soccer
-506 Earthbound,489 Earthbound
-491 Sweden Norway Union Mark,522 Herring Salad
-510 Detroit Red Wings,492 Detroit Red Wings
-498 Tre Kronor,536 Tre kronor
-629 Chelsea FC,502 Chelsea Football Club
-524 NPR,623 NPR
 524 NPR,1715 NPR
-526 Reddit Inbox,620 Reddit inbox icon
-528 Protostar,622 Protostar
-619 nope.avi,532 Nope.avi
-587 Kanye Heart,547 Kanye Heart
-610 Porter Robinson,557 Porter Robinson - Worlds
-624 Club Penguin,564 Club Penguin
-567 Blue Orange Portal Pattern,593 Place Portal Pattern (bopp)
-597 TEST ALLIANCE PLEASE IGNORE alliance in EVE ONLINE,569 Dreddit
-571 Mr. Saturn from Earthbound,1082 Mr. Saturn from Earthbound
-608 Bisexual Flag,572 Bisexual pride flag
-617 Asexual Flag,573 Asexual Pride Flag
-584 Brave Newbies,604 Be Brave 7o Corporation
-665 Menorah and Flag of Israel,655 Israel
-665 Menorah and Flag of Israel,1372 Israel
-689 Script Cal,1912 Cal Logo
-814 Time Gear ( Pokémon Mystery Dungeon),698 Time Gear
-700 Moondye7,775 Moondye7 Logo
-700 Moondye7,801 Moondye7
-700 Moondye7,843 Moondye 7
-700 Moondye7,861 Moondye7 logo
-1027 Moondye7,700 Moondye7
-701 Coat of arms of Ukraine,835 Ukrainian Crest (Trident)
-701 Coat of arms of Ukraine,875 Tryzub
-703 Enter Warp Pipe,1510 Super Mario Pipe
 704,(Covered) Battle of Quebec
-852 Splatoon squid,707 Squid
-709 Denver Broncos Logo,832 Broncos
-709 Denver Broncos Logo,1048 Denver Broncos Logo
-712 Flag of Åland Islands,992 Aland Islands Flag
-713 Flag of Catalonia,829 Flag of Catalonia
-893 Flag of Catalonia,713 Flag of Catalonia
-714 Exit Warp Pipe,994 Super Mario Pipe
-897 Sakura Gakuin,716 Sakura Gakuin
-722 Akane Hino,738 Akane Hino
-976 Akane Hino,722 Akane Hino
-971 The Hulk,723 The Hulk
-725 Snorlax,808 Snorlax blocking the Rainbow Road
-728 Pepe,919 wlfPepe
-731 Minnesota Vikings,1009 Minnesota Vikings
-948 Spiny,734 Spiny Sprite
-735 University of Central Florida,1049 University of Central Florida
-743 Borrusia Dortmund,741 Borussia Dortmund
-762 Logo of Borussia Dortmund,743 Borrusia Dortmund
-858 Colorado State Flag,745 State Flag of Colorado
-759 KC Royals,746 Logo for the Kansas City Royals
-1005 Animal Crossing: New Leaf,747 Animal Crossing Leaf
-748 Totoro,1060 Totoro
-749 Liverpool FC,763 Liverpool FC
-907 r/LiverpoolFC,749 Liverpool FC
-750 University of Florida,1211 University of Florida
-750 University of Florida,1219 The University of Florida
-750 University of Florida,1220 University of Florida
-768 Ohio Box,752 Flag of Ohio
-759 KC Royals,1081 KC Royals
-762 Logo of Borussia Dortmund,776 Borussia Dortmund
-762 Logo of Borussia Dortmund,825 Borussia Dortmund Logo
-762 Logo of Borussia Dortmund,870 Borussia Dortmund
-890 Borussia Dortmund,762 Logo of Borussia Dortmund
-965 MUSE band,764 Muse (band)
-1468 vier-clan.de,765 Villanova University Logo
-766 Monkey D. Luffy,959 Monkey D. Luffy
-970 Luffy,766 Monkey D. Luffy
-768 Ohio Box,"874 Ohio, USA"
-768 Ohio Box,878 Ohio
-768 Ohio Box,929 Ohio Flag
-768 Ohio Box,1069 Ohio Symbols
-768 Ohio Box,1207 Ohio flag and symbols
-1008 anarcha-feminism,769 Anarcha-Feminist flag
-770 Pornhub,1056 Pornhub
-853 Moondye 7,774 2. Moondye7 Logo
-788 /r/Weezer advertisement,778 Weezer
-779 Flag of the Åland Islands,790 Flag of Åland Islands
-779 Flag of the Åland Islands,913 Flag of Åland
-782 Pitt,906 University of Pittsburgh
-783 Flaggy Flag,915 Flaggy Flag
-784 Temple University,841 Temple University
-784 Temple University,1065 Temple University Logo
-786 Kuriboh,791 Kuriboh
-957 Kuriboh,786 Kuriboh
-788 /r/Weezer advertisement,846 Weezer
-788 /r/Weezer advertisement,1034 Weezer Logo
 940 2112,789 2112
-792 Patrick star,956 Surprised Patrick
-986 Surprised Patrick,792 Patrick star
-795 HUEBR,1063 HUEBR
-797 Katawa Shoujo,961 Katawa Shoujo 
-798 Flag of Nova Scotia,821 Flag of Nova Scotia
-800 Flag of the Northwest Territories,851 Flag of Northwest Territories
-819 Major Tom,802 Major Tom with a hot dog
-864 Time Gear,803 Time Gear
-934 Buizel,806 Buizel (Pokemon)
-809 Totodile,1000 Totodile
-810 Flareon,979 Flareon
-811 Squirtle as a Portuguese pirate,1392 Squirtle Vaz de Camões
-973 Pokémon,812 Goomy (Pokémon)
-816 Flag of Artsakh,990 Flag of the Nagorno-Karabakh Republic
-1011 blanka,817 Blanka
-1251 DUP Astronaut,819 Major Tom
-898 Chicago Cubs,837 Chicago Cubs
 840 1867 • 2017,1014 Canada's 150th Birthday
-873 San Francisco 49ers,842 49ers
-985 Ashley,845 Ashley
-852 Splatoon squid,967 Splatoon squid
-853 Moondye 7,900 Moondye 7
-854 World of Tanks Logo,891 World Of Tanks
-854 World of Tanks Logo,1075 wot logo
-1021 Colorado's Flag,858 Colorado State Flag
-1078 Pepe the Frog,859 Pepe the Frog
-866 Borussia Dortmund,890 Borussia Dortmund
-1213 Ace Attorney,869 Ace Attorney
-884 San Francisco 49ers,873 San Francisco 49ers
-876 Smoking Snake and Flying Spaggeti Monster,1071 Smoking Snake and Spaghetti monster
-877 Flag of Armenia,880 Flag of Armenia
-877 Flag of Armenia,888 Flag of Armenia
-914 The flag of armenia,877 Flag of Armenia
-884 San Francisco 49ers,908 San Francisco 49ers logo
-1002 San Francisco 49ers,884 San Francisco 49ers
-885 No CAPTCHA reCAPTCHA,933 CAPTHA
-955 ReCaptcha,885 No CAPTCHA reCAPTCHA
-887 Blanka,1072 Blanka
-893 Flag of Catalonia,1007 Flag of Catalonia
-1001 BVB09 Logo,895 Borussia Dortmund Logo
-897 Sakura Gakuin,909 Sakura Gakuin
-897 Sakura Gakuin,1036 Sakura Gakuin
-898 Chicago Cubs,997 Chicago Cubs logo
-1224 University of Miami,902 The UM Football Team
-942 Muse,904 Muse
-907 r/LiverpoolFC,1026 Liverpool Football Club
-1226 Liverpool FC,907 r/LiverpoolFC
-1218 A tale of three countries,912 Belgium-Pakistan-Bakchodi war
-914 The flag of armenia,935 Flag of Armenia
-914 The flag of armenia,989 Flag of Armenia
-1070 Flag of Armenia and Artsakh,914 The flag of armenia
-1053 Green Bay Packers Logo,916 Green Bay Packers
-1051 Colorado State Flag,917 Flag of Colorado
 921 Space Invaders,1210 Space Invaders
-926 Dragon Ball And Radar,969 Dragon Ball Z Radar
-926 Dragon Ball And Radar,1300 Dragon Radar & Four-Star Ball
-947 Animal Crossing Leaf,927 Animal Crossing Leaf
-996 Payday 2 Logo,930 Payday 2
 931 r/spc,1039 SCP Foundation
-938 Green Mario Mushroom,941 1-Up Mushroom
-1010 1-up Mushroom,938 Green Mario Mushroom
-982 Animal Crossing logo,947 Animal Crossing Leaf
-952 Kauai Album Cover,1214 STN MTN/Kauai
-952 Kauai Album Cover,1215 Kauai - Childish Gambino
-952 Kauai Album Cover,1247 STN MTN/KAUAI
-958 Frank Ocean - Channel Orange,1046 Channel Orange
-1073 Channel Orange,958 Frank Ocean - Channel Orange
-1074 Muse,963 MUSE
-964 legend of Zelda health bar,"1006 Link sprite, health bar and Triforce"
-968 Little Witch Academia,1064 Little Witch Academia
-1216 Frank Ocean 'blonde' album logo,988 Frank Ocean - Blond
 1763 University of Kentucky,1012 Rutgers University
-1038 Rainbow Grid,1016 Rainbow Grid
-1021 Colorado's Flag,1057 Colorado Flag
-1028 The Lost Gun,1279 The Lost Gun
-1221 The Tree,1033 Tree
-1217 Muse,1074 Muse
 1085,(Covered) Saxophone
-1128 University of Notre Dame,1087 University of Notre Dame
-1113 Slime Ball,1189 Slimeball
-1113 Slime Ball,1194 Slime
-1113 Slime Ball,1249 Minecraft Slimeball
-1114 Parabola,1147 r/Parabola
-1160 Maltese Flag,1118 Flag of Malta
-1127 Enchanted Mango,1119 Mango
-1121 St. Louis Cardinals,1205 St. Louis Cardinals
-1128 University of Notre Dame,1163 Notre Dame Fighting Irish
-1225 Faroe Islands,1145 Flag of Faroe Islands
 1252 Borderlands symbol,1206 Borderlands Logo
-1218 A tale of three countries,1604 Bakchodi-Belgium War against Pakistan
 1241 SpaceX OCISLY,1228 SpaceX ASDS
-1269 Watchmen Logo,1266 Watchmen Badge
-1280 Connected hearts of Armenia & The Nagorno-Karabakh Republic,1306 Armenia NKR
+1289,(Former) Void Triangle
 1308,(Covered) Skeletor's blunt
 1317 Mamamoo,1348 Mamamoo (마마무)
-1363 Flag of Prince Edward Island,1323 Flag of Prince Edward Island
-1361 Flag of Yukon,1324 Flag of Yukon
-1335 Quebec,1354 r/quebec
-1335 Quebec,1375 Québec
-1361 Flag of Yukon,1387 Flag of Yukon
-1363 Flag of Prince Edward Island,1388 Flag of Prince Edward Island
-1806 Golden Bender,1377 Wooden Bender
 1378,(Covered) Bill Cipher
-1400 Hungary Heart,1405 Hungary Heart
 1412,(Covered) SkiFree Yeti
 1418,(Covered) WSOFT
 1455,Edmonton Oilers (covered)
 1482,/r/survivor (covered)
-1477 Bosnia and Herzegovina,1467 Bosnia and Herzegovina Heart
 1512,(covered) 7-1
-1515 Numberphile Logo,1694 Numberphile
-1539 Czechia heart,1770 Czech Heart
-1539 Czechia heart,1807 Czech Heart
-1545 The Prince,1617 Prince of All Cosmos
-1545 The Prince,1863 Prince of all Cosmos
 1548,FTL Logo (covered)
 1555 Rainbow Hearts,1904 Rainbow Hearts
 1556 Romania Heart Avocado,1557 Romania Heart Avocado
-1572 Pikachu,1857 Super Smash Bros 64 Pikachu
-1838 L+R+A+Start,1577 L+R+A+Start
-1583 Falco,1835 Falco Lombardi
 1585 Stealie,1797 Stealie (Grateful Dead)
 1586 Warp Pipe,1658 Super Mario Pipe
-1589,Mario Chalmers (Covered)
-1591 Quebec Heart,1717 Quebec Heart
-1864 Québecois Heart,1591 Quebec Heart
-1593 Lehigh University,1660 Lehigh University
-1593 Lehigh University,1673 Lehigh 97
-1593 Lehigh University,1725 Lehigh University
-1593 Lehigh University,1764 Lehigh Marching 97
-1593 Lehigh University,1924 Lehigh 97
-1597 Bunnings Snags,1772 Bunnings Snags
-1831 Bunnings Snags,1597 Bunnings Snags
 1713 Ginger Guy,1598 RedHeadRedemption
-1614 Wentworth Institute of Technology,1639 Wentworth Institute of Technology
-1614 Wentworth Institute of Technology,1753 Wentworth Institute of Technology
-1707 Golden State Warriors,1615 Beaver (Formerly the Golden State Warriors)
-1913 Homelab Invasion,1616 Twitch logo
 1619 Faction Logo,1891 Faction Module Mark
-1622 Guatemala Heart,1657 Heart of Argentina
-1622 Guatemala Heart,1905 Argentinian Heart 1
 1624,(Covered) Dominican Flag
-1625 The moon,1862 The Moon
-1814 Yes,1629 SpaceX Yes
-1636 The Caldari Shuttle,1719 Brave Atron
-1645 George,1869 Georgian heart
-1648 KICK SUAD,1655 Kick Suad
-1728 Kick Suad,1648 KICK SUAD
-1649 Beaver,1830 Golden State Warriors logo
-1652 Bomb Item,1666 Bomb Item
-1842 Touhou Bomb Item,1652 Bomb Item
-1668 Valencia Heart,1739 Valencia heart
-1668 Valencia Heart,1872 Separatist Catalonian flag
-1762 Pokeball,1670 Pokéball
-1744 Jef Dwarf,1671 OneFJef Dwarf
-1685 Faroe Islands Flag Heart,1775 Faroe Islands Heart
-1689 Jean Béliveau's #4,1858 Jean Béliveau Tribute
-1696 Vampire Snoo,1884 Dracula
-1866 Mapcore,1701 Mapcore Logo
+1641,(Former) Night in the Woods Logo
 1705 Auburn University,1908 Auburn University
-1707 Golden State Warriors,1737 Remnants of Golden State Warriors
 1834 Icahn Sign,1720 Clan Icahn
-1722 /r/cirkeltrek,1805 /r/cirkeltrek
-1722 /r/cirkeltrek,1899 Cirkeltrek
-1726 L+R+A+Start,1838 L+R+A+Start
-1744 Jef Dwarf,1766 The Jef Dwarf
 1914 Faeria Yak,1758 Little Yak
-1762 Pokeball,1923 Pokeball
-1903 Australian Redback,1769 Redback spider
-1779 Azerbaijan,1882 Azerbaijan Heart
 1790,8 Bit-Luigi (Covered)
-1793 Final Destination,1833 Final Destination
-1840 Azorean flag,1796 Azores Heart
-1822 Victoria Bitter Logo,1808 VB
 1811,The LANBox Logo (Covered)
-1812 The Donald's Head,1855 (Former) Tiny Trump
-1814 Yes,1911 Yes
-1851 Josuke's Hat,1916 Gappy's Hat
-1861 Azerbaijan heart,1920 Flag of Azerbaijan
-1906 Quebec Heart,1864 Québecois Heart
-1902 Baylor University,1910 Baylor BU logo
+1820,(Former) TLFT logo
+1890,SmileBASIC Source (former) Favicon
 1925,CompSoc (covered)
-1770,988,1660,470,907,1139,1069,1348,1833,1916,181,1805,1639,286,1081,821,1923,1457,1189,1056,927,1870,1615,1811,309,817,1194,1009,716,746,789,1294,1074,841,1670,1214,547,1769,875,874,78,461,448,777,812,906,1884,1790,1900,406,1673,873,1455,1855,273,75,1671,569,1862,1026,362,1764,355,1809,959,536,1797,623,622,1016,929,378,1207,331,916,1863,177,902,81,895,734,67,1897,1049,1882,1147,1772,46,1039,1163,285,713,1210,1405,1249,486,1012,593,1372,116,1604,357,749,620,1300,1118,851,449,1904,736,776,1911,1122,1065,86,914,1657,1864,690,1087,900,992,774,1717,858,752,1048,1775,880,360,909,778,1799,502,832,842,1279,1308,870,829,1075,1512,42,1589,1928,1306,1033,1043,1375,912,1808,1392,846,1753,698,1324,1719,990,792,573,423,1796,463,564,1063,764,379,1694,1739,745,1072,489,938,604,1652,997,917,1629,763,637,1857,299,1034,1006,994,1046,496,933,904,1624,1658,1060,485,1715,1725,1014,492,581,1145,1591,296,123,786,969,1692,1557,1766,961,903,1905,1007,1378,989,963,766,1323,1510,298,1388,1169,1219,1648,835,944,700,859,869,343,861,958,284,962,1215,747,23,532,2,1830,1597,908,775,1617,913,825,801,808,351,888,1891,1869,1720,915,464,61,762,1412,845,765,399,1467,790,307,1482,743,956,738,791,723,1666,1921,434,522,1000,1387,1211,48,655,1071,1858,1082,1085,1616,947,635,1577,1908,1872,741,1807,1912,1737,1289,235,1758,1418,47,266,707,877,1119,21,1920,884,315,1220,1206,1354,998,1205,941,1695,806,1036,979,885,769,383,368,819,1064,1057,1925,1377,878,919,1924,572,1548,1835,361,414,891,1701,843,722,1910,802,704,967,213,1228,890,1247,837,803,1266,935,557,1655,683,1899,1838,1598,56,471,930
+2,704,1715,1210,286,1512,123,581,1557,360,1692,1891,1641,1908,75,81,789,361,1308,235,181,399,1039,46,1122,48,1412,1890,1014,1289,1900,1455,61,1598,1139,1206,1797,1228,1348,1925,23,1012,1811,1624,1695,1482,1820,1758,285,1790,1085,1418,637,357,1809,1548,1720,1378,1904,1658,21,56
