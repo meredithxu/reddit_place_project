@@ -90,4 +90,4 @@ def spatialData(all_data, lo_left_v, lo_right_v, up_left_v, up_right_v):
 
 
 if __name__ == "__main__":
-	locations = store_locations("../data/atlas_filtered.json")
+	locations = store_locations("../data/atlas.json")

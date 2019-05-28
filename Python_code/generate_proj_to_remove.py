@@ -19,13 +19,14 @@ def get_list_of_overlapping_proj(output_filename):
         writer.writerow(["Kept Projects", "Removed Projects"])
 
     for pic_id1 in locations:
-        if "(covered)" in locations.get(pic_id1).get_name().lower():
+        if "(covered)" in locations.get(pic_id1).get_name().lower() or "(former)" in locations.get(pic_id1).get_name().lower():
             projects_to_remove.add(pic_id1)
             with open(output_filename, 'a') as file:
                 writer = csv.writer(file)
                 writer.writerow([pic_id1, locations.get(pic_id1).get_name()])
 
             continue
+
         for pic_id2 in locations:
             if (pic_id1 != pic_id2):
 
@@ -110,19 +111,8 @@ def get_list_of_overlapping_proj(output_filename):
 
 if __name__ == "__main__":
     filename = "../data/proj_to_remove.txt"
-    get_list_of_overlapping_proj(filename)    
-
-    removed_projects_file = open(filename, 'r')
-    set2 = set()
-    for line in removed_projects_file.readlines():
-        pass
-    last = line
-    removed_projects_file.close()
-   
-    ids = last.split(',')
-    for pic_id in ids:
-        set2.add(pic_id)
-
+    set2 = get_list_of_overlapping_proj(filename)    
+    print("Num removed projects: ",len(set2))
 
 
     set1 = {'777', '1921', '1169', '42', '1066', '1757', '1824', '320', '998', '1870', '1811',\
