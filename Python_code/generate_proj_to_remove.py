@@ -4,19 +4,21 @@ import point
 import line
 import csv
 
-def get_list_of_overlapping_proj(output_filename):
+def get_list_of_overlapping_proj(output_filename, print_projects = False):
     '''
         Given input file with project assignments (ts,user,x_coordinate,y_coordinate,color,pic_id,pixel,pixel_color), return projects on the final canvas that overlap each other by at least 90%.
     '''
 
     projects_to_remove = set()
     project_pixels = dict()
+    print_rows = []
 
     locations = store_locations("../data/atlas.json")
     # locations = store_locations("../data/test_atlas.json")
-    with open(output_filename, 'w') as file:
-        writer = csv.writer(file)
-        writer.writerow(["Kept Projects", "Removed Projects"])
+    if print_projects:
+        with open(output_filename, 'w') as file:
+            writer = csv.writer(file)
+            writer.writerow(["Kept Projects", "Removed Projects"])
 
     for pic_id1 in locations:
         if "(covered)" in locations.get(pic_id1).get_name().lower() or "(former)" in locations.get(pic_id1).get_name().lower():
@@ -87,39 +89,48 @@ def get_list_of_overlapping_proj(output_filename):
                 if pic2_pixel_count > 0:
                     overlapping_area2 = overlapping_pixels / pic2_pixel_count
 
+               
                 if (overlapping_area1 >= 0.8 and overlapping_area2 >= 0.8):
                     if pic_id1 not in projects_to_remove and pic_id2 not in projects_to_remove:
                         
-                        with open(output_filename, 'a') as file:
-                            writer = csv.writer(file)
-                            
-                            # Keep the larger one
-                            if pic1_pixel_count >= pic2_pixel_count:
-                                projects_to_remove.add(pic_id2)
-                                writer.writerow([ str(pic_id1) + " " + locations.get(pic_id1).get_name(), str(pic_id2) + " " + locations.get(pic_id2).get_name()  ])
+                        
+                        # Keep the larger one
+                        if pic1_pixel_count >= pic2_pixel_count:
+                            projects_to_remove.add(pic_id2)
+                            print_rows.append([str(pic_id1) + " " + locations.get(pic_id1).get_name(), str(pic_id2) + " " + locations.get(pic_id2).get_name() ] )
 
-                            else:
-                                projects_to_remove.add(pic_id1)
-                                writer.writerow([ str(pic_id2) + " " + locations.get(pic_id2).get_name(), str(pic_id1) + " " + locations.get(pic_id1).get_name()  ])
+                        else:
+                            projects_to_remove.add(pic_id1)
+                              print_rows.append([ str(pic_id2) + " " + locations.get(pic_id2).get_name(), str(pic_id1) + " " + locations.get(pic_id1).get_name()  ])
 
 
-    with open(output_filename, 'a') as file:
-        writer = csv.writer(file)
-        writer.writerow(projects_to_remove)
 
-    return projects_to_remove
+    if print_projects:
+        with open(output_filename, 'a') as file:
+            writer = csv.writer(file)
+            
+            for row in print_rows:
+                writer.writerow(row)
+
+
+            writer.writerow(projects_to_remove)
+    
+
+    addtional_sets_to_remove = {}
+
+    return (projects_to_remove | addtional_sets_to_remove )
 
 if __name__ == "__main__":
     filename = "../data/proj_to_remove.txt"
     set2 = get_list_of_overlapping_proj(filename)    
-    print("Num removed projects: ",len(set2))
+    # print("Num removed projects: ",len(set2))
 
 
-    set1 = {'777', '1921', '1169', '42', '1066', '1757', '1824', '320', '998', '1870', '1811',\
-                     '1925', '1927', '704', '1085', '1308', '1378', '1412', '1418', '1428', '1455', '1482',\
-                      '1512', '1548', '1589', '1614', '1790', '1319', '939', '1263', '1383', '1155', '1761', 
-                     '1524', '351', '129', '1046', '1073', '1595', '1254', '1528', '1529', '1578', '1616',\
-                     '1721'}
+    # additon_sets_to_remove = {'777', '1921', '1169', '42', '1066', '1757', '1824', '320', '998', '1870', '1811',\
+    #                  '1925', '1927', '704', '1085', '1308', '1378', '1412', '1418', '1428', '1455', '1482',\
+    #                   '1512', '1548', '1589', '1614', '1790', '1319', '939', '1263', '1383', '1155', '1761', 
+    #                  '1524', '351', '129', '1046', '1073', '1595', '1254', '1528', '1529', '1578', '1616',\
+    #                  '1721'}
     
-    print(set1 & set2)
+    # print(set1 & set2)
     
