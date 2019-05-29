@@ -22,7 +22,6 @@ def read_picture_names_and_descriptions(js_file_name):
         names[pic_id] = pic_name
         descriptions[pic_id] = pic_desc
 
-    f.close()
 
     return names, descriptions
 
@@ -61,32 +60,6 @@ def store_locations(js_filename,proj=None):
                 locations[pic_id] = path
 
     return locations
-
-# Given the vertices of a rectangle, return data points inside that rectangle
-def spatialData(all_data, lo_left_v, lo_right_v, up_left_v, up_right_v):
-    left_line = Line(lo_left_v,up_left_v)
-    right_line = Line(lo_right_v,up_right_v)
-    up_line = Line(up_left_v,up_right_v)
-    lo_line = Line(lo_left_v,lo_right_v)
-    rectangle = Path(-1)
-    rectangle.add_line(left_line)
-    rectangle.add_line(right_line)
-    rectangle.add_line(up_line)
-    rectangle.add_line(lo_line)
-    spatial_sub = []
-
-    # iterate through the dictionary. For each picture, check if every coordinate of that picture is inside the rectangle. If so, add picture ID to the subdata
-    for key, value in all_data.items():
-        coords = coordHelper(key,all_data)
-        in_image = True
-        for co in coords:
-            p = Point(float(co[0]),float(co[1]))
-            if not rectangle.pixel_is_in_image(p):
-                in_image = False
-                break
-        if in_image:
-            spatial_sub.append(key)
-    return spatial_sub
 
 
 if __name__ == "__main__":

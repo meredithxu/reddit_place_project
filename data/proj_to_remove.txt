@@ -43,3 +43,21 @@ Kept Projects,Removed Projects
 1834 Icahn Sign,1720 Clan Icahn
 1914 Faeria Yak,1758 Little Yak
 1758,1649,1824,2,1695,704,1797,1014,1122,1012,1823,1640,181,1378,1319,1139,1908,81,1641,357,1516,23,1085,1913,789,56,1289,1308,123,1849,1512,361,1818,1715,1383,1412,48,1707,1790,1890,1557,399,1240,285,1206,1418,286,1692,1900,1891,1811,645,75,1658,1820,1548,1210,1720,1228,1455,1348,235,360,637,61,21,581,1493,46,1624,1904,1482,1598,1925,1616,1039,1809
+704,(Covered) Battle of Quebec
+1085,(Covered) Saxophone
+1289,(Former) Void Triangle
+1308,(Covered) Skeletor's blunt
+1378,(Covered) Bill Cipher
+1412,(Covered) SkiFree Yeti
+1418,(Covered) WSOFT
+1455,Edmonton Oilers (covered)
+1482,/r/survivor (covered)
+1512,(covered) 7-1
+1548,FTL Logo (covered)
+1624,(Covered) Dominican Flag
+1641,(Former) Night in the Woods Logo
+1790,8 Bit-Luigi (Covered)
+1811,The LANBox Logo (Covered)
+1820,(Former) TLFT logo
+1890,SmileBASIC Source (former) Favicon
+1925,CompSoc (covered)

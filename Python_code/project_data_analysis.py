@@ -443,7 +443,7 @@ def area_per_project(input_file,projects_to_remove):
                        
 
 	#print(len(project_updates))
-	locations = store_locations("../data/atlas_filtered.json")
+	locations = store_locations("../data/atlas.json")
 	area_prop={}
 
 	for pic_id in locations:

@@ -6,18 +6,21 @@ import csv
 
 def get_list_of_removed_proj(output_filename, writeto_file = False):
     '''
-        Given input file with project assignments (ts,user,x_coordinate,y_coordinate,color,pic_id,pixel,pixel_color), return projects on the final canvas that overlap each other by at least 90%.
-    '''
-    '''
-    1913: Homelab invasion, intersects 1616 twich logo
-    1649: beaver, 1707: warriors
-    1849: Faeria Yak (only has border)
-    1319: very incomplete
-    1824 (climber's head, too small)
-    1383, 1493, 1823, 1818, 645, 1640 (Very small)
-    1240, 1516 (1 pixel)
+        Given input file with project assignments (ts,user,x_coordinate,y_coordinate,color,pic_id,pixel,pixel_color), return projects on the final canvas that overlap each other by at least 80% and should be removed
 
-    These are projects that we manually remove
+        If writeto_file is True, then a text file with the projects will be produced.
+        Otherwise output_filename is ignored.
+
+        There are also some projects that will confuse our CNN, so we maually remove them:
+   
+        1913: Homelab invasion, intersects 1616 twich logo
+        1649: beaver, 1707: warriors
+        1849: Faeria Yak (only has border)
+        1319: very incomplete
+        1824 (climber's head, too small)
+        1383, 1493, 1823, 1818, 645, 1640 (Very small)
+        1240, 1516 (1 pixel)
+
     '''
     projects_to_remove = {'1913', '1616', '1649', '1707', '1849', '1319', '1824', '1383', '1493', '1823', '1818', '645', '1640', '1240', '1516'}
 
@@ -34,9 +37,11 @@ def get_list_of_removed_proj(output_filename, writeto_file = False):
     for pic_id1 in locations:
         if "(covered)" in locations.get(pic_id1).get_name().lower() or "(former)" in locations.get(pic_id1).get_name().lower():
             projects_to_remove.add(pic_id1)
-            with open(output_filename, 'a') as file:
-                writer = csv.writer(file)
-                writer.writerow([pic_id1, locations.get(pic_id1).get_name()])
+            
+            if writeto_file:
+                with open(output_filename, 'a') as file:
+                    writer = csv.writer(file)
+                    writer.writerow([pic_id1, locations.get(pic_id1).get_name()])
 
             continue
 
@@ -131,14 +136,5 @@ def get_list_of_removed_proj(output_filename, writeto_file = False):
 if __name__ == "__main__":
     filename = "../data/proj_to_remove.txt"
     set2 = get_list_of_removed_proj(filename, writeto_file = True)    
-    # print("Num removed projects: ",len(set2))
 
-
-    # additon_sets_to_remove = {'777', '1921', '1169', '42', '1066', '1757', '1824', '320', '998', '1870', '1811',\
-    #                  '1925', '1927', '704', '1085', '1308', '1378', '1412', '1418', '1428', '1455', '1482',\
-    #                   '1512', '1548', '1589', '1614', '1790', '1319', '939', '1263', '1383', '1155', '1761', 
-    #                  '1524', '351', '129', '1046', '1073', '1595', '1254', '1528', '1529', '1578', '1616',\
-    #                  '1721'}
-    
-    # print(set1 & set2)
     
