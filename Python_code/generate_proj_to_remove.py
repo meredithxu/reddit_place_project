@@ -4,18 +4,29 @@ import point
 import line
 import csv
 
-def get_list_of_overlapping_proj(output_filename, print_projects = False):
+def get_list_of_removed_proj(output_filename, writeto_file = False):
     '''
         Given input file with project assignments (ts,user,x_coordinate,y_coordinate,color,pic_id,pixel,pixel_color), return projects on the final canvas that overlap each other by at least 90%.
     '''
+    '''
+    1913: Homelab invasion, intersects 1616 twich logo
+    1649: beaver, 1707: warriors
+    1849: Faeria Yak (only has border)
+    1319: very incomplete
+    1824 (climber's head, too small)
+    1383, 1493, 1823, 1818, 645, 1640 (Very small)
+    1240, 1516 (1 pixel)
 
-    projects_to_remove = set()
+    These are projects that we manually remove
+    '''
+    projects_to_remove = {'1913', '1616', '1649', '1707', '1849', '1319', '1824', '1383', '1493', '1823', '1818', '645', '1640', '1240', '1516'}
+
     project_pixels = dict()
     print_rows = []
 
     locations = store_locations("../data/atlas.json")
     # locations = store_locations("../data/test_atlas.json")
-    if print_projects:
+    if writeto_file:
         with open(output_filename, 'w') as file:
             writer = csv.writer(file)
             writer.writerow(["Kept Projects", "Removed Projects"])
@@ -101,11 +112,11 @@ def get_list_of_overlapping_proj(output_filename, print_projects = False):
 
                         else:
                             projects_to_remove.add(pic_id1)
-                              print_rows.append([ str(pic_id2) + " " + locations.get(pic_id2).get_name(), str(pic_id1) + " " + locations.get(pic_id1).get_name()  ])
+                            print_rows.append([ str(pic_id2) + " " + locations.get(pic_id2).get_name(), str(pic_id1) + " " + locations.get(pic_id1).get_name()  ])
 
 
 
-    if print_projects:
+    if writeto_file:
         with open(output_filename, 'a') as file:
             writer = csv.writer(file)
             
@@ -114,15 +125,12 @@ def get_list_of_overlapping_proj(output_filename, print_projects = False):
 
 
             writer.writerow(projects_to_remove)
-    
-
-    addtional_sets_to_remove = {}
-
-    return (projects_to_remove | addtional_sets_to_remove )
+            
+    return projects_to_remove
 
 if __name__ == "__main__":
     filename = "../data/proj_to_remove.txt"
-    set2 = get_list_of_overlapping_proj(filename)    
+    set2 = get_list_of_removed_proj(filename, writeto_file = True)    
     # print("Num removed projects: ",len(set2))
 
 

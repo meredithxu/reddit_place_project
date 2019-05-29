@@ -1,4 +1,22 @@
 Kept Projects,Removed Projects
+704,(Covered) Battle of Quebec
+1085,(Covered) Saxophone
+1289,(Former) Void Triangle
+1308,(Covered) Skeletor's blunt
+1378,(Covered) Bill Cipher
+1412,(Covered) SkiFree Yeti
+1418,(Covered) WSOFT
+1455,Edmonton Oilers (covered)
+1482,/r/survivor (covered)
+1512,(covered) 7-1
+1548,FTL Logo (covered)
+1624,(Covered) Dominican Flag
+1641,(Former) Night in the Woods Logo
+1790,8 Bit-Luigi (Covered)
+1811,The LANBox Logo (Covered)
+1820,(Former) TLFT logo
+1890,SmileBASIC Source (former) Favicon
+1925,CompSoc (covered)
 129 Former Purple Corner,1289 (Former) Void Triangle
 987 BTS,181 BTS
 1024 AMD,"285 AMD Radeo, Ryzen, and ATI"
@@ -7,39 +25,21 @@ Kept Projects,Removed Projects
 1886 The flag of Albania,399 Flag of Albania
 438 Dalecarlian horse,1809 Yung Lean's Wooden Horse
 524 NPR,1715 NPR
-704,(Covered) Battle of Quebec
 940 2112,789 2112
 840 1867 • 2017,1014 Canada's 150th Birthday
 921 Space Invaders,1210 Space Invaders
 931 r/spc,1039 SCP Foundation
 1763 University of Kentucky,1012 Rutgers University
-1085,(Covered) Saxophone
 1252 Borderlands symbol,1206 Borderlands Logo
 1241 SpaceX OCISLY,1228 SpaceX ASDS
-1289,(Former) Void Triangle
-1308,(Covered) Skeletor's blunt
 1317 Mamamoo,1348 Mamamoo (마마무)
-1378,(Covered) Bill Cipher
-1412,(Covered) SkiFree Yeti
-1418,(Covered) WSOFT
-1455,Edmonton Oilers (covered)
-1482,/r/survivor (covered)
-1512,(covered) 7-1
-1548,FTL Logo (covered)
 1555 Rainbow Hearts,1904 Rainbow Hearts
 1556 Romania Heart Avocado,1557 Romania Heart Avocado
 1585 Stealie,1797 Stealie (Grateful Dead)
 1586 Warp Pipe,1658 Super Mario Pipe
 1713 Ginger Guy,1598 RedHeadRedemption
 1619 Faction Logo,1891 Faction Module Mark
-1624,(Covered) Dominican Flag
-1641,(Former) Night in the Woods Logo
 1705 Auburn University,1908 Auburn University
 1834 Icahn Sign,1720 Clan Icahn
 1914 Faeria Yak,1758 Little Yak
-1790,8 Bit-Luigi (Covered)
-1811,The LANBox Logo (Covered)
-1820,(Former) TLFT logo
-1890,SmileBASIC Source (former) Favicon
-1925,CompSoc (covered)
-2,704,1715,1210,286,1512,123,581,1557,360,1692,1891,1641,1908,75,81,789,361,1308,235,181,399,1039,46,1122,48,1412,1890,1014,1289,1900,1455,61,1598,1139,1206,1797,1228,1348,1925,23,1012,1811,1624,1695,1482,1820,1758,285,1790,1085,1418,637,357,1809,1548,1720,1378,1904,1658,21,56
+1758,1649,1824,2,1695,704,1797,1014,1122,1012,1823,1640,181,1378,1319,1139,1908,81,1641,357,1516,23,1085,1913,789,56,1289,1308,123,1849,1512,361,1818,1715,1383,1412,48,1707,1790,1890,1557,399,1240,285,1206,1418,286,1692,1900,1891,1811,645,75,1658,1820,1548,1210,1720,1228,1455,1348,235,360,637,61,21,581,1493,46,1624,1904,1482,1598,1925,1616,1039,1809
