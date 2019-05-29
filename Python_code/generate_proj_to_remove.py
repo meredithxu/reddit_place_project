@@ -110,7 +110,12 @@ def get_list_of_removed_proj(output_filename, writeto_file = False):
                     if pic_id1 not in projects_to_remove and pic_id2 not in projects_to_remove:
                         
                         
-                        # Keep the larger one
+                        # manually remove 1763 University of Kentucky and keep 1012 Rutgers University
+                        if pic_id1 == '1763' or pic_id2 == '1763':
+                            projects_to_remove.add('1763')
+                            continue
+
+                        # Keep the larger one    
                         if pic1_pixel_count >= pic2_pixel_count:
                             projects_to_remove.add(pic_id2)
                             print_rows.append([str(pic_id1) + " " + locations.get(pic_id1).get_name(), str(pic_id2) + " " + locations.get(pic_id2).get_name() ] )
@@ -128,7 +133,7 @@ def get_list_of_removed_proj(output_filename, writeto_file = False):
             for row in print_rows:
                 writer.writerow(row)
 
-
+            writer.writerow(["1012 Rutgers University", "1763 University of Kentucky"])
             writer.writerow(projects_to_remove)
             
     return projects_to_remove
