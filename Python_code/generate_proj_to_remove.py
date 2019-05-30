@@ -27,7 +27,7 @@ def get_list_of_removed_proj(output_filename, writeto_file = False):
     project_pixels = dict()
     print_rows = []
 
-    locations = store_locations("../data/atlas.json")
+    locations = store_locations("../data/atlas_complete.json")
     # locations = store_locations("../data/test_atlas.json")
     if writeto_file:
         with open(output_filename, 'w') as file:
