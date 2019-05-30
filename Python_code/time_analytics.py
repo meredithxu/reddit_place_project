@@ -8,7 +8,8 @@ from path import *
 from analytics_combined import *
 
 def time_analysis(filename):
-    locations = store_locations("atlas.json")
+    # locations = store_locations("atlas.json")
+    locations = store_locations("atlas_complete.json")
     project_time = dict()
     with open(filename,'r') as file:
         # Skip first line (header row)

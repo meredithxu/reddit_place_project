@@ -11,6 +11,8 @@ from scipy import linalg
 import scipy.sparse.linalg as spla
 from scipy.spatial import distance
 
+from reddit import *
+from analytics_combined import *
 
 def updates_per_project(input_file_proj, projects_to_remove):
 	'''
@@ -63,7 +65,7 @@ def colors_per_project(input_file_proj, projects_to_remove):
 		Important: Only pixels (final canvas) are considered here.
 	'''
 	colors_per_proj = {}
-	num_colors = 16
+	num_colors = 17
 
 	with open(input_file_proj,'r') as file:
 		# Skip first line (header row)
@@ -75,6 +77,7 @@ def colors_per_project(input_file_proj, projects_to_remove):
 			proj = r[5]
 			color = int(r[4])
 			pixel = int(r[6])
+			
 
 			if proj not in projects_to_remove and pixel == 1:
 				if proj in colors_per_proj:
@@ -90,19 +93,19 @@ def entropy_per_project(colors_per_project):
 		Given a dict with colors per project, computes the entropy of each project (dictionary).
 	'''
 	entropy_per_proj = {}
-	num_colors = 16
+	num_colors = 17
 
 	for proj in colors_per_project:
 		ent = 0.
-    
+	
 		colors_per_project[proj] = colors_per_project[proj] / np.sum(colors_per_project[proj])
-    
+	
 		for c in range(num_colors):
 			p = colors_per_project[proj][c]
 			
 			if p > 0:
 				ent = ent - p * np.log(p)
-            
+			
 		entropy_per_proj[proj] = ent
 
 	return entropy_per_proj
@@ -129,8 +132,8 @@ def update_category_per_project():
 			final_pixel_color = int(r[7])
 			if picID not in tile_updates:
 				tile_updates[picID] = {"final_updates":np.zeros(n_vals+1), 
-                                   "agreeing_updates":np.zeros(n_vals+1), 
-                                   "disagreeing_updates":np.zeros(n_vals+1)}
+								   "agreeing_updates":np.zeros(n_vals+1), 
+								   "disagreeing_updates":np.zeros(n_vals+1)}
 			if final_pixel == 1:
 				tile_updates[picID]["final_updates"][t] = tile_updates[picID]["final_updates"][t] + 1
 				total_tile_updates["final_updates"][t] = total_tile_updates["final_updates"][t] + 1
@@ -143,19 +146,19 @@ def update_category_per_project():
 
 	for picID in tile_updates:
 		s = np.sum(tile_updates[picID]["final_updates"]) + np.sum(tile_updates[picID]["agreeing_updates"])\
-        + np.sum(tile_updates[picID]["disagreeing_updates"])
+		+ np.sum(tile_updates[picID]["disagreeing_updates"])
 		tile_updates[picID]["final_updates"] = tile_updates[picID]["final_updates"] / s
-    
+	
 		tile_updates[picID]["agreeing_updates"] = tile_updates[picID]["agreeing_updates"] / s
-    
+	
 		tile_updates[picID]["disagreeing_updates"] = tile_updates[picID]["disagreeing_updates"] / s
-    
+	
 	s = np.sum(total_tile_updates["final_updates"]) + np.sum(total_tile_updates["agreeing_updates"])\
-        + np.sum(total_tile_updates["disagreeing_updates"])
+		+ np.sum(total_tile_updates["disagreeing_updates"])
 	total_tile_updates["final_updates"] = total_tile_updates["final_updates"] / s
 	total_tile_updates["agreeing_updates"] = total_tile_updates["agreeing_updates"] / s
 	total_tile_updates["disagreeing_updates"] = total_tile_updates["disagreeing_updates"] / s
-    
+	
 	return tile_updates, total_tile_updates
 
 
@@ -172,18 +175,18 @@ def update_time_entropy_per_project(tile_updates):
 		agree_up = np.sum(tile_updates[proj]["agreeing_updates"])
 		disagree_up = np.sum(tile_updates[proj]["disagreeing_updates"])
 		sum_up= agree_up+ disagree_up
-        
+		
 		for t in range(0,len(list(tile_updates[proj]["agreeing_updates"]))):
-            
+			
 			p= tile_updates[proj]["agreeing_updates"][t]/sum_up
 			if p > 0:
 				ent = ent - p * np.log(p)
-                
+				
 			q= tile_updates[proj]["disagreeing_updates"][t]/sum_up
 			if q > 0:
 				ent = ent - q * np.log(q)
 
-            
+			
 		update_time_entropy_per_proj[proj] = ent
 
 	return update_time_entropy_per_proj
@@ -207,7 +210,7 @@ def update_entropy_per_project(tile_updates):
 		p2 = disagree_up/sum_up
 		ent= -p1* np.log(p1)
 		ent=ent - p2* np.log(p2)
-            
+			
 		update_entropy_per_proj[proj] = ent
 
 	return update_entropy_per_proj
@@ -337,7 +340,7 @@ def users_per_project(input_file_proj, projects_to_remove):
 			#ts,user,x_coordinate,y_coordinate,color,pic_id,pixel,pixel_color
 			proj = r[5]
 			user = r[1]
-                         
+						 
 			pixel_color = int(r[7])
 
 			if proj not in projects_to_remove and pixel_color == 1:
@@ -372,7 +375,7 @@ def users_per_project_list(input_file_proj, projects_to_remove):
 			#ts,user,x_coordinate,y_coordinate,color,pic_id,pixel,pixel_color
 			proj = r[5]
 			user = r[1]
-                         
+						 
 			pixel_color = int(r[7])
 
 			if proj not in projects_to_remove and pixel_color == 1:
@@ -403,7 +406,7 @@ def area_per_project(input_file,projects_to_remove):
 		Important: The area is computed as a fraction of the area covered in a bounding rectangle.
 	'''
 	project_updates = dict()
-    
+	
 	with open(input_file,'r') as file:
 # Skip first line (header row)
 		next(file, None)
@@ -413,23 +416,23 @@ def area_per_project(input_file,projects_to_remove):
 		right_most={}
 		top_most={}
 		bottom_most={}
-        
+		
 		for r in reader:
 			final_pixel = int(r[-2])
 			pic_id = str(r[-3])
 			x = int(r[2])
 			y = int(r[3]) 
-            
+			
 			if pic_id not in projects_to_remove:
 				if final_pixel == 1:
-                    
+					
 					if pic_id not in project_updates:
 						project_updates[pic_id] = 1
 						left_most[pic_id]=x
 						right_most[pic_id]=x
 						top_most[pic_id]=y
 						bottom_most[pic_id]=y  
-                        
+						
 					else:
 						project_updates[pic_id] += 1
 						if (x<=left_most[pic_id]):
@@ -440,16 +443,17 @@ def area_per_project(input_file,projects_to_remove):
 							bottom_most[pic_id]=y
 						if (y>top_most[pic_id]):
 							top_most[pic_id]=y                            
-                       
+					   
 
 	#print(len(project_updates))
-	locations = store_locations("../data/atlas.json")
+	# locations = store_locations("../data/atlas.json")
+	locations = store_locations("../data/atlas_complete.json")
 	area_prop={}
 
 	for pic_id in locations:
 		if pic_id not in projects_to_remove:
 			if pic_id in project_updates:
-                    
+					
 				area = (top_most[pic_id]-bottom_most[pic_id]+1) * (right_most[pic_id]-left_most[pic_id]+1)
 				num_updates = project_updates[pic_id]
 
@@ -476,7 +480,7 @@ def times_per_project(input_file_proj, projects_to_remove):
 		# Skip first line (header row)
 		next(file, None)
 		reader = csv.reader(file)
-    
+	
 		for r in reader:
 			#ts,user,x_coordinate,y_coordinate,color,pic_id,pixel,pixel_color
 			proj = r[5]
@@ -488,13 +492,13 @@ def times_per_project(input_file_proj, projects_to_remove):
 				if proj in min_times_per_proj:
 					if min_times_per_proj[proj] > t:
 						min_times_per_proj[proj] = t
-                
+				
 					if max_times_per_proj[proj] < t:
 						max_times_per_proj[proj] = t
 				else:
 					min_times_per_proj[proj] = t
 					max_times_per_proj[proj] = t
-                
+				
 	times_per_proj = {}
 
 	for proj in min_times_per_proj:
@@ -505,9 +509,9 @@ def times_per_project(input_file_proj, projects_to_remove):
 
 #IDs = []
 #for p in updates_per_proj.keys():
-    #IDs.append(names[int(p)])
-    #IDs.append(str(p))
-        
+	#IDs.append(names[int(p)])
+	#IDs.append(str(p))
+		
 #IDs = np.array(list(IDs), dtype=object)
 def Ratio(X,Y,names):
 	'''
@@ -518,9 +522,14 @@ def Ratio(X,Y,names):
 	for p in X.keys():
 		xvalue = X[p]
 		yvalue = Y[p]
+
+		# Avoid divisoin by 0
+		if xvalue == 0:
+			continue
+
 		ratios[p] = yvalue / xvalue
 		IDs.append(names[int(p)])
-        #IDs.append(str(p))
+		#IDs.append(str(p))
 	IDs = np.array(list(IDs), dtype=object)
 	return ratios,IDs
    
@@ -536,9 +545,9 @@ def Create_Array(Dict_1,Dict_2):
 		Y[i] = Dict_2[p] 
 		i = i + 1   
 	return X,Y   
-    
-    
-    
+	
+	
+	
 def icdf(dct):
 	'''
 		Simple function to compute an inverse cumulative density distribution from 
@@ -548,10 +557,10 @@ def icdf(dct):
 
 	for k in dct:
 		count[dct[k]] = count[dct[k]] + 1
-    
+	
 	for i in reversed(range(len(count)-1)):
 		count[i] = count[i] + count[i+1]
-    
+	
 	count = count / count[0]
 
 	return count
@@ -569,7 +578,7 @@ def user_project_matrix(input_file_proj, projects_to_remove, match_pixel, match_
 	users_count = 0
 
 	with open(input_file_proj,'r') as file:
-    		# Skip first line (header row)
+			# Skip first line (header row)
 		next(file, None)
 		reader = csv.reader(file)
 		#ts,user,x_coordinate,y_coordinate,color,pic_id,pixel,pixel_color
@@ -578,19 +587,19 @@ def user_project_matrix(input_file_proj, projects_to_remove, match_pixel, match_
 			proj = r[5]
 			pixel = int(r[6])
 			pixel_color = int(r[7])
-        
+		
 			if proj not in projects_to_remove:
 				if (not match_pixel or pixel == 1) and (not match_pixel_color or pixel_color == 1):
 					if user not in users_dict:
 						users_dict[user] = users_count
 						users_count += 1
-            
+			
 					if proj not in projects_dict:
 						projects_dict[proj] = projects_count
 						projects_count += 1
 
 	user_proj_matrix = scipy.sparse.lil_matrix((users_count, projects_count))
-    
+	
 	with open("../data/sorted_tile_placements_proj.csv", "r") as file:
 		reader = csv.reader(file, delimiter = ",")
 		# Skip first line (header row)
@@ -601,10 +610,10 @@ def user_project_matrix(input_file_proj, projects_to_remove, match_pixel, match_
 			proj = r[5]
 			pixel = int(r[6])
 			pixel_color = int(r[7])
-            
+			
 			if proj not in projects_to_remove:
 				if (not match_pixel or pixel == 1) and (not match_pixel_color or pixel_color == 1):
-                			user_proj_matrix[users_dict[user],projects_dict[proj]] += 1
+							user_proj_matrix[users_dict[user],projects_dict[proj]] += 1
 
 	return user_proj_matrix, users_dict, projects_dict 
 
@@ -638,12 +647,12 @@ def distance_per_project(input_file_proj, projects_to_remove,sample_size):
 
 	proj_euc_dist = dict()  # Average euclidean distance between sampled users
 	proj_cos_dist = dict()  # Average cosine distance between sampled users
-    
+	
 	len_v=len(projects_dict.keys())
-    
-    
+	
+	
 	#random pairs 
-    
+	
 	proj_rand_dist = [0,0]
 	cos_rand=0.0
 	euc_rand=0.0
@@ -652,14 +661,14 @@ def distance_per_project(input_file_proj, projects_to_remove,sample_size):
 		rand_t=rand_s
 		while (rand_t==rand_s):
 			rand_t= random.randint(0,len(users_dict.keys())-1)
-            
+			
 		vec1 = user_project_mat[rand_s, : ].toarray()
 		vec1=vec1.reshape(1,len_v)
 		vec1=preprocessing.normalize(vec1, norm='l2')
 		vec2 = user_project_mat[rand_t, :].toarray()
 		vec2=vec2.reshape(1,len_v)
 		vec2=preprocessing.normalize(vec2, norm='l2')
-        
+		
 		euc_rand = euc_rand+distance.euclidean( vec1 , vec2 )
 		cos_rand = cos_rand+distance.cosine( vec1 , vec2 ) 
 	proj_rand_dist[0]=euc_rand/(sample_size)
@@ -683,14 +692,14 @@ def distance_per_project(input_file_proj, projects_to_remove,sample_size):
 			vec1 = user_project_mat[users_dict[user1], : ].toarray()
 			vec1=vec1.reshape(1,len_v)
 			vec1=preprocessing.normalize(vec1, norm='l2')
-            
+			
 			vec2 = user_project_mat[users_dict[user2], :].toarray()
 			vec2=vec2.reshape(1,len_v)
 			vec2=preprocessing.normalize(vec2, norm='l2')
-            
+			
 			euc_dis = euc_dis+distance.euclidean( vec1 , vec2 )
 			cos_dis = cos_dis+distance.cosine( vec1 , vec2 )
-            
+			
 		proj_euc_dist[pic_id]=euc_dis/sample_size
 		proj_cos_dist[pic_id]=cos_dis/sample_size
   
@@ -710,12 +719,12 @@ def distance_per_project_all(input_file_proj, projects_to_remove,sample_size):
 
 	proj_euc_dist = dict()  # Average euclidean distance between sampled users
 	proj_cos_dist = dict()  # Average cosine distance between sampled users
-    
+	
 	len_v=len(projects_dict.keys())
-    
-    
+	
+	
 	#random pairs 
-    
+	
 	proj_rand_dist = [0,0]
 	cos_rand=0.0
 	euc_rand=0.0
@@ -726,14 +735,14 @@ def distance_per_project_all(input_file_proj, projects_to_remove,sample_size):
 		rand_t=rand_s
 		while (rand_t==rand_s):
 			rand_t= random.randint(0,len(users_dict.keys())-1)
-            
+			
 		vec1 = user_project_mat[rand_s, : ].toarray()
 		vec1=vec1.reshape(1,len_v)
 		vec1=preprocessing.normalize(vec1, norm='l2')
 		vec2 = user_project_mat[rand_t, :].toarray()
 		vec2=vec2.reshape(1,len_v)
 		vec2=preprocessing.normalize(vec2, norm='l2')
-        
+		
 		euc_dis = distance.euclidean( vec1 , vec2 )
 		cos_dis = distance.cosine( vec1 , vec2 )
 		temp_list_euc.append(euc_dis)
@@ -762,17 +771,17 @@ def distance_per_project_all(input_file_proj, projects_to_remove,sample_size):
 			vec1 = user_project_mat[users_dict[user1], : ].toarray()
 			vec1=vec1.reshape(1,len_v)
 			vec1=preprocessing.normalize(vec1, norm='l2')
-            
+			
 			vec2 = user_project_mat[users_dict[user2], :].toarray()
 			vec2=vec2.reshape(1,len_v)
 			vec2=preprocessing.normalize(vec2, norm='l2')
-            
+			
 			euc_dis = distance.euclidean( vec1 , vec2 )
 			cos_dis = distance.cosine( vec1 , vec2 )
-            
+			
 			big_euc_dict[(user1,user2,pic_id)]=euc_dis
 			big_cos_dict[(user1,user2,pic_id)]=cos_dis
-                   
+				   
   
 	return big_euc_dict, big_cos_dict, proj_rand_dist
 
