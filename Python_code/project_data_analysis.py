@@ -523,8 +523,9 @@ def Ratio(X,Y,names):
 		xvalue = X[p]
 		yvalue = Y[p]
 
-		# Avoid divisoin by 0
+		# Avoid division by 0
 		if xvalue == 0:
+			
 			continue
 
 		ratios[p] = yvalue / xvalue
