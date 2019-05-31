@@ -17,29 +17,52 @@ Kept Projects,Removed Projects
 1820,(Former) TLFT logo
 1890,SmileBASIC Source (former) Favicon
 1925,CompSoc (covered)
+2007,Fuck Shawn (Covered)
+1938 Flag of Czechia,49 Flag of the Czech Republic
+95 osu! Logo,1994 osu!
 129 Former Purple Corner,1289 (Former) Void Triangle
+133 My Little Pony,1940 bronies never die
 987 BTS,181 BTS
+1958 The Kalmar union,236 Viking Longship
 1024 AMD,"285 AMD Radeo, Ryzen, and ATI"
 303 Silph Road logo,361 The Silph Road
 340 OwO,1900 OwO
+1944 Austria,347 Austria
 1886 The flag of Albania,399 Flag of Albania
 438 Dalecarlian horse,1809 Yung Lean's Wooden Horse
 524 NPR,1715 NPR
+570 University of Oklahoma Logo,2012 University of Denver
+629 Chelsea FC,2021 Chelsea Crest
+783 Flaggy Flag,2016 Flaggy Flag
 940 2112,789 2112
 840 1867 • 2017,1014 Canada's 150th Birthday
 921 Space Invaders,1210 Space Invaders
 931 r/spc,1039 SCP Foundation
+1024 AMD,2004 AMD/Ryzen/ATI logo
+1149 Pilipinas,2023 Pilipinas Banner
 1252 Borderlands symbol,1206 Borderlands Logo
 1241 SpaceX OCISLY,1228 SpaceX ASDS
 1317 Mamamoo,1348 Mamamoo (마마무)
+1939 Discord,1416 Uwus and animeems
+1427 BNE,1979 BNE
 1555 Rainbow Hearts,1904 Rainbow Hearts
 1556 Romania Heart Avocado,1557 Romania Heart Avocado
 1585 Stealie,1797 Stealie (Grateful Dead)
 1586 Warp Pipe,1658 Super Mario Pipe
 1713 Ginger Guy,1598 RedHeadRedemption
 1619 Faction Logo,1891 Faction Module Mark
+1952 venus,1659 Mars
 1705 Auburn University,1908 Auburn University
 1834 Icahn Sign,1720 Clan Icahn
 1914 Faeria Yak,1758 Little Yak
+1778 Chiken,2025 Chiken
+1948 Local Area Network,1935 L. Ron Hubbard
+1973 Brady Haran,1936 Brady Haran
+1943 Juventus Logo,1970 Juventus Logo
+1964 MadoHomu Heart,2010 HomuMado
+1973 Brady Haran,1981 Brady Haran
+1987 Ireland-USA heart,1976 USA/Ireland Heart
+2022 Mount and blade,1990 Butter
+1996 English Heart,2018 England Heart
 1012 Rutgers University,1763 University of Kentucky
-1891,1319,1493,1378,285,1820,1624,1616,1557,361,645,1823,1641,1039,1598,1908,1824,1455,1849,1383,75,48,1014,1649,357,1811,1658,360,1695,1640,1692,123,1715,286,1763,23,1206,1228,1308,1418,1289,1548,581,181,1707,61,81,1790,46,1348,704,2,1512,637,1890,1818,399,1758,1925,1904,1210,21,56,1122,1797,1913,1482,1085,1240,1900,235,1139,1516,1720,789,1412,1809
+1416,1900,2012,637,2010,1014,1455,1482,61,1913,1820,1493,360,235,645,1797,1990,2016,1418,399,2021,1206,1935,1378,704,1890,1707,1616,1412,23,1715,1658,2004,2025,1512,1790,1811,1383,1649,1348,286,285,1936,1891,1640,49,1763,56,1210,1557,2023,1720,48,1228,1758,1692,1139,1994,1598,1641,581,789,1240,357,1809,2007,1818,1904,1979,2018,347,1908,1122,361,1624,1695,21,123,1308,1824,1970,1548,2,181,46,1319,1981,1976,1039,1659,1940,1516,1823,75,1289,81,1085,1925,236,1849
