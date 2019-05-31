@@ -10,6 +10,7 @@ from scipy import sparse
 from scipy import linalg
 import scipy.sparse.linalg as spla
 from scipy.spatial import distance
+from reddit import *
 
 
 def updates_per_project(input_file_proj, projects_to_remove):
@@ -63,7 +64,7 @@ def colors_per_project(input_file_proj, projects_to_remove):
 		Important: Only pixels (final canvas) are considered here.
 	'''
 	colors_per_proj = {}
-	num_colors = 16
+	num_colors = 18
 
 	with open(input_file_proj,'r') as file:
 		# Skip first line (header row)
