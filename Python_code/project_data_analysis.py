@@ -320,7 +320,36 @@ def projects_per_user_list(input_file_proj, projects_to_remove):
 	return proj_per_user_lst
 
 
+def users_per_project_set(input_file_proj, projects_to_remove):
+	'''
+		Given input file with project assignments (ts,user,x_coordinate,y_coordinate,color,pic_id,pixel,pixel_color)
+		computes the set of users who contributed to each project. Some projects might be removed from the analysis.
+		Important: Only updates that agree with the final color of the tile in the canvas are considered.
+	'''
 
+	users_per_proj_set = {}
+
+	with open(input_file_proj, 'r') as file:
+		# Skip first line (header row)
+		next(file, None)
+		reader = csv.reader(file)
+
+		for r in reader:
+			#ts,user,x_coordinate,y_coordinate,color,pic_id,pixel,pixel_color
+			proj = r[5]
+			user = r[1]
+						 
+			pixel_color = int(r[7])
+
+			if proj not in projects_to_remove and pixel_color == 1:
+				if proj in users_per_proj_set:
+					if user not in users_per_proj_set[proj]:
+						users_per_proj_set[proj].add(user)
+				else:   
+					users_per_proj_set[proj] = set()
+					users_per_proj_set[proj].add(user)
+	
+	return users_per_proj_set
 
 
 def users_per_project(input_file_proj, projects_to_remove):
@@ -525,7 +554,7 @@ def Ratio(X,Y,names):
 
 		# Avoid division by 0
 		if xvalue == 0:
-			
+
 			continue
 
 		ratios[p] = yvalue / xvalue
