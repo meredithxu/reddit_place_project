@@ -62,5 +62,7 @@ def store_locations(js_filename,proj=None):
     return locations
 
 
+
+
 if __name__ == "__main__":
 	locations = store_locations("../data/atlas.json")

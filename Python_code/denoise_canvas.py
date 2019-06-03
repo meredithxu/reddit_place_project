@@ -13,6 +13,7 @@ def denoise_freq(canvas, window=3):
 
 	for y in range(canvas.shape[0]):
 		for x in range(canvas.shape[1]):
+			
 			#Creating sliding window
 			y_min = max(0, y-shift)
 			y_max = min(canvas.shape[0],y+shift)
