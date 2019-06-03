@@ -41,6 +41,33 @@ def updates_per_project(input_file_proj, projects_to_remove):
 
 	return updates_per_proj, total_updates
 
+def updates_per_user(input_file_proj):
+	'''
+		Given input file with project assignments (ts,user,x_coordinate,y_coordinate,color,pic_id,pixel,pixel_color)
+		computes the number of updates per user (dictionary). Some projects might be removed from the analysis. 
+		It also returns the total number of updates.
+	'''
+	updates_per_user = dict()
+	total_updates = 0
+
+	with open(input_file_proj,'r') as file:
+		# Skip first line (header row)
+		next(file, None)
+		reader = csv.reader(file)
+		
+		for r in reader:
+			#ts,user,x_coordinate,y_coordinate,color,pic_id,pixel,pixel_color
+			user = r[1]
+			
+			if user in updates_per_user:
+				updates_per_user[user] = updates_per_user[user] + 1
+			else:
+				updates_per_user[user] = 1
+
+			total_updates = total_updates + 1
+
+	return updates_per_user, total_updates
+
 
 #def entropy_update_per_project(updates_per_proj):
 	'''

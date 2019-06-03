@@ -20,9 +20,10 @@ def get_list_of_removed_proj(output_filename, writeto_file = False):
         1824 (climber's head, too small)
         1383, 1493, 1823, 1818, 645, 1640 (Very small)
         1240, 1516 (1 pixel)
+        1738: Auburn University, Includes extra border pixels but still overlaps 1705
 
     '''
-    projects_to_remove = {'1763', '1913', '1616', '1649', '1707', '1849', '1319', '1824', '1240', '1516'}
+    projects_to_remove = {'1738', '1763', '1913', '1616', '1649', '1707', '1849', '1319', '1824', '1240', '1516'}
 
     project_pixels = dict()
     print_rows = []
