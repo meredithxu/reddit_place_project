@@ -43,7 +43,7 @@ def get_list_of_removed_proj(output_filename, writeto_file = False):
                 with open(output_filename, 'a') as file:
                     writer = csv.writer(file)
                     writer.writerow([pic_id1, locations.get(pic_id1).get_name()])
-
+           
             continue
 
         for pic_id2 in locations:
@@ -62,7 +62,7 @@ def get_list_of_removed_proj(output_filename, writeto_file = False):
                 if ( int(locations.get(pic_id1).top) < int(locations.get(pic_id2).bottom) ):
                     continue
 
-
+                
                 if project_pixels.get(pic_id1) == None:
                     pixels = set()
                     # Run through bounding box of pic1
@@ -87,19 +87,7 @@ def get_list_of_removed_proj(output_filename, writeto_file = False):
                 pic2_pixel_count = len(project_pixels[pic_id2])  
                 overlapping_pixels =  len(project_pixels[pic_id1] & project_pixels[pic_id2])
                 
-                # Remove the projects that cover the entire canvas
-                if pic1_pixel_count > 9000 or pic2_pixel_count > 9000:
-
-                    if pic1_pixel_count > 9000:
-                        if pic_id1 not in projects_to_remove:
-                            projects_to_remove.add(pic_id1)
-
-                    if pic2_pixel_count > 9000:
-                        if pic_id2 not in projects_to_remove:
-                            projects_to_remove.add(pic_id2)
-
-                    continue
-
+    
                 if pic1_pixel_count > 0:
                     overlapping_area1 = overlapping_pixels / pic1_pixel_count
 
@@ -109,7 +97,6 @@ def get_list_of_removed_proj(output_filename, writeto_file = False):
                
                 if (overlapping_area1 >= 0.8 and overlapping_area2 >= 0.8):
                     if pic_id1 not in projects_to_remove and pic_id2 not in projects_to_remove:
-                        
 
                         # # manually remove 1763 University of Kentucky and keep 1012 Rutgers University
                         # if pic_id1 == '1763' or pic_id2 == '1763':
