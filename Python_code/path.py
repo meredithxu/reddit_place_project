@@ -92,3 +92,25 @@ class Path:
         num_intersections += 1
 
     return (num_intersections % 2 == 1)
+
+  def get_area(self):
+    '''
+    float area = 0.0f;
+
+    for (int i = 0; i < numVertices - 1; ++i)
+      area += point[i].x * point[i+1].y - point[i+1].x * point[i].y;
+
+    area += point[numVertices-1].x * point[0].y - point[0].x * point[numVertices-1].y;
+
+    area = abs(area) / 2.0f;
+    '''
+
+    area = 0.0
+    for line in self.lines:
+      point1 = line.get_point1()
+      point2 = line.get_point2()
+      area += point1.get_x() * point2.get_y() - point2.get_x() * point1.get_y()
+    
+
+    return abs(area) / 2.0
+

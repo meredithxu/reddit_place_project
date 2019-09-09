@@ -65,6 +65,7 @@ def final_update_time_and_color(filename):
   """
   	Creates matrices with final update time and final color for each pixel in the canvas
   """
+  
   final_time = np.uint64(np.zeros((1001,1001)))
   final_color = np.uint8(np.zeros((1001,1001)))
 
@@ -90,21 +91,15 @@ def add_atlas_data_to_tile_placements(locations, input_filename, output_filename
   """
     Takes the tile_placements and atlas data and creates a csv where each line is a tuple of the following elements:
     time, user, x, y, color, project_id, pixel, pixel_color.
-  """  
+  """
+
   #Creates matrix with pic_id associated with each pixel
   proj_per_pixel = pixel_assignments(locations)
 
   # Create dictionary with the area of each project
   proj_areas = dict()
-  for (x,y) in proj_per_pixel:
-    pic_ids = proj_per_pixel[(x, y)]
-
-    for pic_id in pic_ids:
-
-      if proj_areas.get(pic_id) is None:
-        proj_areas[pic_id] = 1
-      else:
-        proj_areas[pic_id] += 1
+  for pic_id in locations:
+    proj_areas[pic_id] = locations.get(pic_id).get_area()
 
   #Creates matrices with final update time and final color for each pixel in the canvas
   final_up_time, final_up_color = final_update_time_and_color(input_filename)
