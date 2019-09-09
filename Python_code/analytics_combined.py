@@ -146,7 +146,7 @@ def add_atlas_data_to_tile_placements(locations, input_filename, output_filename
               smallest_pic_id = pic_id
 
           for pic_id in pic_ids:
-            updates.add([time, user, x, y, color, pic_id, pixel, pixel_color, "1" if smallest_pic_id == pic_id else "0"])
+            updates.add((time, user, x, y, color, pic_id, pixel, pixel_color, "1" if smallest_pic_id == pic_id else "0"))
       else:
         excluded_pixels.append((x,y))
 
@@ -155,7 +155,7 @@ def add_atlas_data_to_tile_placements(locations, input_filename, output_filename
     writer.writerow(["ts", "user" ,"x_coordinate" ,"y_coordinate" ,"color", "pic_id", "pixel", "pixel_color", "proj_smallest"])
 
     for update in updates:
-       writer.writerow(update)
+       writer.writerow([update[0], update[1], update[2], update[3], update[4], update[5], update[6], update[7], update[8]])
 
   # create a text file with all the pixels that have been excluded
   # f = open("excluded_pixels.txt", "w")
