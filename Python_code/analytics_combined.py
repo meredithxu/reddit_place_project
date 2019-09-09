@@ -147,13 +147,14 @@ def add_atlas_data_to_tile_placements(locations, input_filename, output_filename
               smallest_pic_id = pic_id
 
           for pic_id in pic_ids:
-            updates_set.add((time, user))
-            if updates_dict.get((time, user)) is None:
-              updates_dict[(time, user)] = [time, user, x, y, color, pic_id, pixel, pixel_color, "1" if smallest_pic_id == pic_id else "0"]
+            key = (time, user, pic_id)
+            updates_set.add(key)
+            if updates_dict.get(key) is None:
+              updates_dict[key] = [time, user, x, y, color, pic_id, pixel, pixel_color, "1" if smallest_pic_id == pic_id else "0"]
             else:
               # Only update if this duplicate is on the final canvas
               if pixel == 1:
-                updates_dict[(time, user)] = [time, user, x, y, color, pic_id, pixel, pixel_color, "1" if smallest_pic_id == pic_id else "0"]
+                updates_dict[key] = [time, user, x, y, color, pic_id, pixel, pixel_color, "1" if smallest_pic_id == pic_id else "0"]
 
       else:
         excluded_pixels.append((x,y))
