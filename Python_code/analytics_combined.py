@@ -65,6 +65,7 @@ def final_update_time_and_color(filename):
   """
   	Creates matrices with final update time and final color for each pixel in the canvas
   """
+  
   final_time = np.uint64(np.zeros((1001,1001)))
   final_color = np.uint8(np.zeros((1001,1001)))
 
@@ -90,17 +91,25 @@ def add_atlas_data_to_tile_placements(locations, input_filename, output_filename
   """
     Takes the tile_placements and atlas data and creates a csv where each line is a tuple of the following elements:
     time, user, x, y, color, project_id, pixel, pixel_color.
-  """  
+  """
+
   #Creates matrix with pic_id associated with each pixel
   proj_per_pixel = pixel_assignments(locations)
+
+  # Create dictionary with the area of each project
+  proj_areas = dict()
+  for pic_id in locations:
+    proj_areas[pic_id] = locations.get(pic_id).get_area()
 
   #Creates matrices with final update time and final color for each pixel in the canvas
   final_up_time, final_up_color = final_update_time_and_color(input_filename)
     
+  excluded_pixels = []
+  
   with open(input_filename,'r') as file_in:
     with open(output_filename, 'w') as file_out:
       writer = csv.writer(file_out, delimiter = ",")
-      writer.writerow(["ts", "user" ,"x_coordinate" ,"y_coordinate" ,"color", "pic_id", "pixel", "pixel_color"])
+      writer.writerow(["ts", "user" ,"x_coordinate" ,"y_coordinate" ,"color", "pic_id", "pixel", "pixel_color", "proj_smallest"])
       
       # Skip first line (header row)
       next(file_in, None)
@@ -113,7 +122,6 @@ def add_atlas_data_to_tile_placements(locations, input_filename, output_filename
         x = int(r[2])
         y = int(r[3])
         color = int(r[4])
-
         
         if (x,y) in proj_per_pixel:
           pic_ids = proj_per_pixel[(x,y)]
@@ -129,16 +137,31 @@ def add_atlas_data_to_tile_placements(locations, input_filename, output_filename
               pixel_color = 1
             else:
               pixel_color = 0
+            
+            # Find the project with the smallest area that this pixel has been assigned to
+            smallest_pic_id = None
+            for pic_id in pic_ids:
+              if smallest_pic_id is None or proj_areas[pic_id] < proj_areas[smallest_pic_id]:
+                smallest_pic_id = pic_id
 
             for pic_id in pic_ids:
-              writer.writerow([time, user, x, y, color, pic_id, pixel, pixel_color])
+              writer.writerow([time, user, x, y, color, pic_id, pixel, pixel_color, "1" if smallest_pic_id == pic_id else "0"])
+        else:
+          excluded_pixels.append((x,y))
+
+    f = open("excluded_pixels.txt", "w")
+    for item in excluded_pixels:
+      f.write(str(item))
+      f.write("\n")
+    f.close()
 
 if __name__ == "__main__":
     locations = store_locations("../data/atlas.json")
     
+    add_atlas_data_to_tile_placements(locations, "../data/tile_placements.csv", "../data/tile_placements_proj.csv")
     #add_atlas_data_to_tile_placements(locations, "../data/sorted_tile_placements.csv", "../data/sorted_tile_placements_proj.csv")
     #add_atlas_data_to_tile_placements(locations, "../data/sorted_tile_placements_denoised_freq.csv",\
     #	"../data/tile_placements_denoised_freq_proj.csv")
-    add_atlas_data_to_tile_placements(locations, "../data/sorted_tile_placements_denoised_users.csv",\
-    	"../data/tile_placements_denoised_users_proj.csv")
+    # add_atlas_data_to_tile_placements(locations, "../data/sorted_tile_placements_denoised_users.csv",\
+    	# "../data/tile_placements_denoised_users_proj.csv")
 

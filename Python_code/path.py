@@ -92,3 +92,19 @@ class Path:
         num_intersections += 1
 
     return (num_intersections % 2 == 1)
+
+  def get_area(self):
+    '''
+      Shoelace algorithm to calculate the area of the artwork
+      https://en.wikipedia.org/wiki/Shoelace_formula
+    '''
+
+    area = 0.0
+    for line in self.lines:
+      point1 = line.get_point1()
+      point2 = line.get_point2()
+      area += point1.get_x() * point2.get_y() - point2.get_x() * point1.get_y()
+    
+
+    return abs(area) / 2.0
+
