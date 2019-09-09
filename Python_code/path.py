@@ -95,14 +95,8 @@ class Path:
 
   def get_area(self):
     '''
-    float area = 0.0f;
-
-    for (int i = 0; i < numVertices - 1; ++i)
-      area += point[i].x * point[i+1].y - point[i+1].x * point[i].y;
-
-    area += point[numVertices-1].x * point[0].y - point[0].x * point[numVertices-1].y;
-
-    area = abs(area) / 2.0f;
+      Shoelace algorithm to calculate the area of the artwork
+      https://en.wikipedia.org/wiki/Shoelace_formula
     '''
 
     area = 0.0
