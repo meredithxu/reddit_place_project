@@ -100,7 +100,7 @@ def add_atlas_data_to_tile_placements(locations, input_filename, output_filename
   proj_areas = dict()
   for pic_id in locations:
     proj_areas[pic_id] = locations.get(pic_id).get_area()
-
+  
   #Creates matrices with final update time and final color for each pixel in the canvas
   final_up_time, final_up_color = final_update_time_and_color(input_filename)
     
@@ -147,7 +147,7 @@ def add_atlas_data_to_tile_placements(locations, input_filename, output_filename
               smallest_pic_id = pic_id
 
           for pic_id in pic_ids:
-            key = (time, user, pic_id)
+            key = (time,user,x,y,color, pic_id)
             updates_set.add(key)
             if updates_dict.get(key) is None:
               updates_dict[key] = [time, user, x, y, color, pic_id, pixel, pixel_color, "1" if smallest_pic_id == pic_id else "0"]
@@ -174,12 +174,7 @@ def add_atlas_data_to_tile_placements(locations, input_filename, output_filename
   # f.close()
 
 if __name__ == "__main__":
-    locations = store_locations("../data/atlas.json")
-    
+    locations = store_locations("../data/atlas_complete.json")
+    print("locations length:", len(locations))
     add_atlas_data_to_tile_placements(locations, "../data/tile_placements.csv", "../data/tile_placements_proj.csv")
-    #add_atlas_data_to_tile_placements(locations, "../data/sorted_tile_placements.csv", "../data/sorted_tile_placements_proj.csv")
-    #add_atlas_data_to_tile_placements(locations, "../data/sorted_tile_placements_denoised_freq.csv",\
-    #	"../data/tile_placements_denoised_freq_proj.csv")
-    # add_atlas_data_to_tile_placements(locations, "../data/sorted_tile_placements_denoised_users.csv",\
-    	# "../data/tile_placements_denoised_users_proj.csv")
-
+    
