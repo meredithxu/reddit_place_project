@@ -118,63 +118,74 @@ def add_atlas_data_to_tile_placements(locations, input_filename, output_filename
 
     reader = csv.reader(file_in)
 
-    for r in reader:
-      time = int(r[0])
-      user = r[1]
-      x = int(r[2])
-      y = int(r[3])
-      color = int(r[4])
-      
-      if (x,y) in proj_per_pixel:
-        pic_ids = proj_per_pixel[(x,y)]
+    with open(output_filename, 'w') as file_out:
+      writer = csv.writer(file_out, delimiter = ",")
+      writer.writerow(["ts", "user" ,"x_coordinate" ,"y_coordinate" ,"color", "pic_id", "pixel", "pixel_color", "proj_smallest"])
 
-        if len(pic_ids) > 0:
-          if time >= final_up_time[y][x]:
-            pixel = 1
-            final_up_time[y][x] = sys.maxsize
-          else:
-            pixel = 0
+      for r in reader:
+        time = int(r[0])
+        user = r[1]
+        x = int(r[2])
+        y = int(r[3])
+        color = int(r[4])
+        
+        if (x,y) in proj_per_pixel:
+          pic_ids = proj_per_pixel[(x,y)]
 
-          if color == final_up_color[y][x]:
-            pixel_color = 1
-          else:
-            pixel_color = 0
-          
-          # Find the project with the smallest area that this pixel has been assigned to
-          smallest_pic_id = None
-          for pic_id in pic_ids:
-            if smallest_pic_id is None or proj_areas[pic_id] < proj_areas[smallest_pic_id]:
-              smallest_pic_id = pic_id
-
-          for pic_id in pic_ids:
-            key = (time,user,x,y,color, pic_id)
-            updates_set.add(key)
-            if updates_dict.get(key) is None:
-              updates_dict[key] = [time, user, x, y, color, pic_id, pixel, pixel_color, "1" if smallest_pic_id == pic_id else "0"]
+          if len(pic_ids) > 0:
+            if time >= final_up_time[y][x]:
+              pixel = 1
+              final_up_time[y][x] = sys.maxsize
             else:
-              # Only update if this duplicate is on the final canvas
-              if pixel == 1:
+              pixel = 0
+
+            if color == final_up_color[y][x]:
+              pixel_color = 1
+            else:
+              pixel_color = 0
+            
+            # Find the project with the smallest area that this pixel has been assigned to
+            smallest_pic_id = None
+            for pic_id in pic_ids:
+              if smallest_pic_id is None or proj_areas[pic_id] < proj_areas[smallest_pic_id]:
+                smallest_pic_id = pic_id
+
+            for pic_id in pic_ids:
+               writer.writerow([time, user, x, y, color, pic_id, pixel, pixel_color, "1" if smallest_pic_id == pic_id else "0"])
+
+  '''
+            for pic_id in pic_ids:
+              key = (time,user,x,y,color, pic_id)
+              #updates_set.add(key)
+              if updates_dict.get(key) is None:
                 updates_dict[key] = [time, user, x, y, color, pic_id, pixel, pixel_color, "1" if smallest_pic_id == pic_id else "0"]
+              else:
+                # Only update if this duplicate is on the final canvas
+                if pixel == 1:
+                  updates_dict[key] = [time, user, x, y, color, pic_id, pixel, pixel_color, "1" if smallest_pic_id == pic_id else "0"]
+  '''
+          #else:
+            #excluded_pixels.append((x,y))
 
-      else:
-        excluded_pixels.append((x,y))
+  '''
+    with open(output_filename, 'w') as file_out:
+      writer = csv.writer(file_out, delimiter = ",")
+      writer.writerow(["ts", "user" ,"x_coordinate" ,"y_coordinate" ,"color", "pic_id", "pixel", "pixel_color", "proj_smallest"])
+      
 
-  with open(output_filename, 'w') as file_out:
-    writer = csv.writer(file_out, delimiter = ",")
-    writer.writerow(["ts", "user" ,"x_coordinate" ,"y_coordinate" ,"color", "pic_id", "pixel", "pixel_color", "proj_smallest"])
+      for update in updates_set:
+         writer.writerow(updates_dict[update])
+         '''
 
-    for update in updates_set:
-       writer.writerow(updates_dict[update])
-
-  # create a text file with all the pixels that have been excluded
-  # f = open("excluded_pixels.txt", "w")
-  # for item in excluded_pixels:
-  #   f.write(str(item))
-  #   f.write("\n")
-  # f.close()
+    # create a text file with all the pixels that have been excluded
+    # f = open("excluded_pixels.txt", "w")
+    # for item in excluded_pixels:
+    #   f.write(str(item))
+    #   f.write("\n")
+    # f.close()
 
 if __name__ == "__main__":
     locations = store_locations("../data/atlas_complete.json")
     print("locations length:", len(locations))
-    add_atlas_data_to_tile_placements(locations, "../data/tile_placements.csv", "../data/tile_placements_proj.csv")
+    add_atlas_data_to_tile_placements(locations, "../data/tile_placements_no_duplicates.csv", "../data/tile_placements_proj.csv")
     
