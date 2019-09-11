@@ -187,5 +187,5 @@ def add_atlas_data_to_tile_placements(locations, input_filename, output_filename
 if __name__ == "__main__":
     locations = store_locations("../data/atlas_complete.json")
     print("locations length:", len(locations))
-    add_atlas_data_to_tile_placements(locations, "../data/tile_placements.csv", "../data/tile_placements_proj.csv")
+    add_atlas_data_to_tile_placements(locations, "../data/tile_placements_no_duplicates.csv", "../data/tile_placements_proj.csv")
     
