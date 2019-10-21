@@ -22,7 +22,7 @@ def get_list_of_removed_proj(output_filename, writeto_file = False):
         1240, 1516 (1 pixel)
         1738: Auburn University, Includes extra border pixels but still overlaps 1705
 
-        manually remove former projects based on the canvas visualization (NOTE: only did the top 100 corner for now)
+        manually remove former projects based on the canvas visualization: 1289, 129, 720 (NOTE: only did the top 100 corner for now)
 
     '''
     projects_to_remove = {'1738', '1763', '1913', '1616', '1649', '1707', '1849', '1319', '1824', '1240', '1516', '1289', '129', '720'}
