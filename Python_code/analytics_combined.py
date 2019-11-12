@@ -6,6 +6,7 @@ from reddit import *
 from line import *
 from point import *
 from path import *
+from generate_proj_to_remove import *
 
 def create_sorted_lists(locations):
   boundary_list = []
@@ -96,6 +97,9 @@ def add_atlas_data_to_tile_placements(locations, input_filename, output_filename
   #Creates matrix with pic_id associated with each pixel
   proj_per_pixel = pixel_assignments(locations)
 
+  # Find which projects are going to be removed and thus should not be associated with any pixel
+  projects_to_remove = get_list_of_removed_proj(output_filename="../data/proj_to_remove.txt")
+
   # Create dictionary with the area of each project
   proj_areas = dict()
   for pic_id in locations:
@@ -151,7 +155,8 @@ def add_atlas_data_to_tile_placements(locations, input_filename, output_filename
                 smallest_pic_id = pic_id
 
             for pic_id in pic_ids:
-               writer.writerow([time, user, x, y, color, pic_id, pixel, pixel_color, "1" if smallest_pic_id == pic_id else "0"])
+              if pic_id not in projects_to_remove:
+                writer.writerow([time, user, x, y, color, pic_id, pixel, pixel_color, "1" if smallest_pic_id == pic_id else "0"])
 
   '''
             for pic_id in pic_ids:
