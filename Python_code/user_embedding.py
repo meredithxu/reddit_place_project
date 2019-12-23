@@ -122,9 +122,11 @@ def balance(G):
 def sign_embedding(usr_rel_same_color, usr_rel_diff_color, user_index, output_file_name, ndim=2,
     threshold=5, total_samples=100, n_negatives=5, n_iterations=10):
     generate_user_signed_net(usr_rel_same_color, usr_rel_diff_color, user_index, output_file_name)
-    print("python "+signet_path+" -l signet_id.txt -i signet.txt -o "+output_file_name+ " -d "+str(ndim)+" -t "+str(threshold)+" -s "+str(total_samples))
-
-    os.system("python "+signet_path+" -l signet_id.txt -i signet.txt -o "+output_file_name+ " -d "+str(ndim)+" -t "+str(threshold)+" -s "+str(total_samples))
+    cmd = "python "+signet_path+" -l signet_id.txt -i signet.txt -o "+output_file_name+ " -d "+str(ndim)+" -t "+str(threshold)+" -s "+str(total_samples)
+    print(cmd)
+    print(os.system("ls ../.."))
+    print(os.system("ls ../../signet"))
+    os.system(cmd)
 
 def read_embedding(input_file_name, user_index, ndim=2):
     emb = np.zeros((len(user_index), ndim))

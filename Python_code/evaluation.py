@@ -1,5 +1,68 @@
 import sys
 import csv
+from reddit import *
+from segmentation import *
+from sklearn.ensemble import GradientBoostingRegressor
+
+
+def create_folds(min_x=0, min_y=0, max_x=1000, max_y=1000):
+    # Partition the data into folds
+
+    num_folds = 10
+    folds = []
+    for i in range(num_folds):
+        folds.append([])
+
+    halfway_x = (min_x + max_x) / 2.0
+    y_increment = (min_y + max_y) / 5.0
+
+    for i in range(2):
+        for j in range(5):
+
+            for x in range(i, (i + 1) * halfway_x):
+                for y in range(j, (j + 1) * y_increment):
+                    folds[i + j].append((x, y))
+
+            for x in range(halfway_x):
+                for y in range(j, (j + 1) * y_increment):
+                    folds[i + j].append((x, y))
+
+    return folds
+
+
+def validate_best_model(G, ups, features, ground_truth, min_x=0, min_y=0, max_x=1000, max_y=1000):
+    '''
+        Do 10 fold cross validation and return the best model
+    '''
+    locations = store_locations("../data/atlas_complete.json")
+    folds = create_folds(min_x, min_y, max_x, max_y)
+
+    best_recall = -1
+    best_model = None
+
+    for i in range(10):
+        validation_fold = folds[i]
+        training_folds = []
+        for j in range(10):
+            if j != i:
+                training_folds = training_folds + folds[j]
+        
+
+        A, b = build_feat_label_data(G, ups, features, train_x_y = training_folds)
+        model = GradientBoostingRegressor(random_state=1, n_estimators=25).fit(A, b)
+
+        compute_edge_weights(G, ups, model, features)
+        G.sort_edges()
+
+        comp_assign = region_segmentation(G, ups, .25)
+        regions, sizes = extract_regions(comp_assign)
+
+        num_correct_counter, num_assignments_made, precision, recall, region_assignments = evaluate(locations, regions, ups, ground_truth, threshold=0.5, draw = False)
+        if recall > best_recall:
+            best_model = model
+
+    return best_model
+
 
 
 def create_ground_truth(input_filename, min_time=0, max_time=sys.maxsize, min_x=0, max_x=1002, min_y=0, max_y=1002):
