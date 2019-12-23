@@ -723,7 +723,8 @@ def build_feat_label_data(G, ups, features, pixel=False, train_x_y=None):
                 else:
                     if int(ups[u][7]) == 1 and int(ups[v][7]) == 1:
                         n_labelled = n_labelled + 1
-            
+    
+    print("n_labelled: ", n_labelled)        
     A = np.zeros((n_labelled, len(features)))
     b = np.zeros(n_labelled)
     
@@ -736,6 +737,11 @@ def build_feat_label_data(G, ups, features, pixel=False, train_x_y=None):
             v = int(r[1])
             lb = int(r[2])
             type_edge = int(r[3])
+
+            x_u = ups[u][2]
+            y_u = ups[u][3]
+            x_v = ups[v][2]
+            y_v = ups[v][3]
 
             if type_edge > 0 and (train_x_y is None or ((x_u,y_u) in train_x_y and (x_v,y_v) in train_x_y)):
                 if pixel is True:

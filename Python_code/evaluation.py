@@ -5,7 +5,7 @@ from segmentation import *
 from sklearn.ensemble import GradientBoostingRegressor
 
 
-def create_folds(min_x=0, min_y=0, max_x=1000, max_y=1000):
+def create_folds(min_x=0, min_y=0, max_x=1002, max_y=1002):
     # Partition the data into folds
 
     num_folds = 10
@@ -13,32 +13,33 @@ def create_folds(min_x=0, min_y=0, max_x=1000, max_y=1000):
     for i in range(num_folds):
         folds.append([])
 
-    halfway_x = (min_x + max_x) / 2.0
-    y_increment = (min_y + max_y) / 5.0
+    halfway_x = int((min_x + max_x) // 2)
+    y_increment = int((min_y + max_y) // 5)
 
-    for i in range(2):
-        for j in range(5):
+    for j in range(5):
 
-            for x in range(i, (i + 1) * halfway_x):
-                for y in range(j, (j + 1) * y_increment):
-                    folds[i + j].append((x, y))
+        for x in range(0, halfway_x):
+            for y in range(j, (j + 1) * y_increment):
+                folds[j].append((x, y))
 
-            for x in range(halfway_x):
-                for y in range(j, (j + 1) * y_increment):
-                    folds[i + j].append((x, y))
+        for x in range(halfway_x, max_x):
+            for y in range(j, (j + 1) * y_increment):
+                folds[5 + j].append((x, y))
 
     return folds
 
 
-def validate_best_model(G, ups, features, ground_truth, min_x=0, min_y=0, max_x=1000, max_y=1000):
+def validate_best_model(G, ups, features, input_filename, projects_to_remove, min_x=0, min_y=0, max_x=1002, max_y=1002):
     '''
         Do 10 fold cross validation and return the best model
     '''
+    print("start validating the model")
     locations = store_locations("../data/atlas_complete.json")
     folds = create_folds(min_x, min_y, max_x, max_y)
 
     best_recall = -1
     best_model = None
+    best_i = -1
 
     for i in range(10):
         validation_fold = folds[i]
@@ -48,6 +49,7 @@ def validate_best_model(G, ups, features, ground_truth, min_x=0, min_y=0, max_x=
                 training_folds = training_folds + folds[j]
         
 
+        ground_truth = create_ground_truth(input_filename, min_x=min_x, max_x = max_x, min_y=min_y, max_y = max_y, projects_to_remove = projects_to_remove, partial_canvas = validation_fold)
         A, b = build_feat_label_data(G, ups, features, train_x_y = training_folds)
         model = GradientBoostingRegressor(random_state=1, n_estimators=25).fit(A, b)
 
@@ -58,14 +60,20 @@ def validate_best_model(G, ups, features, ground_truth, min_x=0, min_y=0, max_x=
         regions, sizes = extract_regions(comp_assign)
 
         num_correct_counter, num_assignments_made, precision, recall, region_assignments = evaluate(locations, regions, ups, ground_truth, threshold=0.5, draw = False)
+
+        print("i: ", i)
+        print("recall: ", recall)
+       
         if recall > best_recall:
             best_model = model
+            best_i = i
 
+    print("best i: ", best_i)
     return best_model
 
 
 
-def create_ground_truth(input_filename, min_time=0, max_time=sys.maxsize, min_x=0, max_x=1002, min_y=0, max_y=1002):
+def create_ground_truth(input_filename, min_time=0, max_time=sys.maxsize, min_x=0, max_x=1002, min_y=0, max_y=1002, projects_to_remove = [], partial_canvas = None):
     '''
         Given the input file, create and return a dictionary of the ground truth for the
         pixel assignments.
@@ -93,13 +101,13 @@ def create_ground_truth(input_filename, min_time=0, max_time=sys.maxsize, min_x=
             smallest_proj = int(r[8])
 
             # The ground truth pixel assignments will be based on the pixel assigned to the smallest project
-            if smallest_proj and ts >= min_time and ts < max_time and x >= min_x and x < max_x and y >= min_y and y < max_y and pic_id not in projects_to_remove:
+            if smallest_proj and ts >= min_time and ts < max_time and x >= min_x and x < max_x and y >= min_y and y < max_y and pic_id not in projects_to_remove and (partial_canvas is None or (x,y) in partial_canvas):
 
                 if pic_id not in ground_truth:
                     ground_truth[pic_id] = set()
 
                 if final_pixel == 1:
-                    ground_truth[pic_id].add((ts, user, x, y, color))
+                    ground_truth[pic_id].add((x, y, color))
 
     return ground_truth
 
@@ -193,7 +201,7 @@ def get_max_iou(locations, region, updates, ground_truth):
                 y = int(update[3])
                 color = int(update[4])
 
-                region_colors.append((ts, user, x, y, color))
+                region_colors.append((x, y, color))
 
             iou = calc_intersection_over_union(
                 region_colors, ground_truth[pic_id])
