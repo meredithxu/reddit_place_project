@@ -124,8 +124,14 @@ def sign_embedding(usr_rel_same_color, usr_rel_diff_color, user_index, output_fi
     generate_user_signed_net(usr_rel_same_color, usr_rel_diff_color, user_index, output_file_name)
     cmd = "python "+signet_path+" -l signet_id.txt -i signet.txt -o "+output_file_name+ " -d "+str(ndim)+" -t "+str(threshold)+" -s "+str(total_samples)
     print(cmd)
-    print(os.system("ls ../.."))
-    print(os.system("ls ../../signet"))
+    # print(os.system("ls ../.."))
+    # print(os.system("ls ../../signet"))
+
+    proc = subprocess.Popen(['ls', '../..'], stdout=subprocess.PIPE)
+
+    tmp = proc.stdout.read()
+    print(tmp.decode())
+
     os.system(cmd)
 
 def read_embedding(input_file_name, user_index, ndim=2):
