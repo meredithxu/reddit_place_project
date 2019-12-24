@@ -840,7 +840,7 @@ def embed_users(G, ups, ndim=40, threshold=5, total_samples=100, n_negatives=5, 
     sign_embedding(usr_rel_same_color, usr_rel_diff_color, user_index, "signet", ndim, threshold, 
 	total_samples, n_negatives, n_iterations)
 
-    emb = read_embedding("signet", user_index, ndim=40)
+    emb = read_embedding("signet", user_index, ndim)
 
     avg_distances_pos_neg(emb)
     
