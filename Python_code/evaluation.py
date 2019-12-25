@@ -29,17 +29,22 @@ def create_folds(min_x=0, min_y=0, max_x=1002, max_y=1002):
     return folds
 
 
-def validate_best_model(G, ups, features, input_filename, projects_to_remove, min_x=0, min_y=0, max_x=1002, max_y=1002):
+def validate_best_model(eval_function, ups, G, features, input_filename, projects_to_remove, metric, min_x=0, min_y=0, max_x=1002, max_y=1002):
     '''
         Do 10 fold cross validation and return the best model
+        if metric == recall, then use recall as evaluation metric
+        if metric == precision, then use precision as evaluation metric
+        otherwise, option is invalid, print error message and then return from the function
     '''
-    print("start validating the model")
+    #print("start validating the model")
     locations = store_locations("../data/atlas_complete.json")
     folds = create_folds(min_x, min_y, max_x, max_y)
 
-    best_recall = -1
+    metric_val = -1
+    best_metric_val= -1
     best_model = None
     best_i = -1
+    metric_vals = []
 
     for i in range(10):
         validation_fold = folds[i]
@@ -59,17 +64,28 @@ def validate_best_model(G, ups, features, input_filename, projects_to_remove, mi
         comp_assign = region_segmentation(G, ups, .25)
         regions, sizes = extract_regions(comp_assign)
 
-        num_correct_counter, num_assignments_made, precision, recall, region_assignments = evaluate(locations, regions, ups, ground_truth, threshold=0.5, draw = False)
+        num_correct_counter, num_assignments_made, precision, recall, region_assignments = eval_function(locations, regions, ups, ground_truth, threshold=0.5, draw = False)
 
-        print("i: ", i)
-        print("recall: ", recall)
+        if metric == 'recall':
+            metric_val = recall
+        elif metric == 'precision':
+            metric_val = precision
+        else:
+            print("invalid metric option")
+            return
+
+        metric_vals.append(metric_val)
        
-        if recall > best_recall:
+        if metric_val > best_metric_val:
             best_model = model
+            best_metric_val = metric_val
             best_i = i
 
-    print("best i: ", best_i)
-    return best_model
+            #print("current best i: ", best_i)
+
+    #print("best i: ", best_i)
+
+    return metric_vals, best_model
 
 
 
