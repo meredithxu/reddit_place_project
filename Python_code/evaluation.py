@@ -29,12 +29,14 @@ def create_folds(min_x=0, min_y=0, max_x=1002, max_y=1002):
     return folds
 
 
-def validate_best_model(eval_function, ups, G, features, input_filename, projects_to_remove, metric, min_x=0, min_y=0, max_x=1002, max_y=1002):
+def validate_best_model(eval_function, ups, G, features, input_filename, projects_to_remove, metric, min_x=0, min_y=0, max_x=1002, max_y=1002, kappa = 0.25):
     '''
         Do 10 fold cross validation and return the best model
         if metric == recall, then use recall as evaluation metric
         if metric == precision, then use precision as evaluation metric
         otherwise, option is invalid, print error message and then return from the function
+
+        kappa is the value used for region segmentation.
     '''
     #print("start validating the model")
     locations = store_locations("../data/atlas_complete.json")
@@ -61,7 +63,7 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
         compute_edge_weights(G, ups, model, features)
         G.sort_edges()
 
-        comp_assign = region_segmentation(G, ups, .25)
+        comp_assign = region_segmentation(G, ups, kappa)
         regions, sizes = extract_regions(comp_assign)
 
         num_correct_counter, num_assignments_made, precision, recall, region_assignments = eval_function(locations, regions, ups, ground_truth, threshold=0.5, draw = False)
@@ -99,6 +101,22 @@ def create_ground_truth(input_filename, min_time=0, max_time=sys.maxsize, min_x=
     line_number = 0
     ground_truth = dict()
     times = dict()
+    if partial_canvas is not None and len(partial_canvas) > 0:
+        # Update min_x, max_x, min_y, max_y to represent all the points within partial canvas
+        min_x = sys.maxsize
+        min_y = sys.maxsize
+        max_x = 0
+        max_y = 0
+        for point in partial_canvas:
+            if point[0] < min_x:
+                min_x = point[0]
+            if point[0] > max_x:
+                max_x = point[0]
+            if point[1] < min_y:
+                min_y = point[1]
+            if point[1] > max_y:
+                max_y = point[1]
+
     with open(input_filename, 'r') as file_in:
 
         # Skip first line (header row)
@@ -117,7 +135,7 @@ def create_ground_truth(input_filename, min_time=0, max_time=sys.maxsize, min_x=
             smallest_proj = int(r[8])
 
             # The ground truth pixel assignments will be based on the pixel assigned to the smallest project
-            if smallest_proj and ts >= min_time and ts < max_time and x >= min_x and x < max_x and y >= min_y and y < max_y and pic_id not in projects_to_remove and (partial_canvas is None or (x,y) in partial_canvas):
+            if smallest_proj and ts >= min_time and ts < max_time and x >= min_x and x < max_x and y >= min_y and y < max_y and pic_id not in projects_to_remove:
 
                 if pic_id not in ground_truth:
                     ground_truth[pic_id] = set()
