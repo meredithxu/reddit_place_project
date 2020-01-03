@@ -48,52 +48,17 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
     best_i = -1
     metric_vals = []
 
-    A, b = build_feat_label_data(G, ups, features)
-    
-
     for i in range(10):
         validation_fold = folds[i]
-        # training_folds = []
-        # for j in range(10):
-        #     if j != i:
-        #         training_folds = training_folds + folds[j]
+        training_folds = []
+        for j in range(10):
+            if j != i:
+                training_folds = training_folds + folds[j]
         
-        # Get the min_x, max_x, min_y, and max_y of the validation fold
-        vmin_x, vmin_y, vmax_x, vmax_y = get_min_max_x_y(validation_fold)
 
         ground_truth = create_ground_truth(input_filename, min_x=min_x, max_x = max_x, min_y=min_y, max_y = max_y, projects_to_remove = projects_to_remove, partial_canvas = validation_fold)
-
-        # A, b = build_feat_label_data(G, ups, features, train_x_y = training_folds)
-        # Grab the features and labels only if they belong to nodes within the fold
-        A_fold = []
-        b_fold = []
-        with open(G.unique_edges_file_name, 'r') as file_in:
-            reader = csv.reader(file_in)
-
-            for i, r in enumerate(reader):
-                u = int(r[0])
-                v = int(r[1])
-
-                x_u = int(ups[u][2])
-                y_u = int(ups[u][3])
-                x_v = int(ups[v][2])
-                y_v = int(ups[v][3])
-
-                # Check that these two points are not within the validation fold
-                # If so, then they must be part of the training fold
-                if x_u <= vmax_x and x_u >= vmin_x and \
-                    x_v <= vmax_x and x_v >= vmin_x and \
-                    y_u <= vmax_y and y_u >= vmin_y and \
-                    y_v <= vmax_y and y_v >= vmin_y:
-                    
-                    continue
-
-                A_fold.append(A[i])
-                b_fold.append(b[i])
-
-
-
-        model = GradientBoostingRegressor(random_state=1, n_estimators=25).fit(A_fold, b_fold)
+        A, b = build_feat_label_data(G, ups, features, train_x_y = training_folds)
+        model = GradientBoostingRegressor(random_state=1, n_estimators=25).fit(A, b)
 
         compute_edge_weights(G, ups, model, features)
         G.sort_edges()
@@ -181,19 +146,19 @@ def create_ground_truth(input_filename, min_time=0, max_time=sys.maxsize, min_x=
     return ground_truth
 
 
-def get_min_max_x_y(coordinates):
+def get_region_borders(region, updates):
     '''
-        Coordinates is a list of (x,y) tuples
-        Return the minimum and maximum of the x and y values
+        Given a region (list of lists), return the min x, min y, max x, and max y
     '''
     min_x = sys.maxsize
     min_y = sys.maxsize
     max_x = 0
     max_y = 0
+    for update_id in region:
 
-    for coordinate in coordinates:
-        x = coordinate[0]
-        y = coordinate[1]
+        update = updates[int(update_id)]
+        x = int(update[2])
+        y = int(update[3])
 
         if x > max_x:
             max_x = x
@@ -205,22 +170,6 @@ def get_min_max_x_y(coordinates):
             min_y = y
 
     return min_x, min_y, max_x, max_y
-
-
-def get_region_borders(region, updates):
-    '''
-        Given a region (list of lists), return the min x, min y, max x, and max y
-    '''
-    coordinates = []
-    for update_id in region:
-
-        update = updates[int(update_id)]
-        x = int(update[2])
-        y = int(update[3])
-
-        coordinates.append((x,y))
-
-    return get_min_max_x_y(coordinates)
 
 
 def get_rectangle_overlap_area(min_x1, max_x1, min_y1, max_y1, min_x2, max_x2, min_y2, max_y2):
