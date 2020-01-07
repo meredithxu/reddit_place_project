@@ -1,5 +1,6 @@
 import sys
 import csv
+import numpy as np
 from reddit import *
 from segmentation import *
 from sklearn.ensemble import GradientBoostingRegressor
@@ -28,6 +29,68 @@ def create_folds(min_x=0, min_y=0, max_x=1002, max_y=1002):
 
     return folds
 
+def get_fold_border(fold):
+    '''
+        Return a dictionary with the min_x, max_x, min_y, and max_y values of the fold
+    '''
+    min_x = sys.maxsize
+    min_y = sys.maxsize
+    max_x = 0
+    max_y = 0
+    for coordinate in fold:
+        x = coordinate[0]
+        y = coordinate[1]
+
+        if x < min_x:
+            min_x = x
+        if x > max_x:
+            max_x = x
+        if y < min_y:
+            min_y = y
+        if y > max_y:
+            max_y = y
+    
+    return { "min_x" : min_x, "min_y" : min_y, "max_x" : max_x, "max_y" :max_y }
+
+def get_intra_fold_edges(folds, G, ups):
+    '''
+        Given a list of folds, return a list of lists, where each sublist corresponds to an index within G.unique_edges_file_name
+        Each sublist contains the index of all edges that lie within the fold
+    '''
+    fold_edges = []  # List of indexes corresponding to edges within a fold
+    fold_boundaries = [] # List of dictionaries containing min_x, max_x, min_y, max_y for each fold
+
+    for fold in folds:
+        fold_boundaries.append(get_fold_border(fold))
+        fold_edges.append([])
+
+    with open(G.unique_edges_file_name, 'r') as file_in:
+        reader = csv.reader(file_in)
+
+        line_num = 0
+        for r in reader:
+            u = int(r[0])
+            v = int(r[1])
+            lb = int(r[2])
+            type_edge = int(r[3])
+
+            x_u = ups[u][2]
+            y_u = ups[u][3]
+            x_v = ups[v][2]
+            y_v = ups[v][3]
+
+            for idx, boundary in enumerate(fold_boundaries):
+                if x_u <= boundary["max_x"] and x_u >= boundary["min_x"] and \
+                    x_v <= boundary["max_x"] and x_v >= boundary["min_x"] and \
+                    y_u <= boundary["max_y"] and y_u >= boundary["min_y"] and \
+                    y_v <= boundary["max_y"] and y_v >= boundary["min_y"]:
+
+                        fold_edges[idx].append(line_num)
+            
+            line_num += 1
+                    
+    return fold_edges
+
 
 def validate_best_model(eval_function, ups, G, features, input_filename, projects_to_remove, metric, min_x=0, min_y=0, max_x=1002, max_y=1002, kappa = 0.25):
     '''
@@ -48,7 +111,11 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
     best_i = -1
     metric_vals = []
 
+    A, b = build_feat_label_data(G, ups, features)
+    fold_edges = get_intra_fold_edges(folds, G, ups)
+
     for i in range(10):
+        print("Iteration:", i)
         validation_fold = folds[i]
         training_folds = []
         for j in range(10):
@@ -57,8 +124,13 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
         
 
         ground_truth = create_ground_truth(input_filename, min_x=min_x, max_x = max_x, min_y=min_y, max_y = max_y, projects_to_remove = projects_to_remove, partial_canvas = validation_fold)
-        A, b = build_feat_label_data(G, ups, features, train_x_y = training_folds)
-        model = GradientBoostingRegressor(random_state=1, n_estimators=25).fit(A, b)
+        
+        # All edges that belong to the validation fold need to be excluded
+        edges_to_exclude = fold_edges[i]
+        A_training = np.delete(A, edges_to_exclude, axis=0)
+        b_training = np.delete(b, edges_to_exclude, axis=0)
+
+        model = GradientBoostingRegressor(random_state=1, n_estimators=25).fit(A_training, b_training)
 
         compute_edge_weights(G, ups, model, features)
         G.sort_edges()
