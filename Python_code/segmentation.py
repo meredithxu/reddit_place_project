@@ -681,7 +681,44 @@ def extract_canvas_updates(updates):
         
     return data_color_code
 
-def build_feat_label_data(G, ups, features, pixel=False, train_x_y=None):
+
+def get_fold_border(fold):
+    '''
+        Return a dictionary with the min_x, max_x, min_y, and max_y values of the fold
+    '''
+    min_x = sys.maxsize
+    min_y = sys.maxsize
+    max_x = 0
+    max_y = 0
+    for coordinate in fold:
+        x = coordinate[0]
+        y = coordinate[1]
+
+        if x < min_x:
+            min_x = x
+        if x > max_x:
+            max_x = x
+        if y < min_y:
+            min_y = y
+        if y > max_y:
+            max_y = y
+
+    return {"min_x": min_x, "min_y": min_y, "max_x": max_x, "max_y": max_y}
+
+def is_within_fold(x, y, boundary):
+    '''
+        Return true if (x,y) is within fold boundary
+        Return false otherwise
+    '''
+    
+    if x <= boundary["max_x"] and x >= boundary["min_x"] and \
+        y <= boundary["max_y"] and y >= boundary["min_y"]:
+        return True
+
+    return False
+
+
+def build_feat_label_data(G, ups, features, pixel=False, train_x_y=None, folds=None, excluded_folds=None):
     '''
         Extracts feature values and labels for edges in the graph.
 
@@ -697,8 +734,21 @@ def build_feat_label_data(G, ups, features, pixel=False, train_x_y=None):
         train_x_y allows you to select which x,y positions are used
         for training the model.
 
+        if folds is not None, then it is a list of folds which are
+        the edges that will be used to build the features.
+        excluded_folds is a list of fold which are not included to
+        build features. This flag is not used if folds is None
+
         Returns matrix A with feature values and vector b with labels
     '''
+    fold_boundaries = []  # List of dictionaries containing min_x, max_x, min_y, max_y for each fold
+
+    if folds is not None:
+        for fold in folds:
+            fold_boundaries.append(get_fold_border(fold))
+    
+    print("Excluded folds:", excluded_folds)
+    # print("Fold boundaries:", fold_boundaries)
     #Counting labelled points
     n_labelled = 0
     with open(G.unique_edges_file_name, 'r') as file_in:
@@ -717,6 +767,18 @@ def build_feat_label_data(G, ups, features, pixel=False, train_x_y=None):
             y_v = ups[v][3]
         
             if type_edge > 0 and (train_x_y is None or ((x_u,y_u) in train_x_y and (x_v,y_v) in train_x_y)):
+                
+                if folds is not None:
+                    # Check which fold this edge belongs to. If it belongs to an excluded fold, then skip it
+                    skip_edge = False
+                    for f_idx in excluded_folds:
+                        if is_within_fold(x_u, y_u, fold_boundaries[f_idx]) or is_within_fold(x_v, y_v, fold_boundaries[f_idx]):
+                            skip_edge = True
+
+                    
+                    if skip_edge:
+                        continue
+
                 if pixel is True:
                     if int(ups[u][6]) == 1 and int(ups[v][6]) == 1:
                         n_labelled = n_labelled + 1
@@ -744,6 +806,17 @@ def build_feat_label_data(G, ups, features, pixel=False, train_x_y=None):
             y_v = ups[v][3]
 
             if type_edge > 0 and (train_x_y is None or ((x_u,y_u) in train_x_y and (x_v,y_v) in train_x_y)):
+                
+                if folds is not None:
+                    # Check which fold this edge belongs to. If it belongs to an excluded fold, then skip it
+                    skip_edge = False
+                    for f_idx in excluded_folds:
+                        if is_within_fold(x_u, y_u, fold_boundaries[f_idx]) or is_within_fold(x_v, y_v, fold_boundaries[f_idx]):
+                            skip_edge = True
+
+                    if skip_edge:
+                        continue
+
                 if pixel is True:
                     if int(ups[u][6]) == 1 and int(ups[v][6]) == 1:
                         for f in range(len(features)):
