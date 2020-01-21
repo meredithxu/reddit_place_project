@@ -77,6 +77,77 @@ def build_and_evaluate_model_wrapper(params):
 
     return build_and_evaluate_model(ups, features, params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7], params[8])
 
+def validate_best_model_wrapper(parameters):
+
+    vertex_lengths = parameters.get("v_lengths")
+    projects_to_remove = parameters.get("projects_to_remove")
+    input_filename = parameters.get("input_filename")
+    min_x = parameters.get("min_x")
+    max_x = parameters.get("max_x")
+    min_y = parameters.get("min_y")
+    max_y = parameters.get("max_y")
+
+    n_dims = parameters.get("n_dims")
+    thresholds = parameters.get("thresholds")
+    total_samples = parameters.get("total_samples")
+    n_negatives = parameters.get("n_negatives")
+    n_iterations = parameters.get("n_iterations")
+
+    kappa_vals = parameters["kappas"]
+    validation_metrics = parameters("validation_metrics")
+
+    best_score = -1
+    best_parameters = None
+
+    for v in vertex_lengths:
+        G, ups = create_graph(input_file, projects_to_remove,
+                              v, min_x, max_x, min_y, max_y)
+
+        for ndim in n_dims:
+            for threshold in thresholds:
+                for total_sample in total_samples:
+                    for n_negative in n_negatives:
+                        for n_iteration in n_iterations:
+                            user_index, emb = embed_users(G, ups, ndim, threshold, total_samples, n_negatives, n_iterations)
+
+                            features = [{'name': "different_color", 'func': different_color, 'data': None},
+                                        {'name': "distance_space",
+                                            'func': distance_space, 'data': None},
+                                        {'name': "distance_time",
+                                            'func': distance_time, 'data': None},
+                                        {'name': "distance_duration",
+                                         'func': distance_duration, 'data': durations},
+                                        {'name': "distance_color",
+                                         'func': distance_color, 'data': conflicts},
+                                        {'name': "distance_user_embedding", 'func': distance_user_embedding, 'data': {
+                                            'index': user_index, 'emb': emb}},
+                                        {'name': "distance_user_colors", 'func': distance_user_colors, 'data': {'index': user_index_color, 'emb': user_color}}]
+
+
+
+                            
+
+                            for kappa in kappa_vals:
+                                for metric in validation_metrics:
+                                    metric_vals = validate_best_model(evaluate, ups, G, features, input_file, projects_to_remove, metric, min_x, min_y, max_x, max_y)
+
+                                    avg_score = sum(metric_vals) / len(metric_vals)
+                                    if avg_score > best_score:
+                                        best_score = avg_score
+                                        best_parameters = { 
+                                            "v_length": v, 
+                                            "ndim" : ndim, 
+                                            "threshold": threshold, 
+                                            "total_sample":total_sample, 
+                                            "n_negative" : n_negative,
+                                            "n_iteration" : n_iteration,
+                                            "kappa" : kappa,
+                                            "metric" : metric,
+                                            "avg_score" : avg_scores
+                                            }
+
+    return best_parameters
+
 def validate_best_model(eval_function, ups, G, features, input_filename, projects_to_remove, metric, min_x=0, min_y=0, max_x=1002, max_y=1002, kappa = 0.25, n_threads = 5):
     '''
         Do 10 fold cross validation and return the best model
@@ -112,6 +183,7 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
             res = fut.result()
             model_filenames.append(res)
 
+    metric_vals = []
     for model_filename in model_filenames:
         pfile = open(model_filename, "rb")
         model = pickle.load(pfile)
@@ -129,7 +201,6 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
                                            projects_to_remove=projects_to_remove, partial_canvas_boundaries=fold_boundaries[model_id])
         num_correct_counter, num_assignments_made, precision, recall, region_assignments = eval_function( locations, regions, ups, ground_truth, threshold=0.5, draw=False)
 
-        metric_vals = []
         if metric == 'recall':
             metric_val = recall
         elif metric == 'precision':
