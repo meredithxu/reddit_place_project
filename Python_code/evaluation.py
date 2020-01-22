@@ -199,7 +199,7 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
         regions, sizes = extract_regions(comp_assign)
         ground_truth = create_ground_truth(input_filename, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y,
                                            projects_to_remove=projects_to_remove, partial_canvas_boundaries=fold_boundaries[model_id])
-        num_correct_counter, num_assignments_made, precision, recall, region_assignments = eval_function( locations, regions, ups, ground_truth, threshold=0.5, draw=False)
+        num_correct_counter, num_assignments_made, precision, recall, region_assignments = eval_function( locations, regions, ups, ground_truth, threshold=0.3, draw=False)
 
         if metric == 'recall':
             metric_val = recall
