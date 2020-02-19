@@ -77,83 +77,17 @@ def build_and_evaluate_model_wrapper(params):
 
     return build_and_evaluate_model(ups, features, params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7], params[8])
 
-def validate_best_model_wrapper(parameters):
-
-    vertex_lengths = parameters.get("v_lengths")
-    projects_to_remove = parameters.get("projects_to_remove")
-    input_filename = parameters.get("input_filename")
-    min_x = parameters.get("min_x")
-    max_x = parameters.get("max_x")
-    min_y = parameters.get("min_y")
-    max_y = parameters.get("max_y")
-
-    n_dims = parameters.get("n_dims")
-    thresholds = parameters.get("thresholds")
-    total_samples = parameters.get("total_samples")
-    n_negatives = parameters.get("n_negatives")
-    n_iterations = parameters.get("n_iterations")
-
-    kappa_vals = parameters["kappas"]
-    validation_metrics = parameters("validation_metrics")
-
-    best_score = -1
-    best_parameters = None
-
-    for v in vertex_lengths:
-        G, ups = create_graph(input_file, projects_to_remove,
-                              v, min_x, max_x, min_y, max_y)
-
-        for ndim in n_dims:
-            for threshold in thresholds:
-                for total_sample in total_samples:
-                    for n_negative in n_negatives:
-                        for n_iteration in n_iterations:
-                            user_index, emb = embed_users(G, ups, ndim, threshold, total_samples, n_negatives, n_iterations)
-
-                            features = [{'name': "different_color", 'func': different_color, 'data': None},
-                                        {'name': "distance_space",
-                                            'func': distance_space, 'data': None},
-                                        {'name': "distance_time",
-                                            'func': distance_time, 'data': None},
-                                        {'name': "distance_duration",
-                                         'func': distance_duration, 'data': durations},
-                                        {'name': "distance_color",
-                                         'func': distance_color, 'data': conflicts},
-                                        {'name': "distance_user_embedding", 'func': distance_user_embedding, 'data': {
-                                            'index': user_index, 'emb': emb}},
-                                        {'name': "distance_user_colors", 'func': distance_user_colors, 'data': {'index': user_index_color, 'emb': user_color}}]
 
 
-
-                            
-
-                            for kappa in kappa_vals:
-                                for metric in validation_metrics:
-                                    metric_vals = validate_best_model(evaluate, ups, G, features, input_file, projects_to_remove, metric, min_x, min_y, max_x, max_y)
-
-                                    avg_score = sum(metric_vals) / len(metric_vals)
-                                    if avg_score > best_score:
-                                        best_score = avg_score
-                                        best_parameters = { 
-                                            "v_length": v, 
-                                            "ndim" : ndim, 
-                                            "threshold": threshold, 
-                                            "total_sample":total_sample, 
-                                            "n_negative" : n_negative,
-                                            "n_iteration" : n_iteration,
-                                            "kappa" : kappa,
-                                            "metric" : metric,
-                                            "avg_score" : avg_scores
-                                            }
-
-    return best_parameters
-
-def validate_best_model(eval_function, ups, G, features, input_filename, projects_to_remove, metric, min_x=0, min_y=0, max_x=1002, max_y=1002, kappa = 0.25, n_threads = 5):
+def validate_best_model(eval_function, ups, G, features, input_filename, projects_to_remove, metric, min_x=0, min_y=0, max_x=1002, max_y=1002, kappa = 0.25, n_threads = 5, load_models = False, load_segmentation = False):
     '''
         Do 10 fold cross validation and return the best model
         if metric == recall, then use recall as evaluation metric
         if metric == precision, then use precision as evaluation metric
         otherwise, option is invalid, print error message and then return from the function
+
+        if load_models is true, then load the modles from pickle files
+        else create the models using the multithreading
 
         kappa is the value used for region segmentation.
     '''
@@ -169,19 +103,26 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
     model_filenames = []
     futures = []
 
-    #Multithreading
-    # For n_thread = 5, Run n_threads at once, and repeat twice for a total of 2 * n_thread = 10 folds
-    for i in range(2):
-        with concurrent.futures.ProcessPoolExecutor(max_workers=n_threads) as executor:
-            for t in range(n_threads * i, n_threads * (i + 1)):
-                fut = executor.submit(build_and_evaluate_model_wrapper, (t, G.unique_edges_file_name, fold_boundaries, [t], min_x, min_y, max_x, max_y, kappa))
-                futures.append(fut)
+    if load_models:
+        for i in range(10):
+            filename = str(i) + "_model.pkl"
+            model_filenames.append(filename)
+    else:
+        #Multithreading
+        # For n_thread = 5, Run n_threads at once, and repeat twice for a total of 2 * n_thread = 10 folds
+        for i in range(2):
+            with concurrent.futures.ProcessPoolExecutor(max_workers=n_threads) as executor:
+                for t in range(n_threads * i, n_threads * (i + 1)):
+                    fut = executor.submit(build_and_evaluate_model_wrapper, (t, G.unique_edges_file_name, fold_boundaries, [t], min_x, min_y, max_x, max_y, kappa))
+                    futures.append(fut)
 
-        #Collecting results
-        for t in range(n_threads * i, n_threads * (i + 1)):
-            fut = futures[t]
-            res = fut.result()
-            model_filenames.append(res)
+            #Collecting results
+            for t in range(n_threads * i, n_threads * (i + 1)):
+                fut = futures[t]
+                res = fut.result()
+                model_filenames.append(res)
+
+    # Create a file to write the evaluation results
 
     metric_vals = []
     for model_filename in model_filenames:
@@ -195,11 +136,28 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
         compute_edge_weights_multithread(G, ups, model, features, 5)
         G.sort_edges()
 
-        comp_assign = region_segmentation(G, ups, kappa)
+
+        comp_assign = None
+        comp_assign_filename = "component_assignment_" + model_filename
+        if load_segmentation and os.path.exists(comp_assign_filename):
+            pfile = open(comp_assign_filename, "rb")
+            comp_assign = pickle.load(pfile)
+            pfile.close()
+        else:
+            comp_assign = region_segmentation(G, ups, kappa)
+            
+            if os.path.exists(comp_assign_filename):
+                os.remove(comp_assign_filename)
+
+            pfile = open(comp_assign_filename, 'wb')
+            pickle.dump(comp_assign, pfile)
+            pfile.close()
+    
+            
         regions, sizes = extract_regions(comp_assign)
         ground_truth = create_ground_truth(input_filename, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y,
                                            projects_to_remove=projects_to_remove, partial_canvas_boundaries=fold_boundaries[model_id])
-        num_correct_counter, num_assignments_made, precision, recall, region_assignments = eval_function( locations, regions, ups, ground_truth, threshold=0.5, draw=False)
+        num_correct_counter, num_assignments_made, precision, recall, region_assignments = eval_function( locations, regions, ups, ground_truth, threshold=0.3, draw=False)
 
         if metric == 'recall':
             metric_val = recall
@@ -208,7 +166,7 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
         else:
             print("invalid metric option")
         
-        metric_vals.append(metric_val)
+        metric_vals.append(metric_val) 
  
 
     # max_id = metric_vals.index(max(metric_vals))

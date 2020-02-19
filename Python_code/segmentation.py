@@ -8,6 +8,8 @@ import subprocess
 import numpy as np
 import scipy
 import time
+import concurrent.futures
+import pickle
 
 from user_embedding import *
 
@@ -21,7 +23,7 @@ class MyGraph:
         '''
         '''
         self._edges = {}
-        self.buffer_size = 100000                            #Keeps at most 100K edges in memory
+        self.buffer_size = 10000000                            #Keeps at most 10M edges in memory
         self.n_edges = 0
         
         #File names used by this class
@@ -86,6 +88,7 @@ class MyGraph:
         '''
            Adds edge to the graph. 
         '''
+
         self.n_edges = self.n_edges + 1
         if node1 < node2:
             if (str(node1), str(node2)) not in self._edges:
@@ -276,6 +279,7 @@ def create_graph(input_file_name, projects_to_remove, space_threshold=1,
                                     if xy_index[xi][yi][i] != xy_index[xj][yj][j]:
                                         label = get_label(updates[xy_index[xi][yi][i]], 
                                             updates[xy_index[xj][yj][j]])
+
                                         G.add_edge(xy_index[xi][yi][i], xy_index[xj][yj][j], label, +1)
 
                                 if ui[0] < uj[0]:
@@ -293,6 +297,7 @@ def create_graph(input_file_name, projects_to_remove, space_threshold=1,
                                         if xy_index[xi][yi][i] != xy_index[xj][yj][j-1]:
                                             label = get_label(updates[xy_index[xi][yi][i]], 
                                                 updates[xy_index[xj][yj][j-1]])
+
                                             G.add_edge(xy_index[xi][yi][i], xy_index[xj][yj][j-1], label, +1)
                                     i = i + 1
 
@@ -305,6 +310,7 @@ def create_graph(input_file_name, projects_to_remove, space_threshold=1,
                                         if xy_index[xi][yi][i-1] != xy_index[xj][yj][j]:
                                                 label = get_label(updates[xy_index[xi][yi][i-1]], 
                                                     updates[xy_index[xj][yj][j]])
+
                                                 G.add_edge(xy_index[xi][yi][i-1], xy_index[xj][yj][j], label, +1)
                                     j = j + 1
 
@@ -705,20 +711,20 @@ def get_fold_border(fold):
 
     return {"min_x": min_x, "min_y": min_y, "max_x": max_x, "max_y": max_y}
 
+
 def is_within_fold(x, y, boundary):
     '''
         Return true if (x,y) is within fold boundary
         Return false otherwise
     '''
-    
-    if x <= boundary["max_x"] and x >= boundary["min_x"] and \
-        y <= boundary["max_y"] and y >= boundary["min_y"]:
+
+    if x <= boundary["max_x"] and x >= boundary["min_x"] and y <= boundary["max_y"] and y >= boundary["min_y"]:
         return True
 
     return False
 
 
-def build_feat_label_data(G, ups, features, pixel=False, train_x_y=None, folds=None, excluded_folds=None):
+def build_feat_label_data(unique_edges_file_name, ups, features, pixel=False, train_x_y=None, fold_boundaries=None, excluded_folds=None):
     '''
         Extracts feature values and labels for edges in the graph.
 
@@ -741,17 +747,10 @@ def build_feat_label_data(G, ups, features, pixel=False, train_x_y=None, folds=N
 
         Returns matrix A with feature values and vector b with labels
     '''
-    fold_boundaries = []  # List of dictionaries containing min_x, max_x, min_y, max_y for each fold
 
-    if folds is not None:
-        for fold in folds:
-            fold_boundaries.append(get_fold_border(fold))
-    
-    print("Excluded folds:", excluded_folds)
-    # print("Fold boundaries:", fold_boundaries)
     #Counting labelled points
     n_labelled = 0
-    with open(G.unique_edges_file_name, 'r') as file_in:
+    with open(unique_edges_file_name, 'r') as file_in:
         reader = csv.reader(file_in)
     
         for r in reader:
@@ -768,14 +767,13 @@ def build_feat_label_data(G, ups, features, pixel=False, train_x_y=None, folds=N
         
             if type_edge > 0 and (train_x_y is None or ((x_u,y_u) in train_x_y and (x_v,y_v) in train_x_y)):
                 
-                if folds is not None:
+                if fold_boundaries is not None:
                     # Check which fold this edge belongs to. If it belongs to an excluded fold, then skip it
                     skip_edge = False
                     for f_idx in excluded_folds:
                         if is_within_fold(x_u, y_u, fold_boundaries[f_idx]) or is_within_fold(x_v, y_v, fold_boundaries[f_idx]):
                             skip_edge = True
 
-                    
                     if skip_edge:
                         continue
 
@@ -785,13 +783,12 @@ def build_feat_label_data(G, ups, features, pixel=False, train_x_y=None, folds=N
                 else:
                     if int(ups[u][7]) == 1 and int(ups[v][7]) == 1:
                         n_labelled = n_labelled + 1
-    
-    print("n_labelled: ", n_labelled)        
+            
     A = np.zeros((n_labelled, len(features)))
     b = np.zeros(n_labelled)
     
     i = 0
-    with open(G.unique_edges_file_name, 'r') as file_in:
+    with open(unique_edges_file_name, 'r') as file_in:
         reader = csv.reader(file_in)
     
         for r in reader:
@@ -807,7 +804,7 @@ def build_feat_label_data(G, ups, features, pixel=False, train_x_y=None, folds=N
 
             if type_edge > 0 and (train_x_y is None or ((x_u,y_u) in train_x_y and (x_v,y_v) in train_x_y)):
                 
-                if folds is not None:
+                if fold_boundaries is not None:
                     # Check which fold this edge belongs to. If it belongs to an excluded fold, then skip it
                     skip_edge = False
                     for f_idx in excluded_folds:
@@ -842,16 +839,126 @@ def build_feat_label_data(G, ups, features, pixel=False, train_x_y=None, folds=N
     
     return A, b
 
-def compute_weight(u, v, ups, m, features):
+def compute_weight(edge_buffer, ups, m, features):
     '''
         Computes weight of edge (upi,upj) based on several features.
     '''
-    feat_values = np.zeros(len(features))
+    feat_values = np.zeros((len(edge_buffer), len(features)))
     
-    for f in range(len(features)):
-        feat_values[f] = features[f]['func'](u, v, ups, features[f]['data'])
+    for e in range(len(edge_buffer)):
+        u = edge_buffer[e][0]
+        v = edge_buffer[e][1]
+
+        for f in range(len(features)):
+            feat_values[e][f] = features[f]['func'](u, v, ups, features[f]['data'])
         
-    return m.predict([feat_values])[0]
+    return m.predict(feat_values)
+
+def compute_weight_wrapper(param):
+    '''
+        Simple wrapper for the compute_weight function
+    '''    
+    #Loading pickled features
+    #Each thread has its own copy, which is quite inneficient
+    pfile = open('features.pkl', 'rb')
+    features = pickle.load(pfile)
+    pfile.close()
+
+    res = compute_weight(param[0], param[1], param[2], features)
+
+    return res
+
+def compute_weight_multithread(edge_buffer, ups, model, n_threads):
+    '''
+        Computes weights for set of edges in edge_buffer using multithreading
+    '''
+
+    #Dividing the work
+    edges_per_thread = int(len(edge_buffer) / n_threads)
+
+    edge_parts = []
+    for t in range(n_threads):
+        edge_parts.append([])
+
+    e = 0
+    for e in range(len(edge_buffer)):
+        t = e % n_threads
+        edge_parts[t].append(edge_buffer[e])
+
+    futures = []
+
+    #Multithreading
+    with concurrent.futures.ProcessPoolExecutor(max_workers=n_threads) as executor:
+        for t in range(n_threads):
+            fut = executor.submit(compute_weight_wrapper, (edge_parts[t], ups, model))
+            futures.append(fut)
+
+    #Collecting results
+    W = np.zeros(len(edge_buffer))
+    for t in range(n_threads):
+        fut = futures[t]
+        res = fut.result()
+        for e in range(res.shape[0]):
+            W[e*n_threads+t] = res[e]
+
+    return W
+
+def compute_edge_weights_multithread(G, ups, model, features, n_threads):
+    '''
+        Computes weights for edges in the graph using multithreading.
+    '''
+
+    if os.path.exists(G.edges_file_name):
+        os.remove(G.edges_file_name)
+    
+    #Pickling feature data to be shared with threads
+    if not os.path.exists('features.pkl'):
+         pfile = open('features.pkl', 'wb')
+         pickle.dump(features, pfile)
+         pfile.close()
+        
+    edge_buffer = []
+
+    with open(G.unique_edges_file_name, 'r') as file_in:
+        reader = csv.reader(file_in)
+
+        for r in reader:
+            u = r[0]
+            v = r[1]
+            lb = r[2]
+            type_edge = int(r[3])
+
+            if type_edge > 0:
+                edge_buffer.append((int(u), int(v), lb, type_edge))
+
+                if len(edge_buffer) >= G.buffer_size:
+
+                    W = compute_weight_multithread(edge_buffer, ups, model, n_threads)
+
+                    for e in range(len(edge_buffer)):
+                        u = edge_buffer[e][0]
+                        v = edge_buffer[e][1]
+                        lb = edge_buffer[e][2]
+                        type_edge = edge_buffer[e][3]
+                        w = W[e]
+
+                        G.set_weight(u, v, lb, type_edge, w)
+
+                    edge_buffer = []
+
+    if len(edge_buffer) > 0:
+        W = compute_weight_multithread(edge_buffer, ups, model, n_threads)
+
+        for e in range(len(edge_buffer)):
+            u = edge_buffer[e][0]
+            v = edge_buffer[e][1]
+            lb = edge_buffer[e][2]
+            type_edge = edge_buffer[e][3]
+            w = W[e]
+
+            G.set_weight(u, v, lb, type_edge, w)
+
+    G.flush_weights()
 
 def compute_edge_weights(G, ups, model, features):
     '''
@@ -860,6 +967,8 @@ def compute_edge_weights(G, ups, model, features):
     if os.path.exists(G.edges_file_name):
         os.remove(G.edges_file_name)
     
+    edge_buffer = []        
+
     with open(G.unique_edges_file_name, 'r') as file_in:
         reader = csv.reader(file_in)
     
@@ -870,8 +979,34 @@ def compute_edge_weights(G, ups, model, features):
             type_edge = int(r[3])
         
             if type_edge > 0:
-                w = compute_weight(int(u), int(v), ups, model, features)
-                G.set_weight(u, v, lb, type_edge, w)
+                edge_buffer.append((int(u), int(v), lb, type_edge))
+                
+                if len(edge_buffer) >= G.buffer_size:
+                    
+                    W = compute_weight(edge_buffer, ups, model, features)
+                    
+                    for e in range(len(edge_buffer)):
+                        u = edge_buffer[e][0]
+                        v = edge_buffer[e][1]
+                        lb = edge_buffer[e][2]
+                        type_edge = edge_buffer[e][3]
+                        w = W[e]
+                        
+                        G.set_weight(u, v, lb, type_edge, w)
+		
+                    edge_buffer = []
+                
+    if len(edge_buffer) > 0:
+        W = compute_weight(edge_buffer, ups, model, features)
+                    
+        for e in range(len(edge_buffer)):
+            u = edge_buffer[e][0]
+            v = edge_buffer[e][1]
+            lb = edge_buffer[e][2]
+            type_edge = edge_buffer[e][3]
+            w = W[e]
+                        
+            G.set_weight(u, v, lb, type_edge, w)
         
     G.flush_weights()
 
