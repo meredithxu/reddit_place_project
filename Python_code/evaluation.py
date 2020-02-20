@@ -46,7 +46,6 @@ def build_and_evaluate_model(ups, features, pid, unique_edges_file_name, fold_bo
     # edges_to_exclude = fold_edges[i]
     # A_training = np.delete(A, edges_to_exclude, axis=0)
     # b_training = np.delete(b, edges_to_exclude, axis=0)
-    print("Created training data")
 
     model = GradientBoostingRegressor(random_state=1, n_estimators=25).fit(A, b)
 

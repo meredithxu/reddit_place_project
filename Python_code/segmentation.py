@@ -740,10 +740,13 @@ def build_feat_label_data(unique_edges_file_name, ups, features, pixel=False, tr
         train_x_y allows you to select which x,y positions are used
         for training the model.
 
-        if folds is not None, then it is a list of folds which are
-        the edges that will be used to build the features.
-        excluded_folds is a list of fold which are not included to
-        build features. This flag is not used if folds is None
+        fold_boundaries is a list of dictionaries of the following format:
+        {"min_x": min_x, "min_y": min_y, "max_x": max_x, "max_y": max_y}
+        Each dictionary indicates the boundary of a fold.
+
+        excluded_folds is a list of indexes indicating which corresponding folds within fold_boundaries
+        are to be excluded from the feature and label data.
+        If fold_boundaries is None, then all folds are included.
 
         Returns matrix A with feature values and vector b with labels
     '''
