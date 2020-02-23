@@ -4,6 +4,7 @@ import csv
 import numpy as np
 from reddit import *
 from segmentation import *
+from nonlinear_regressor import *
 from sklearn.ensemble import GradientBoostingRegressor
 import pickle
 import concurrent.futures
@@ -47,7 +48,8 @@ def build_and_evaluate_model(ups, features, pid, unique_edges_file_name, fold_bo
     # A_training = np.delete(A, edges_to_exclude, axis=0)
     # b_training = np.delete(b, edges_to_exclude, axis=0)
 
-    model = GradientBoostingRegressor(random_state=1, n_estimators=25).fit(A, b)
+    model = createNonlinearRegressionNeuralNet(A, b)
+    # model = GradientBoostingRegressor(random_state=1, n_estimators=25).fit(A, b)
 
     del A
     del b
