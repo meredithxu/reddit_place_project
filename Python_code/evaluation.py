@@ -34,7 +34,7 @@ def create_folds(min_x=0, min_y=0, max_x=1002, max_y=1002):
     return folds
 
 
-def build_and_evaluate_model(ups, features, pid, unique_edges_file_name, fold_boundaries, excluded_folds, min_x=0, min_y=0, max_x=1002, max_y=1002, kappa=0.25):
+def build_and_evaluate_model(ups, features, pid, unique_edges_file_name, fold_boundaries, excluded_folds, min_x=0, min_y=0, max_x=1002, max_y=1002, kappa=0.25, file_prefix = ""):
     '''
         Build a model and return the evaluation metric
     '''
@@ -55,7 +55,7 @@ def build_and_evaluate_model(ups, features, pid, unique_edges_file_name, fold_bo
     del b
     
     # Save the model in a pickle file
-    model_name = str(pid) + "_model.pkl"
+    model_name = str(file_prefix) +  str(pid) + "_model.pkl"
     if os.path.exists(model_name):
         os.remove(model_name)
 
@@ -76,11 +76,11 @@ def build_and_evaluate_model_wrapper(params):
     ups = pickle.load(pfile)
     pfile.close()
 
-    return build_and_evaluate_model(ups, features, params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7], params[8])
+    return build_and_evaluate_model(ups, features, params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7], params[8], params[9])
 
 
 
-def validate_best_model(eval_function, ups, G, features, input_filename, projects_to_remove, metric, min_x=0, min_y=0, max_x=1002, max_y=1002, kappa = 0.25, n_threads = 5, load_models = False, load_segmentation = False):
+def validate_best_model(eval_function, ups, G, features, input_filename, projects_to_remove, metric, min_x=0, min_y=0, max_x=1002, max_y=1002, kappa = 0.25, n_threads = 5, load_models = False, load_segmentation = False, file_prefix = ""):
     '''
         Do 10 fold cross validation and return the best model
         if metric == recall, then use recall as evaluation metric
@@ -89,6 +89,8 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
 
         if load_models is true, then load the modles from pickle files
         else create the models using the multithreading
+        Each model is saved to a pickle file after creation. 
+        The file_prefix parameter will be prepended to each filename
 
         kappa is the value used for region segmentation.
     '''
@@ -114,7 +116,7 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
         for i in range(2):
             with concurrent.futures.ProcessPoolExecutor(max_workers=n_threads) as executor:
                 for t in range(n_threads * i, n_threads * (i + 1)):
-                    fut = executor.submit(build_and_evaluate_model_wrapper, (t, G.unique_edges_file_name, fold_boundaries, [t], min_x, min_y, max_x, max_y, kappa))
+                    fut = executor.submit(build_and_evaluate_model_wrapper, (t, G.unique_edges_file_name, fold_boundaries, [t], min_x, min_y, max_x, max_y, kappa, file_prefix))
                     futures.append(fut)
 
             #Collecting results
