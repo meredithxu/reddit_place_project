@@ -108,7 +108,7 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
 
     if load_models:
         for i in range(10):
-            filename = str(i) + "_model.pkl"
+            filename = str(file_prefix) + str(i) + "_model.pkl"
             model_filenames.append(filename)
     else:
         #Multithreading
