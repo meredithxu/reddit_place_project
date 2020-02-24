@@ -58,7 +58,8 @@ def build_and_evaluate_model(ups, features, pid, unique_edges_file_name, fold_bo
     model_name = str(file_prefix) +  str(pid) + "_model.pkl"
     if os.path.exists(model_name):
         os.remove(model_name)
-
+        
+        
     pfile = open(model_name, 'wb')
     pickle.dump(model, pfile)
     pfile.close()
@@ -170,6 +171,7 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
             print("invalid metric option")
         
         metric_vals.append(metric_val)
+        print(metric_val)
  
 
     # max_id = metric_vals.index(max(metric_vals))

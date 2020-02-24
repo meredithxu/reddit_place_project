@@ -19,17 +19,18 @@ class MyGraph:
         as files. It is suitable for very large number of edges that 
         might not fit in memory.
     '''
-    def __init__(self):
+    def __init__(self, file_prefix = ""):
         '''
+            file_prefix is prepended to the edge file names
         '''
         self._edges = {}
         self.buffer_size = 10000000                            #Keeps at most 10M edges in memory
         self.n_edges = 0
         
         #File names used by this class
-        self.edges_file_name = "./edges.csv"
-        self.unique_edges_file_name = "./unique_edges.csv"
-        self.sorted_edges_file_name = "./sorted_edges.csv"
+        self.edges_file_name = "./" + str(file_prefix) + "_edges.csv"
+        self.unique_edges_file_name = "./" + str(file_prefix) + "_unique_edges.csv"
+        self.sorted_edges_file_name = "./" + str(file_prefix) + "_sorted_edges.csv"
         
         if os.path.exists(self.edges_file_name):
             os.remove(self.edges_file_name)
@@ -184,7 +185,7 @@ def check_overlap(dur_i, dur_j):
         return True
     
 def create_graph(input_file_name, projects_to_remove, space_threshold=1, 
-                min_x=0, max_x=1002, min_y=0, max_y=1002):
+                min_x=0, max_x=1002, min_y=0, max_y=1002, file_prefix = ""):
     '''
         Creates networkx graph of updates within a given frame (or time window) and associated 
         list of update info (timestamp, user, color etc.).
@@ -241,9 +242,8 @@ def create_graph(input_file_name, projects_to_remove, space_threshold=1,
                     i = i + 1
     
     
-    
-    G = MyGraph()
-    
+    G = MyGraph(file_prefix)
+
     durations = compute_update_durations(updates)
     
     for xi in range(1001):
