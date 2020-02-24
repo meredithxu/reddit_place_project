@@ -48,8 +48,8 @@ def build_and_evaluate_model(ups, features, pid, unique_edges_file_name, fold_bo
     # A_training = np.delete(A, edges_to_exclude, axis=0)
     # b_training = np.delete(b, edges_to_exclude, axis=0)
 
-    model = createNonlinearRegressionNeuralNet(A, b)
-    # model = GradientBoostingRegressor(random_state=1, n_estimators=25).fit(A, b)
+    # model = createNonlinearRegressionNeuralNet(A, b)
+    model = GradientBoostingRegressor(random_state=1, n_estimators=25).fit(A, b)
 
     del A
     del b
@@ -58,7 +58,6 @@ def build_and_evaluate_model(ups, features, pid, unique_edges_file_name, fold_bo
     model_name = str(file_prefix) +  str(pid) + "_model.pkl"
     if os.path.exists(model_name):
         os.remove(model_name)
-        
         
     pfile = open(model_name, 'wb')
     pickle.dump(model, pfile)
