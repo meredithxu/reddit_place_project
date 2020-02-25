@@ -136,9 +136,6 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
 
         model_id = int(model_filename.split("_")[0])
 
-        compute_edge_weights_multithread(G, ups, model, features, 5)
-        G.sort_edges()
-
 
         comp_assign = None
         comp_assign_filename = "component_assignment_" + model_filename
@@ -147,6 +144,9 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
             comp_assign = pickle.load(pfile)
             pfile.close()
         else:
+            compute_edge_weights_multithread(G, ups, model, features, 5)
+            G.sort_edges()
+
             comp_assign = region_segmentation(G, ups, kappa)
             
             if os.path.exists(comp_assign_filename):
