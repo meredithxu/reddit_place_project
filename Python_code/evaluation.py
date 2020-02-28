@@ -34,7 +34,7 @@ def create_folds(min_x=0, min_y=0, max_x=1002, max_y=1002):
     return folds
 
 
-def build_and_evaluate_model(ups, features, pid, unique_edges_file_name, fold_boundaries, excluded_folds, min_x=0, min_y=0, max_x=1002, max_y=1002, kappa=0.25, file_prefix = ""):
+def build_and_evaluate_model(ups, features, pid, unique_edges_file_name, fold_boundaries, excluded_folds, file_prefix = ""):
     '''
         Build a model and return the evaluation metric
     '''
@@ -76,7 +76,7 @@ def build_and_evaluate_model_wrapper(params):
     ups = pickle.load(pfile)
     pfile.close()
 
-    return build_and_evaluate_model(ups, features, params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7], params[8], params[9])
+    return build_and_evaluate_model(ups, features, params[0], params[1], params[2], params[3], params[4])
 
 
 
@@ -122,7 +122,7 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
         for i in range(2):
             with concurrent.futures.ProcessPoolExecutor(max_workers=n_threads) as executor:
                 for t in range(n_threads * i, n_threads * (i + 1)):
-                    fut = executor.submit(build_and_evaluate_model_wrapper, (t, G.unique_edges_file_name, fold_boundaries, [t], min_x, min_y, max_x, max_y, kappa, file_prefix))
+                    fut = executor.submit(build_and_evaluate_model_wrapper, (t, G.unique_edges_file_name, fold_boundaries, [t], file_prefix))
                     futures.append(fut)
 
             #Collecting results
