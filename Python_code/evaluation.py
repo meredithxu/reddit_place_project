@@ -55,7 +55,7 @@ def build_and_evaluate_model(ups, features, pid, unique_edges_file_name, fold_bo
     del b
     
     # Save the model in a pickle file
-    model_name = str(file_prefix) +  str(pid) + "_model.pkl"
+    model_name = str(file_prefix) + "_" +  str(pid) + "_model.pkl"
     if os.path.exists(model_name):
         os.remove(model_name)
         
@@ -114,7 +114,7 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
 
     if load_models:
         for i in range(10):
-            filename = str(file_prefix) + str(i) + "_model.pkl"
+            filename = str(file_prefix) + "_" + str(i) + "_model.pkl"
             model_filenames.append(filename)
     else:
         #Multithreading
@@ -140,7 +140,7 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
         pfile.close()
         print(model)
 
-        model_id = int(model_filename.split("_")[0])
+        model_id = int(model_filename.split("_")[1])
 
 
         comp_assign = None
