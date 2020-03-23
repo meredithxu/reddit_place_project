@@ -122,7 +122,7 @@ class MyGraph:
             Sorts edges in increasing order of weight.
         '''
         time.sleep(5)
-        os.system("sort -g -t, -k5,5 "+self.edges_file_name+" > "+self.sorted_edges_file_name)
+        os.system("sort -g -t, -k5,5 " + self.edges_file_name + " > " + self.sorted_edges_file_name)
 
 
 
@@ -575,22 +575,26 @@ def region_segmentation(G, ups, KAPPA):
         reader = csv.reader(file_in)
     
         for r in reader:
-            u = int(r[0])
-            v = int(r[1])
-            lb = r[2]
-            type_edge = int(r[3])
-            w = float(r[4])
+            try:
+                u = int(r[0])
+                v = int(r[1])
+                lb = r[2]
+                type_edge = int(r[3])
+                w = float(r[4])
 
-            if type_edge > 0:
-                comp_u = comp_assign[u]
-                comp_v = comp_assign[v]
-        
-                if comp_u != comp_v:
-                    m_int = compute_m_int(int_weights, sizes, comp_u, comp_v, KAPPA)
+                if type_edge > 0:
+                    comp_u = comp_assign[u]
+                    comp_v = comp_assign[v]
             
-                    if w < m_int:
-                        comp_assign, int_weights, sizes, regions = merge(G, comp_assign, int_weights, sizes, regions,
-                            comp_u, comp_v, w)
+                    if comp_u != comp_v:
+                        m_int = compute_m_int(int_weights, sizes, comp_u, comp_v, KAPPA)
+                
+                        if w < m_int:
+                            comp_assign, int_weights, sizes, regions = merge(G, comp_assign, int_weights, sizes, regions,
+                                comp_u, comp_v, w)
+            except:
+                print("Booboo: ", r)
+                continue
         
     return comp_assign
 
