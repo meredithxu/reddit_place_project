@@ -580,7 +580,11 @@ def region_segmentation(G, ups, KAPPA):
                 v = int(r[1])
                 lb = r[2]
                 type_edge = int(r[3])
-                w = float(r[4])
+                w = r[4]
+                try:
+                    w = float(w)
+                except:
+                    w = float(w.replace("[","").replace("]",""))
 
                 if type_edge > 0:
                     comp_u = comp_assign[u]
