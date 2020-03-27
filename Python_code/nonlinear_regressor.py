@@ -15,7 +15,7 @@ def createNonlinearRegressionNeuralNet(train_A, train_b, val_A, val_b):
     np.random.seed(SEED)
     tf.random.set_seed(SEED)
 
-    dims = A.shape[1] # Number of columns
+    dims = train_A.shape[1] # Number of columns
 
     # create model
     model = Sequential()
