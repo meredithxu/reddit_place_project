@@ -19,16 +19,16 @@ def create_folds(min_x=0, min_y=0, max_x=1002, max_y=1002):
         folds.append([])
 
     halfway_x = int((min_x + max_x) // 2)
-    y_increment = int((min_y + max_y) // 5)
+    y_increment = int((max_y - min_y) // 5)
 
     for j in range(5):
 
-        for x in range(0, halfway_x):
-            for y in range(j * y_increment, (j + 1) * y_increment):
+        for x in range(min_x, halfway_x):
+            for y in range((j * y_increment) + min_y, ((j + 1) * y_increment) + min_y):
                 folds[j].append((x, y))
 
         for x in range(halfway_x, max_x):
-            for y in range(j * y_increment, (j + 1) * y_increment):
+            for y in range((j * y_increment) + min_y, ((j + 1) * y_increment) + min_y):
                 folds[5 + j].append((x, y))
 
     return folds
