@@ -151,7 +151,7 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
             pfile.close()
         else:
             if compute_edge_weights:
-                compute_edge_weights_multithread(G, ups, model, features, 5)
+                compute_edge_weights_multithread(G, ups, model, features, 5, file_prefix)
                 G.sort_edges()
 
             comp_assign = region_segmentation(G, ups, kappa)

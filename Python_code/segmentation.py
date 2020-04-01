@@ -870,9 +870,10 @@ def compute_weight_wrapper(param):
     '''
         Simple wrapper for the compute_weight function
     '''    
+    file_prefix = param[3]
     #Loading pickled features
     #Each thread has its own copy, which is quite inneficient
-    pfile = open('features.pkl', 'rb')
+    pfile = open(file_prefix + 'features.pkl', 'rb')
     features = pickle.load(pfile)
     pfile.close()
 
@@ -880,7 +881,8 @@ def compute_weight_wrapper(param):
 
     return res
 
-def compute_weight_multithread(edge_buffer, ups, model, n_threads):
+
+def compute_weight_multithread(edge_buffer, ups, model, n_threads, file_prefix = ""):
     '''
         Computes weights for set of edges in edge_buffer using multithreading
     '''
@@ -902,7 +904,7 @@ def compute_weight_multithread(edge_buffer, ups, model, n_threads):
     #Multithreading
     with concurrent.futures.ProcessPoolExecutor(max_workers=n_threads) as executor:
         for t in range(n_threads):
-            fut = executor.submit(compute_weight_wrapper, (edge_parts[t], ups, model))
+            fut = executor.submit(compute_weight_wrapper, (edge_parts[t], ups, model, file_prefix))
             futures.append(fut)
 
     #Collecting results
@@ -915,7 +917,7 @@ def compute_weight_multithread(edge_buffer, ups, model, n_threads):
 
     return W
 
-def compute_edge_weights_multithread(G, ups, model, features, n_threads):
+def compute_edge_weights_multithread(G, ups, model, features, n_threads, file_prefix = ""):
     '''
         Computes weights for edges in the graph using multithreading.
     '''
@@ -924,8 +926,8 @@ def compute_edge_weights_multithread(G, ups, model, features, n_threads):
         os.remove(G.edges_file_name)
     
     #Pickling feature data to be shared with threads
-    if not os.path.exists('features.pkl'):
-         pfile = open('features.pkl', 'wb')
+    if not os.path.exists(file_prefix + 'features.pkl'):
+         pfile = open(file_prefix + 'features.pkl', 'wb')
          pickle.dump(features, pfile)
          pfile.close()
         
@@ -945,7 +947,7 @@ def compute_edge_weights_multithread(G, ups, model, features, n_threads):
 
                 if len(edge_buffer) >= G.buffer_size:
 
-                    W = compute_weight_multithread(edge_buffer, ups, model, n_threads)
+                    W = compute_weight_multithread(edge_buffer, ups, model, n_threads, file_prefix)
 
                     for e in range(len(edge_buffer)):
                         u = edge_buffer[e][0]
@@ -959,7 +961,7 @@ def compute_edge_weights_multithread(G, ups, model, features, n_threads):
                     edge_buffer = []
 
     if len(edge_buffer) > 0:
-        W = compute_weight_multithread(edge_buffer, ups, model, n_threads)
+        W = compute_weight_multithread(edge_buffer, ups, model, n_threads, file_prefix)
 
         for e in range(len(edge_buffer)):
             u = edge_buffer[e][0]
