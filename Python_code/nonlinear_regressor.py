@@ -20,20 +20,17 @@ def createNonlinearRegressionNeuralNet(train_A, train_b, val_A, val_b):
     # create model
     model = Sequential()
 
-    # Input layer with dimension dims and hidden layer i with 128 neurons.
-    model.add(Dense(128, input_dim=dims, activation='relu'))
-    # Dropout of 20% of the neurons and activation layer.
-    model.add(Dropout(.2))
-    # Hidden layer j with 64 neurons plus activation layer.
-    model.add(Dense(64, activation='relu'))
+    model.add(Dense(256, input_dim=dims, activation='relu'))
+    # Hidden layer j with 128 neurons plus activation layer.
+    model.add(Dense(128, activation='relu'))
     # Hidden layer k with 64 neurons.
     model.add(Dense(64, activation='relu'))
     # Output Layer.
-    model.add(Dense(1))
+    model.add(Dense(1,activation='sigmoid'))
 
     # Model is derived and compiled using mean square error as loss
     # function, accuracy as metric and gradient descent optimizer.
-    model.compile(loss='mse', optimizer='adam', metrics=["accuracy"])
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=["accuracy"])
 
     # Training model with train data.
     callbacks = [
