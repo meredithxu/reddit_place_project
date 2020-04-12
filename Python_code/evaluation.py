@@ -34,9 +34,20 @@ def create_folds(min_x=0, min_y=0, max_x=1002, max_y=1002):
     return folds
 
 
-def build_and_evaluate_model(ups, features, pid, unique_edges_file_name, fold_boundaries, excluded_folds, file_prefix = ""):
+def build_and_evaluate_model(ups, 
+                                features, 
+                                pid, 
+                                unique_edges_file_name, 
+                                fold_boundaries, 
+                                excluded_folds, 
+                                file_prefix = "", 
+                                modeltype = 0):
     '''
         Build a model and return the evaluation metric
+
+        modeltype determines what type the model that computes the edge weights will be
+            modeltype = 0 will use a sklearn.ensemble.GradientBoostingRegressor
+            modeltype = 1 will create a keras.models.Sequential neural network
     '''
     locations = store_locations("../data/atlas_complete.json")
     
@@ -44,30 +55,32 @@ def build_and_evaluate_model(ups, features, pid, unique_edges_file_name, fold_bo
     A, b = build_feat_label_data(unique_edges_file_name, ups, features,
                                  fold_boundaries=fold_boundaries, excluded_folds=excluded_folds)
 
-    # edges_to_exclude = fold_edges[i]
-    # A_training = np.delete(A, edges_to_exclude, axis=0)
-    # b_training = np.delete(b, edges_to_exclude, axis=0)
-
-    # model = createNonlinearRegressionNeuralNet(A, b)
-    model = GradientBoostingRegressor(random_state=1, n_estimators=25).fit(A, b)
+    model = None
+    if modeltype == 0:
+        model = GradientBoostingRegressor(random_state=1, n_estimators=25).fit(A, b)
+    elif modeltype == 1:
+        model = createNonlinearRegressionNeuralNet(A, b)
 
     del A
     del b
-    
-    # Save the model in a pickle file
-    model_name = str(file_prefix) + "_" +  str(pid) + "_model.pkl"
-    if os.path.exists(model_name):
-        os.remove(model_name)
-        
-    pfile = open(model_name, 'wb')
-    pickle.dump(model, pfile)
-    pfile.close()
+    model_name = str(file_prefix) + "_" +  str(pid) + "_model"
+    if modeltype == 0:
+        # Save the model in a pickle file
+        model_name = model_name + ".pkl"
+        if os.path.exists(model_name):
+            os.remove(model_name)
+            
+        pfile = open(model_name, 'wb')
+        pickle.dump(model, pfile)
+        pfile.close()     
+    else:
+        model.save(model_name)
 
     return model_name
 
 def build_and_evaluate_model_wrapper(params):
-     #Loading pickled features
-    #Each thread has its own copy, which is quite inneficient
+    #Loading pickled features
+    #Each thread has its own copy if passed as a param, which is quite inneficient
     pfile = open('features.pkl', 'rb')
     features = pickle.load(pfile)
     pfile.close()
@@ -76,11 +89,23 @@ def build_and_evaluate_model_wrapper(params):
     ups = pickle.load(pfile)
     pfile.close()
 
-    return build_and_evaluate_model(ups, features, params[0], params[1], params[2], params[3], params[4])
+    return build_and_evaluate_model(ups, features, params[0], params[1], params[2], params[3], params[4], params[5])
 
 
 
-def validate_best_model(eval_function, ups, G, features, input_filename, projects_to_remove, metric, min_x=0, min_y=0, max_x=1002, max_y=1002, kappa = 0.25, n_threads = 5, load_models = False, load_segmentation = False, compute_edge_weights = True, file_prefix = ""):
+def validate_best_model(eval_function, ups, G, features, input_filename, projects_to_remove, metric, 
+                            min_x=0, 
+                            min_y=0, 
+                            max_x=1002,
+                            max_y=1002, 
+                            kappa = 0.25, 
+                            n_threads = 5, 
+                            load_models = False, 
+                            load_segmentation = False, 
+                            compute_edge_weights = True, 
+                            file_prefix = "",
+                            evaluation_threshold = 0.5,
+                            modeltype = 0):
     '''
         Do 10 fold cross validation and return the best model
         if metric == recall, then use recall as evaluation metric
@@ -99,8 +124,14 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
         The file_prefix parameter will be prepended to each filename
 
         kappa is the value used for region segmentation.
+
+        evaluation_threshold is the proportion of the ground truth image that a prediction must 
+        match to be consideredd correct
+
+        modeltype determines what type the model that computes the edge weights will be
+            modeltype = 0 will use a sklearn.ensemble.GradientBoostingRegressor
+            modeltype = 1 will create a keras.models.Sequential neural network
     '''
-    #print("start validating the model")
     locations = store_locations("../data/atlas_complete.json")
     folds = create_folds(min_x, min_y, max_x, max_y)
 
@@ -112,21 +143,39 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
     model_filenames = []
     futures = []
 
+    # Check if all the model filenames you want exist. 
+    # If they do, then you can load them. Otherwise they must be regenerated
+    missing_model = False
     if load_models:
         for i in range(10):
-            filename = str(file_prefix) + "_" + str(i) + "_model.pkl"
-            model_filenames.append(filename)
-    else:
+            filename = str(file_prefix) + "_" + str(i) + "_model"
+            if modeltype == 0:
+                filename = filename + ".pkl"
+
+            if not os.path.exists(filename):
+                missing_model = True
+            else:
+                model_filenames.append(filename)
+
+
+    if not load_models or missing_model:
+   
         #Multithreading
         # For n_thread = 5, Run n_threads at once, and repeat twice for a total of 2 * n_thread = 10 folds
         for i in range(2):
             with concurrent.futures.ProcessPoolExecutor(max_workers=n_threads) as executor:
                 for t in range(n_threads * i, n_threads * (i + 1)):
-                    fut = executor.submit(build_and_evaluate_model_wrapper, (t, G.unique_edges_file_name, fold_boundaries, [t], file_prefix))
-                    futures.append(fut)
+                    
+                    filename = str(file_prefix) + "_" + str(t) + "_model"
+                    if modeltype == 0:
+                        filename = filename + ".pkl"
+
+                    if not load_models or (missing_model and not os.path.exists(filename)):
+                        fut = executor.submit(build_and_evaluate_model_wrapper, (t, G.unique_edges_file_name, fold_boundaries, [t], file_prefix, modeltype))
+                        futures.append(fut)
 
             #Collecting results
-            for t in range(n_threads * i, n_threads * (i + 1)):
+            for t in range(len(futures)):
                 fut = futures[t]
                 res = fut.result()
                 model_filenames.append(res)
@@ -138,7 +187,6 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
         pfile = open(model_filename, "rb")
         model = pickle.load(pfile)
         pfile.close()
-        print(model)
 
         model_id = int(model_filename.split("_")[1])
 
@@ -150,7 +198,7 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
             comp_assign = pickle.load(pfile)
             pfile.close()
         else:
-            if compute_edge_weights:
+            if compute_edge_weights or not os.path.exists(G.sorted_edges_file_name):
                 compute_edge_weights_multithread(G, ups, model, features, 5, file_prefix)
                 G.sort_edges()
 
@@ -167,7 +215,8 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
         regions, sizes = extract_regions(comp_assign)
         ground_truth = create_ground_truth(input_filename, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y,
                                            projects_to_remove=projects_to_remove, partial_canvas_boundaries=fold_boundaries[model_id])
-        num_correct_counter, num_assignments_made, precision, recall, region_assignments = eval_function( locations, regions, ups, ground_truth, threshold=0.3, draw=False)
+        num_correct_counter, num_assignments_made, precision, recall, region_assignments = eval_function(
+            locations, regions, ups, ground_truth, threshold=evaluation_threshold, draw=False)
 
         if metric == 'recall':
             metric_val = recall
@@ -179,11 +228,6 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
         metric_vals.append(metric_val)
         print(metric_val)
  
-
-    # max_id = metric_vals.index(max(metric_vals))
-    # pfile = open(str(max_id) + "_model.pkl", "rb")
-    # best_model = pickle.load(pfile)
-    # pfile.close()
 
     return metric_vals
 
