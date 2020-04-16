@@ -92,8 +92,7 @@ def build_and_evaluate_model_wrapper(params):
     return build_and_evaluate_model(ups, features, params[0], params[1], params[2], params[3], params[4], params[5])
 
 
-
-def validate_best_model(eval_function, ups, G, features, input_filename, projects_to_remove, metric, 
+def validate_best_model(eval_function, ups, G, features, input_filename, projects_to_remove, metric, ground_truth,
                             min_x=0, 
                             min_y=0, 
                             max_x=1002,
@@ -157,7 +156,6 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
             else:
                 model_filenames.append(filename)
 
-
     if not load_models or missing_model:
    
         #Multithreading
@@ -213,10 +211,11 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
     
             
         regions, sizes = extract_regions(comp_assign)
-        ground_truth = create_ground_truth(input_filename, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y,
-                                           projects_to_remove=projects_to_remove, partial_canvas_boundaries=fold_boundaries[model_id])
+        
         num_correct_counter, num_assignments_made, precision, recall, region_assignments = eval_function(
-            locations, regions, ups, ground_truth, threshold=evaluation_threshold, draw=False)
+            locations, regions, ups, ground_truth, threshold=evaluation_threshold,
+            min_x=fold_boundaries[model_id]["min_x"], max_x=fold_boundaries[model_id]["max_x"],
+            min_y=fold_boundaries[model_id]["min_y"], max_y=fold_boundaries[model_id]["max_y"])
 
         if metric == 'recall':
             metric_val = recall
@@ -233,7 +232,7 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
 
 
 
-def create_ground_truth(input_filename, min_time=0, max_time=sys.maxsize, min_x=0, max_x=1002, min_y=0, max_y=1002, projects_to_remove = [], partial_canvas_boundaries = None):
+def create_ground_truth(input_filename, min_time=0, max_time=sys.maxsize, min_x=0, max_x=1002, min_y=0, max_y=1002, projects_to_remove = []):
     '''
         Given the input file, create and return a dictionary of the ground truth for the
         pixel assignments.
@@ -243,12 +242,6 @@ def create_ground_truth(input_filename, min_time=0, max_time=sys.maxsize, min_x=
     line_number = 0
     ground_truth = dict()
     times = dict()
-    if partial_canvas_boundaries is not None:
-        # Update min_x, max_x, min_y, max_y to represent all the points within partial canvas
-        min_x = partial_canvas_boundaries["min_x"]
-        min_y = partial_canvas_boundaries["min_y"]
-        max_x = partial_canvas_boundaries["max_x"]
-        max_y = partial_canvas_boundaries["max_y"]
 
     with open(input_filename, 'r') as file_in:
 
@@ -302,7 +295,8 @@ def get_region_borders(region, updates):
         if y < min_y:
             min_y = y
 
-    return min_x, min_y, max_x, max_y
+    return {"min_x": min_x, "min_y": min_y, "max_x": max_x, "max_y": max_y}
+
 
 
 def get_rectangle_overlap_area(min_x1, max_x1, min_y1, max_y1, min_x2, max_x2, min_y2, max_y2):
@@ -341,7 +335,7 @@ def calc_intersection_over_union(region_colors, ground_truth):
     return iou
 
 
-def get_max_iou(locations, region, updates, ground_truth):
+def get_max_iou(locations, region, updates, ground_truth, region_borders):
     '''
         Given a region, check and return the maximum the iou with every project in the ground truth.
     '''
@@ -350,7 +344,10 @@ def get_max_iou(locations, region, updates, ground_truth):
     max_pic_id = None
     for pic_id in ground_truth:
         project = locations[pic_id]
-        min_x, min_y, max_x, max_y = get_region_borders(region, updates)
+        min_x = region_borders["min_x"]
+        max_x = region_borders["max_x"]
+        min_y = region_borders["min_y"]
+        max_y = region_borders["max_y"]
 
         # only check this region with the pic_id if the bounding boxes overlap by at least the threshold
         overlap_area = get_rectangle_overlap_area(min_x, max_x, min_y, max_y, project.get_left(
@@ -380,17 +377,18 @@ def get_max_iou(locations, region, updates, ground_truth):
     return max_iou, max_pic_id
 
 
-# Given a set_of_updates and the ground truth data, evaluate the precision and recall
-# ground_truth is a dictionary of the following format:
-'''
-    "image_id" : [ list of update IDS belonging to this image ]
-'''
-
-# Each update tuple is assumed to be this format:
-# (updateID, time, user, x, y, color, pic_id)
 
 
-def evaluate(locations, regions, updates, ground_truth, threshold=0.50, draw=False):
+def evaluate(locations, regions, updates, ground_truth, threshold=0.50, min_x=0,max_x=1002,min_y=0,max_y=1002):
+
+    # Given a set_of_updates and the ground truth data, evaluate the precision and recall
+    # ground_truth is a dictionary of the following format:
+    
+    #   "image_id" : [ list of update IDS belonging to this image ]
+
+    # Each update tuple is assumed to be this format:
+    # (updateID, time, user, x, y, color, pic_id)
+    # min_x, max_x, min_y, max_y determines the area of the canvas that you are evaluating over
 
     if len(regions) == 0 or len(ground_truth) == 0:
         return 0, 0, 0, 0, dict()
@@ -403,7 +401,13 @@ def evaluate(locations, regions, updates, ground_truth, threshold=0.50, draw=Fal
     num_correct_counter = 0
 
     for region in regions:
-        iou, pic_id = get_max_iou(locations, region, updates, ground_truth)
+        region_borders = get_region_borders(region, updates)
+
+        # check that the region is within the area we are evaluating
+        if region_borders["min_x"] < min_x or region_borders["max_x"] > max_x or region_borders["min_y"] < min_y or region_borders["max_y"] > max_y:
+            continue
+
+        iou, pic_id = get_max_iou(locations, region, updates, ground_truth, region_borders)
 
         if iou > threshold:
             if region_assignments.get(pic_id) is None:
@@ -416,20 +420,6 @@ def evaluate(locations, regions, updates, ground_truth, threshold=0.50, draw=Fal
                 if iou > region_assignments[pic_id][0]:
                     region_assignments[pic_id] = (iou, region)
 
-            # if draw:
-            #     print(pic_id)
-            #     name = locations[pic_id].get_name().replace('/', '')
-            #     draw_canvas_region(
-            #         updates, region, "../drawings/" + name + "_region.png")
-            #     draw_canvas_region(
-            #         updates, ground_truth[pic_id], "../drawings/" + name + "_truth.png", True)
-#     if draw:
-#         for pic_id in region_assignments:
-#             print(pic_id)
-#             region = region_assignments[pic_id][1]
-#             name = locations[pic_id].get_name().replace('/', '')
-#             draw_canvas_region(updates, region, "../drawings/" + name + "_region.png")
-#             draw_canvas_region(updates, ground_truth[pic_id], "../drawings/" + name + "_truth.png", True)
 
     precision = num_correct_counter / num_assignments_made
 
