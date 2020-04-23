@@ -771,12 +771,12 @@ def build_feat_label_data(unique_edges_file_name, ups, features, pixel=False, tr
             lb = r[2]
             type_edge = int(r[3])
 
-            #updates.append([ts, user, x, y, color, proj, pixel, pixel_color])
             x_u = ups[u][2]
             y_u = ups[u][3]
             x_v = ups[v][2]
             y_v = ups[v][3]
-        
+
+           
             if type_edge > 0 and (train_x_y is None or ((x_u,y_u) in train_x_y and (x_v,y_v) in train_x_y)):
                 
                 if fold_boundaries is not None:
@@ -851,9 +851,12 @@ def build_feat_label_data(unique_edges_file_name, ups, features, pixel=False, tr
     
     return A, b
 
-def compute_weight(edge_buffer, ups, m, features):
+def compute_weight(edge_buffer, ups, m, features, scalerX= None, scalerY = None):
     '''
         Computes weight of edge (upi,upj) based on several features.
+
+        scalerX and scalerY are filenames for saved standard scalers to scale the input and output of m
+        If either is none, then no scaling will occur
     '''
     feat_values = np.zeros((len(edge_buffer), len(features)))
     
@@ -863,26 +866,41 @@ def compute_weight(edge_buffer, ups, m, features):
 
         for f in range(len(features)):
             feat_values[e][f] = features[f]['func'](u, v, ups, features[f]['data'])
-        
-    return m.predict(feat_values)
+    
+    # Check if you need to scale the values
+    results = None
+    if scalerX == None or not os.path.exists(scalerX):
+        results = m.predict(feat_values)
+    else:  
+        sc = pickle.load(open(scalerX, 'rb'))
+        results = m.predict(sc.transform(feat_values))
+
+    if scalerY == None or not os.path.exists(scalerY):
+        return results 
+    else:
+        sc = pickle.load(open(scalerY, 'rb'))
+        results = sc.inverse_transform(results)
+
+        return results
+
 
 def compute_weight_wrapper(param):
     '''
         Simple wrapper for the compute_weight function
     '''    
-    file_prefix = param[3]
+    file_prefix = param[5]
     #Loading pickled features
     #Each thread has its own copy, which is quite inneficient
     pfile = open(file_prefix + 'features.pkl', 'rb')
     features = pickle.load(pfile)
     pfile.close()
 
-    res = compute_weight(param[0], param[1], param[2], features)
+    res = compute_weight(param[0], param[1], param[2], features, param[3], param[4])
 
     return res
 
 
-def compute_weight_multithread(edge_buffer, ups, model, n_threads, file_prefix = ""):
+def compute_weight_multithread(edge_buffer, ups, model, n_threads, file_prefix = "", scalerX = None, scalerY = None):
     '''
         Computes weights for set of edges in edge_buffer using multithreading
     '''
@@ -904,7 +922,7 @@ def compute_weight_multithread(edge_buffer, ups, model, n_threads, file_prefix =
     #Multithreading
     with concurrent.futures.ProcessPoolExecutor(max_workers=n_threads) as executor:
         for t in range(n_threads):
-            fut = executor.submit(compute_weight_wrapper, (edge_parts[t], ups, model, file_prefix))
+            fut = executor.submit(compute_weight_wrapper, (edge_parts[t], ups, model, scalerX, scalerY, file_prefix))
             futures.append(fut)
 
     #Collecting results
@@ -917,7 +935,7 @@ def compute_weight_multithread(edge_buffer, ups, model, n_threads, file_prefix =
 
     return W
 
-def compute_edge_weights_multithread(G, ups, model, features, n_threads, file_prefix = ""):
+def compute_edge_weights_multithread(G, ups, model, features, n_threads, file_prefix = "", scalerX = None, scalerY = None):
     '''
         Computes weights for edges in the graph using multithreading.
     '''
@@ -947,7 +965,7 @@ def compute_edge_weights_multithread(G, ups, model, features, n_threads, file_pr
 
                 if len(edge_buffer) >= G.buffer_size:
 
-                    W = compute_weight_multithread(edge_buffer, ups, model, n_threads, file_prefix)
+                    W = compute_weight_multithread(edge_buffer, ups, model, n_threads, file_prefix, scalerX, scalerY)
 
                     for e in range(len(edge_buffer)):
                         u = edge_buffer[e][0]

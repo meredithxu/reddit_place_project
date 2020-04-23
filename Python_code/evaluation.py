@@ -6,22 +6,25 @@ from reddit import *
 from segmentation import *
 from nonlinear_regressor import *
 from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.preprocessing import StandardScaler
 import pickle
 import concurrent.futures
+import time
 
 
 def create_folds(min_x=0, min_y=0, max_x=1002, max_y=1002):
     # Partition the data into folds
 
-    num_folds = 10
+    num_folds = 4
+    num_yincrements = num_folds // 2
     folds = []
     for i in range(num_folds):
         folds.append([])
 
     halfway_x = int((min_x + max_x) // 2)
-    y_increment = int((max_y - min_y) // 5)
+    y_increment = int((max_y - min_y) // num_yincrements)
 
-    for j in range(5):
+    for j in range(num_yincrements):
 
         for x in range(min_x, halfway_x):
             for y in range((j * y_increment) + min_y, ((j + 1) * y_increment) + min_y):
@@ -29,7 +32,7 @@ def create_folds(min_x=0, min_y=0, max_x=1002, max_y=1002):
 
         for x in range(halfway_x, max_x):
             for y in range((j * y_increment) + min_y, ((j + 1) * y_increment) + min_y):
-                folds[5 + j].append((x, y))
+                folds[num_yincrements + j].append((x, y))
 
     return folds
 
@@ -41,7 +44,7 @@ def build_and_evaluate_model(ups,
                                 fold_boundaries, 
                                 excluded_folds, 
                                 file_prefix = "", 
-                                modeltype = 0):
+                                modeltype = 0,):
     '''
         Build a model and return the evaluation metric
 
@@ -50,10 +53,18 @@ def build_and_evaluate_model(ups,
             modeltype = 1 will create a keras.models.Sequential neural network
     '''
     locations = store_locations("../data/atlas_complete.json")
+    scaler_A = StandardScaler()
+    scaler_b = StandardScaler()
     
     # All edges that belong to the validation fold need to be excluded
     A, b = build_feat_label_data(unique_edges_file_name, ups, features,
                                  fold_boundaries=fold_boundaries, excluded_folds=excluded_folds)
+    
+    scaler_A.fit(A)
+    b = np.matrix(b).T
+    scaler_b.fit(b)
+    A = scaler_A.transform(A)
+    b = (scaler_b.transform(b)).T[0]
 
     model = None
     if modeltype == 0:
@@ -76,16 +87,30 @@ def build_and_evaluate_model(ups,
     else:
         model.save(model_name)
 
+    filenameA = str(pid) + 'std_scaler_A.pkl'
+    filenameb = str(pid) + 'std_scaler_b.pkl'
+
+    if os.path.exists(filenameA):
+        os.remove(filenameA)
+
+    pickle.dump(scaler_A, open(filenameA, 'wb'))
+
+    if os.path.exists(filenameb):
+        os.remove(filenameb)
+    
+    pickle.dump(scaler_b, open(filenameb, 'wb'))
+
     return model_name
 
 def build_and_evaluate_model_wrapper(params):
     #Loading pickled features
     #Each thread has its own copy if passed as a param, which is quite inneficient
-    pfile = open('features.pkl', 'rb')
+    file_prefix = params[4]
+    pfile = open(file_prefix + 'features.pkl', 'rb')
     features = pickle.load(pfile)
     pfile.close()
 
-    pfile = open('ups.pkl', 'rb')
+    pfile = open(file_prefix + 'ups.pkl', 'rb')
     ups = pickle.load(pfile)
     pfile.close()
 
@@ -98,7 +123,6 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
                             max_x=1002,
                             max_y=1002, 
                             kappa = 0.25, 
-                            n_threads = 5, 
                             load_models = False, 
                             load_segmentation = False, 
                             compute_edge_weights = True, 
@@ -133,7 +157,7 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
     '''
     locations = store_locations("../data/atlas_complete.json")
     folds = create_folds(min_x, min_y, max_x, max_y)
-
+    
     # List of dictionaries containing min_x, max_x, min_y, max_y for each fold
     fold_boundaries = []
     for fold in folds:
@@ -157,37 +181,50 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
                 model_filenames.append(filename)
 
     if not load_models or missing_model:
-   
-        #Multithreading
-        # For n_thread = 5, Run n_threads at once, and repeat twice for a total of 2 * n_thread = 10 folds
-        for i in range(2):
-            with concurrent.futures.ProcessPoolExecutor(max_workers=n_threads) as executor:
-                for t in range(n_threads * i, n_threads * (i + 1)):
-                    
-                    filename = str(file_prefix) + "_" + str(t) + "_model"
-                    if modeltype == 0:
-                        filename = filename + ".pkl"
+        n_threads = 4
+        t_model = time.time()
 
-                    if not load_models or (missing_model and not os.path.exists(filename)):
-                        fut = executor.submit(build_and_evaluate_model_wrapper, (t, G.unique_edges_file_name, fold_boundaries, [t], file_prefix, modeltype))
-                        futures.append(fut)
+        #Multithreading: 4 fold cross validation
+      
+        with concurrent.futures.ProcessPoolExecutor(max_workers=n_threads) as executor:
+            for t in range(0, n_threads):
+                filename = str(file_prefix) + "_" + str(t) + "_model"
+                if modeltype == 0:
+                    filename = filename + ".pkl"
 
-            #Collecting results
-            for t in range(len(futures)):
-                fut = futures[t]
-                res = fut.result()
-                model_filenames.append(res)
+                if not load_models or (missing_model and not os.path.exists(filename)):
+                    fut = executor.submit(build_and_evaluate_model_wrapper, (t, G.unique_edges_file_name, fold_boundaries, 
+                                                                                [t], file_prefix, modeltype))
+                    futures.append(fut)
+
+        #Collecting results
+        for t in range(len(futures)):
+            fut = futures[t]
+            res = fut.result()
+            model_filenames.append(res)
+        
+        print("time to create models= ", time.time()-t_model, " seconds") 
 
     # Create a file to write the evaluation results
 
     metric_vals = []
     for model_filename in model_filenames:
+        print(model_filename)
         pfile = open(model_filename, "rb")
         model = pickle.load(pfile)
         pfile.close()
 
         model_id = int(model_filename.split("_")[1])
 
+
+        # When predicting the edge weights, check if 
+        filenameA= str(model_id) + 'std_scaler_A.pkl'
+        if not os.path.exists(filenameA):
+            filenameA = None
+
+        filenameb = str(model_id) + 'std_scaler_b.pkl'
+        if not os.path.exists(filenameb):
+            filenameb = None
 
         comp_assign = None
         comp_assign_filename = "component_assignment_" + model_filename
@@ -197,10 +234,15 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
             pfile.close()
         else:
             if compute_edge_weights or not os.path.exists(G.sorted_edges_file_name):
-                compute_edge_weights_multithread(G, ups, model, features, 5, file_prefix)
+                t = time.time()
+                compute_edge_weights_multithread(G, ups, model, features, 5, file_prefix, filenameA, filenameb)
                 G.sort_edges()
+                print("time to calculate and sort edge weigths= ", time.time()-t, " seconds")
 
+            t = time.time()
             comp_assign = region_segmentation(G, ups, kappa)
+            print("time to segment regions= ", time.time()-t, " seconds")
+
             
             if os.path.exists(comp_assign_filename):
                 os.remove(comp_assign_filename)
@@ -208,14 +250,18 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
             pfile = open(comp_assign_filename, 'wb')
             pickle.dump(comp_assign, pfile)
             pfile.close()
+        
+        print()
     
             
         regions, sizes = extract_regions(comp_assign)
-        
+        t = time.time()
         num_correct_counter, num_assignments_made, precision, recall, region_assignments = eval_function(
             locations, regions, ups, ground_truth, threshold=evaluation_threshold,
             min_x=fold_boundaries[model_id]["min_x"], max_x=fold_boundaries[model_id]["max_x"],
             min_y=fold_boundaries[model_id]["min_y"], max_y=fold_boundaries[model_id]["max_y"])
+        print("time to evaluate regions= ", time.time()-t, " seconds")
+
 
         if metric == 'recall':
             metric_val = recall
@@ -428,49 +474,49 @@ def evaluate(locations, regions, updates, ground_truth, threshold=0.50, min_x=0,
     return num_correct_counter, num_assignments_made, precision, recall, region_assignments
 
 
-def compute_overlap_area(locations, region, updates, ground_truth):
-    '''
-        Given a region, return a dictionary that lists the percent overlap that region has with every ground truth
-    '''
-    truncated_ground_truth = dict()
-    for pic_id in ground_truth:
+# def compute_overlap_area(locations, region, updates, ground_truth):
+#     '''
+#         Given a region, return a dictionary that lists the percent overlap that region has with every ground truth
+#     '''
+#     truncated_ground_truth = dict()
+#     for pic_id in ground_truth:
 
-        if pic_id not in truncated_ground_truth:
-            truncated_ground_truth[pic_id] = set()
+#         if pic_id not in truncated_ground_truth:
+#             truncated_ground_truth[pic_id] = set()
         
-        for datapoint in ground_truth[pic_id]:
-            # datapoint is a tuple: (ts, user, x, y, color)
-            truncated_ground_truth[pic_id].add( (datapoint[2], datapoint[3])  )
+#         for datapoint in ground_truth[pic_id]:
+#             # datapoint is a tuple: (ts, user, x, y, color)
+#             truncated_ground_truth[pic_id].add( (datapoint[2], datapoint[3])  )
     
 
-    regions_xy = []
+#     regions_xy = []
  
-    for idx in region:
-        update = updates[idx]
-        x = int(update[2])
-        y = int(update[3])
+#     for idx in region:
+#         update = updates[idx]
+#         x = int(update[2])
+#         y = int(update[3])
 
-        regions_xy.append((x, y))
+#         regions_xy.append((x, y))
         
     
-    overlap_statistics = dict()
-    for pic_id in truncated_ground_truth:
+#     overlap_statistics = dict()
+#     for pic_id in truncated_ground_truth:
 
-        project = locations[pic_id]
+#         project = locations[pic_id]
 
-        min_x, min_y, max_x, max_y = get_region_borders(region, updates)
-        overlap_area = get_rectangle_overlap_area(min_x, max_x, min_y, max_y, project.get_left(
-        ), project.get_right(), project.get_bottom(), project.get_top())
+#         min_x, min_y, max_x, max_y = get_region_borders(region, updates)
+#         overlap_area = get_rectangle_overlap_area(min_x, max_x, min_y, max_y, project.get_left(
+#         ), project.get_right(), project.get_bottom(), project.get_top())
 
-        if overlap_area > 0:
+#         if overlap_area > 0:
 
-            total_num_pixels = len(region)
-            overlap_pixels = len( regions_xy.intersect(truncated_ground_truth[ pic_id ]) )
+#             total_num_pixels = len(region)
+#             overlap_pixels = len( regions_xy.intersect(truncated_ground_truth[ pic_id ]) )
 
-            overlap_statistics[pic_id] = float(overlap_pixels) / total_num_pixels
-        else:
-            overlap_statistics[pic_id] = 0
+#             overlap_statistics[pic_id] = float(overlap_pixels) / total_num_pixels
+#         else:
+#             overlap_statistics[pic_id] = 0
 
 
-    return overlap_statistics
+#     return overlap_statistics
 
