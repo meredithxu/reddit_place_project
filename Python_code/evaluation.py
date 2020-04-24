@@ -125,7 +125,6 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
                             kappa = 0.25, 
                             load_models = False, 
                             load_segmentation = False, 
-                            compute_edge_weights = True, 
                             file_prefix = "",
                             evaluation_threshold = 0.5,
                             modeltype = 0):
@@ -138,11 +137,6 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
         if load_models is true, then load the models from pickle files
         else create the models using the multithreading
         Each model is saved to a pickle file after creation. 
-
-        If load_segmentation is true, then load the segmentation from a file. Otherwise compute it.
-        If compute_edge_weights is true, then the edge weights for the graph will be computed based
-        on the model and features.
-        Otherwise, the graph will use its existing G.sorted_edge_weights.
     
         The file_prefix parameter will be prepended to each filename
 
@@ -233,17 +227,15 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
             comp_assign = pickle.load(pfile)
             pfile.close()
         else:
-            if compute_edge_weights or not os.path.exists(G.sorted_edges_file_name):
-                t = time.time()
-                compute_edge_weights_multithread(G, ups, model, features, 5, file_prefix, filenameA, filenameb)
-                G.sort_edges()
-                print("time to calculate and sort edge weigths= ", time.time()-t, " seconds")
+            t = time.time()
+            compute_edge_weights_multithread(G, ups, model, features, 5, file_prefix, filenameA, filenameb)
+            G.sort_edges()
+            print("time to calculate and sort edge weigths= ", time.time()-t, " seconds")
 
             t = time.time()
             comp_assign = region_segmentation(G, ups, kappa)
             print("time to segment regions= ", time.time()-t, " seconds")
 
-            
             if os.path.exists(comp_assign_filename):
                 os.remove(comp_assign_filename)
 
@@ -460,18 +452,15 @@ def evaluate(locations, regions, updates, ground_truth, threshold=0.50, min_x=0,
                 # If this artwork has not been predicted yet, then add 1 to num_correct_counter and set the iou for
                 # this image
                 num_correct_counter += 1
-                region_assignments[pic_id] = (iou, region)
-            else:
-                # Else if there is a higher iou, update the value within region_assignments
-                if iou > region_assignments[pic_id][0]:
-                    region_assignments[pic_id] = (iou, region)
+                region_assignments[pic_id] = True
+           
 
 
     precision = num_correct_counter / num_assignments_made
 
     recall = num_correct_counter / ground_truth_size
 
-    return num_correct_counter, num_assignments_made, precision, recall, region_assignments
+    return num_correct_counter, num_assignments_made, precision, recall
 
 
 # def compute_overlap_area(locations, region, updates, ground_truth):
