@@ -979,7 +979,7 @@ def compute_edge_weights_multithread(G, ups, model, features, n_threads, file_pr
                     edge_buffer = []
 
     if len(edge_buffer) > 0:
-        W = compute_weight_multithread(edge_buffer, ups, model, n_threads, file_prefix)
+        W = compute_weight_multithread(edge_buffer, ups, model, n_threads, file_prefix, scalerX, scalerY)
 
         for e in range(len(edge_buffer)):
             u = edge_buffer[e][0]
@@ -992,7 +992,8 @@ def compute_edge_weights_multithread(G, ups, model, features, n_threads, file_pr
 
     G.flush_weights()
 
-def compute_edge_weights(G, ups, model, features):
+
+def compute_edge_weights(G, ups, model, features, scalerX=None, scalerY=None):
     '''
         Computes weights for edges in the graph.
     '''
@@ -1015,7 +1016,7 @@ def compute_edge_weights(G, ups, model, features):
                 
                 if len(edge_buffer) >= G.buffer_size:
                     
-                    W = compute_weight(edge_buffer, ups, model, features)
+                    W = compute_weight(edge_buffer, ups, model, features, scalerX, scalerY)
                     
                     for e in range(len(edge_buffer)):
                         u = edge_buffer[e][0]
@@ -1029,7 +1030,7 @@ def compute_edge_weights(G, ups, model, features):
                     edge_buffer = []
                 
     if len(edge_buffer) > 0:
-        W = compute_weight(edge_buffer, ups, model, features)
+        W = compute_weight(edge_buffer, ups, model, features, scalerX, scalerY)
                     
         for e in range(len(edge_buffer)):
             u = edge_buffer[e][0]
