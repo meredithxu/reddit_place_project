@@ -877,6 +877,10 @@ def compute_weight(edge_buffer, ups, m, features, scalerX= None, scalerY = None)
         results = m.predict(sc.transform(feat_values))
 
     print("result shape:", results.shape)
+    # Ensure that the dimensions of result is a 2d array
+    if results.ndim == 1:
+        results = results.reshape(-1,1)
+
     if scalerY == None or not os.path.exists(scalerY):
         return results 
     else:
