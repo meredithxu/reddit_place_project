@@ -867,6 +867,7 @@ def compute_weight(edge_buffer, ups, m, features, scalerX= None, scalerY = None)
         for f in range(len(features)):
             feat_values[e][f] = features[f]['func'](u, v, ups, features[f]['data'])
     
+    print("Feature shape:", feat_values.shape)
     # Check if you need to scale the values
     results = None
     if scalerX == None or not os.path.exists(scalerX):
@@ -874,6 +875,11 @@ def compute_weight(edge_buffer, ups, m, features, scalerX= None, scalerY = None)
     else:  
         sc = pickle.load(open(scalerX, 'rb'))
         results = m.predict(sc.transform(feat_values))
+
+    print("result shape:", results.shape)
+    # Ensure that the dimensions of result is a 2d array
+    if results.ndim == 1:
+        results = results.reshape(-1,1)
 
     if scalerY == None or not os.path.exists(scalerY):
         return results 

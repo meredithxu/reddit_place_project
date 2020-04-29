@@ -248,7 +248,7 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
             
         regions, sizes = extract_regions(comp_assign)
         t = time.time()
-        num_correct_counter, num_assignments_made, precision, recall, region_assignments = eval_function(
+        num_correct_counter, num_assignments_made, precision, recall = eval_function(
             locations, regions, ups, ground_truth, threshold=evaluation_threshold,
             min_x=fold_boundaries[model_id]["min_x"], max_x=fold_boundaries[model_id]["max_x"],
             min_y=fold_boundaries[model_id]["min_y"], max_y=fold_boundaries[model_id]["max_y"])
