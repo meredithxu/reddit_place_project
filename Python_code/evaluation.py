@@ -37,10 +37,9 @@ def create_folds(min_x=0, min_y=0, max_x=1002, max_y=1002):
     return folds
 
 
-def build_and_evaluate_model(ups, 
+def build_and_evaluate_model(G, ups, 
                                 features, 
                                 pid, 
-                                unique_edges_file_name, 
                                 fold_boundaries, 
                                 excluded_folds, 
                                 file_prefix = "", 
@@ -57,7 +56,7 @@ def build_and_evaluate_model(ups,
     scaler_b = StandardScaler()
     
     # All edges that belong to the validation fold need to be excluded
-    A, b = build_feat_label_data(unique_edges_file_name, ups, features,
+    A, b = build_feat_label_data(G, ups, features,
                                  fold_boundaries=fold_boundaries, excluded_folds=excluded_folds)
     
     scaler_A.fit(A)
@@ -105,7 +104,11 @@ def build_and_evaluate_model(ups,
 def build_and_evaluate_model_wrapper(params):
     #Loading pickled features
     #Each thread has its own copy if passed as a param, which is quite inneficient
-    file_prefix = params[4]
+    file_prefix = params[3]
+    pfile = open(file_prefix + 'graph.pkl', 'rb')
+    G = pickle.load(pfile)
+    pfile.close()
+
     pfile = open(file_prefix + 'features.pkl', 'rb')
     features = pickle.load(pfile)
     pfile.close()
@@ -114,7 +117,7 @@ def build_and_evaluate_model_wrapper(params):
     ups = pickle.load(pfile)
     pfile.close()
 
-    return build_and_evaluate_model(ups, features, params[0], params[1], params[2], params[3], params[4], params[5])
+    return build_and_evaluate_model(G, ups, features, params[0], params[1], params[2], params[3], params[4])
 
 
 def validate_best_model(eval_function, ups, G, features, input_filename, projects_to_remove, metric, ground_truth,
@@ -187,7 +190,7 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
                     filename = filename + ".pkl"
 
                 if not load_models or (missing_model and not os.path.exists(filename)):
-                    fut = executor.submit(build_and_evaluate_model_wrapper, (t, G.unique_edges_file_name, fold_boundaries, 
+                    fut = executor.submit(build_and_evaluate_model_wrapper, (t, fold_boundaries, 
                                                                                 [t], file_prefix, modeltype))
                     futures.append(fut)
 
@@ -228,7 +231,7 @@ def validate_best_model(eval_function, ups, G, features, input_filename, project
             pfile.close()
         else:
             t = time.time()
-            compute_edge_weights_multithread(G, ups, model, features, 5, file_prefix, filenameA, filenameb)
+            compute_edge_weights_multithread(G, ups, model, features, file_prefix + 'features.pkl', 5, filenameA, filenameb)
             G.sort_edges()
             print("time to calculate and sort edge weigths= ", time.time()-t, " seconds")
 
@@ -461,51 +464,4 @@ def evaluate(locations, regions, updates, ground_truth, threshold=0.50, min_x=0,
     recall = num_correct_counter / ground_truth_size
 
     return num_correct_counter, num_assignments_made, precision, recall
-
-
-# def compute_overlap_area(locations, region, updates, ground_truth):
-#     '''
-#         Given a region, return a dictionary that lists the percent overlap that region has with every ground truth
-#     '''
-#     truncated_ground_truth = dict()
-#     for pic_id in ground_truth:
-
-#         if pic_id not in truncated_ground_truth:
-#             truncated_ground_truth[pic_id] = set()
-        
-#         for datapoint in ground_truth[pic_id]:
-#             # datapoint is a tuple: (ts, user, x, y, color)
-#             truncated_ground_truth[pic_id].add( (datapoint[2], datapoint[3])  )
-    
-
-#     regions_xy = []
- 
-#     for idx in region:
-#         update = updates[idx]
-#         x = int(update[2])
-#         y = int(update[3])
-
-#         regions_xy.append((x, y))
-        
-    
-#     overlap_statistics = dict()
-#     for pic_id in truncated_ground_truth:
-
-#         project = locations[pic_id]
-
-#         min_x, min_y, max_x, max_y = get_region_borders(region, updates)
-#         overlap_area = get_rectangle_overlap_area(min_x, max_x, min_y, max_y, project.get_left(
-#         ), project.get_right(), project.get_bottom(), project.get_top())
-
-#         if overlap_area > 0:
-
-#             total_num_pixels = len(region)
-#             overlap_pixels = len( regions_xy.intersect(truncated_ground_truth[ pic_id ]) )
-
-#             overlap_statistics[pic_id] = float(overlap_pixels) / total_num_pixels
-#         else:
-#             overlap_statistics[pic_id] = 0
-
-
-#     return overlap_statistics
 
