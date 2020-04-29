@@ -14,6 +14,11 @@ from sklearn.manifold import TSNE
 signet_path = "../../signet/signet.py"
 
 def generate_user_signed_net(usr_rel_same_color, usr_rel_diff_color, user_index, output_file_name):
+    '''
+        Writes signed network edges based on user updates to an output file. usr_rel_same_color 
+        has the positive relations and usr_rel_diff_color are negative relations. Edges are added 
+        according to the majority of the relations between pairs of users.
+    '''
     with open(output_file_name+".txt", 'w') as file_out:
         writer = csv.writer(file_out, delimiter = "\t")
 
@@ -37,6 +42,10 @@ def generate_user_signed_net(usr_rel_same_color, usr_rel_diff_color, user_index,
             writer.writerow([ID])
 
 def generate_nx_signed_net(usr_rel_same_color, usr_rel_diff_color, user_index, filter_users=None):
+    '''
+        Generates signed networkx network based on user relations.
+        See details in function generate_user_signed_net.
+    '''
     G = nx.Graph()
     reverse_index = {}
 
@@ -64,6 +73,8 @@ def generate_nx_signed_net(usr_rel_same_color, usr_rel_diff_color, user_index, f
 
 def balance(G):
     '''
+        Computes balance statistics for the network.
+        Based on:
         https://stackoverflow.com/questions/52582733/how-to-find-balanced-triangles-and-unbalanced-triangles-of-a-signed-network-us
     '''
     ppp = 0    #balanced
@@ -119,22 +130,27 @@ def balance(G):
 
     return ppp, ppm, pmm, mmm
 
-def sign_embedding(usr_rel_same_color, usr_rel_diff_color, user_index, output_file_name, ndim=2,
-    threshold=5, total_samples=100, n_negatives=5, n_iterations=10):
+def sign_embedding(usr_rel_same_color, usr_rel_diff_color, user_index, output_file_name, 
+    ndim=2, threshold=5, total_samples=100, n_negatives=5, 
+    n_iterations=10, compute_balance=False):
+    '''
+        Computes signed embedding based on user relations using the algorithm from: 
+        SIGNet: Scalable Embeddings for Signed Networks, code from: 
+        https://github.com/raihan2108/signet
+    '''
     generate_user_signed_net(usr_rel_same_color, usr_rel_diff_color, user_index, output_file_name)
-    cmd = "python "+signet_path+" -l signet_id.txt -i signet.txt -o "+output_file_name+ " -d "+str(ndim)+" -t "+str(threshold)+" -s "+str(total_samples)
-    print(cmd)
-    # print(os.system("ls ../.."))
-    # print(os.system("ls ../../signet"))
+    print("python "+signet_path+" -l signet_id.txt -i signet.txt -o "+output_file_name+ " -d "+str(ndim)+" -t "+str(threshold)+" -s "+str(total_samples))
 
-    proc = subprocess.Popen(['ls', '../..'], stdout=subprocess.PIPE)
+    os.system("python "+signet_path+" -l signet_id.txt -i signet.txt -o "+output_file_name+ " -d "+str(ndim)+" -t "+str(threshold)+" -s "+str(total_samples))
 
-    tmp = proc.stdout.read()
-    print(tmp.decode())
-
-    os.system(cmd)
+    if compute_balance is True:
+        sign_G = generate_nx_signed_net(usr_rel_same_color, usr_rel_diff_color, user_index)
+        res = balance(sign_G)
 
 def read_embedding(input_file_name, user_index, ndim=2):
+    '''
+        Reads embedding results from input file as a matrix.
+    '''
     emb = np.zeros((len(user_index), ndim))
 
     with open(input_file_name,'r') as file:
@@ -149,6 +165,10 @@ def read_embedding(input_file_name, user_index, ndim=2):
     return emb
 
 def avg_distances_pos_neg(emb):
+    '''
+        Computes the avg Eucliden distance between
+        users with positive and negative edges.
+    '''
     n_pos = 0
     n_neg = 0
     sum_pos = 0.
@@ -186,6 +206,9 @@ def avg_distances_pos_neg(emb):
     return avg_pos, avg_neg
 
 def top_users_updates(ups, k):
+    '''
+        Extracts top k users with the most updates.
+    '''
     updates_per_user = {}
     top_users = {}
     
@@ -208,6 +231,9 @@ def top_users_updates(ups, k):
     return top_users
 
 def users_in_projects(ups, projs):
+    '''
+        Extracts users in a set of projects.
+    '''
     users = {}
     n_ups = 0
     for u in range(len(ups)):
