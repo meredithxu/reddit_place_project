@@ -645,6 +645,36 @@ def extract_canvas_updates_region(updates, min_x=0, max_x=1000, min_y=0, max_y=1
 
     return data_color_code
 
+	
+def get_fold_border(fold):
+    '''
+        Return a dictionary with the min_x, max_x, min_y, and max_y values of the fold
+    '''
+    min_x = sys.maxsize
+    min_y = sys.maxsize
+    max_x = 0
+    max_y = 0
+    for coordinate in fold:
+        x = coordinate[0]
+        y = coordinate[1]
+        if x < min_x:
+            min_x = x
+        if x > max_x:
+            max_x = x
+        if y < min_y:
+            min_y = y
+        if y > max_y:
+            max_y = y
+    return {"min_x": min_x, "min_y": min_y, "max_x": max_x, "max_y": max_y}
+    
+def is_within_fold(x, y, boundary):
+    '''
+        Return true if (x,y) is within fold boundary
+        Return false otherwise
+    '''
+    if x <= boundary["max_x"] and x >= boundary["min_x"] and y <= boundary["max_y"] and y >= boundary["min_y"]:
+        return True
+    return False
 
 def build_feat_label_data(G, ups, features, pixel=False, train_x_y=None, fold_boundaries=None, excluded_folds=None):
     '''
