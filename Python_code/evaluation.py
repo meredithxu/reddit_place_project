@@ -4,12 +4,272 @@ import csv
 import numpy as np
 from reddit import *
 from segmentation import *
+from features_ups import *
+from features_super import *
 from nonlinear_regressor import *
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.preprocessing import StandardScaler
 import pickle
 import concurrent.futures
 import time
+
+def create_regions(iterations, 
+                    modeltype,
+                    num_threads,
+                    input_file,
+                    projects_to_remove,
+                    dist_threshold, 
+                    ndim, 
+                    feature_threshold, 
+                    total_samples, 
+                    n_negatives, 
+                    n_iterations,
+                    min_x = 0, 
+                    max_x = 1002, 
+                    min_y = 0, 
+                    max_y = 1002,
+                   
+                    ):
+    '''
+       Take all of the updates within input_file and cluster them into regions
+       PARAMS:
+            - modeltype indicated which type of model will be used to cluster the
+            updates.
+            modeltype = 'gboost' will use a GradientBoostingRegressor
+            modeltype = 'nn' will use a neural network
+    '''
+
+    # Verify that the user selected a valid modeltype
+    valid_modeltypes = set(['nn', 'gboost'])
+    if not modeltype in valid_modeltypes:
+        return None
+
+    graph_filename = 'graph.pkl'
+    ups_filename = 'ups.pkl'
+    features_filename = 'features.pkl'
+
+    # Create a graph of the updates where each update is one node
+    # First check if this graph has already been created. If so, load the pickle
+    # Else create it and save to a pickle
+    G_ups = None
+    ups = None
+    if not (os.path.exists(graph_filename) and os.path.exists(ups_filename)):
+        t = time.time()
+        G_ups, ups = create_graph(input_file, projects_to_remove, dist_threshold, min_x, max_x, min_y, max_y)
+
+        print("num edges = ", G_ups.n_edges)
+
+        pfile = open(graph_filename, 'wb')
+        pickle.dump(G_ups, pfile)
+        pfile.close()
+
+        pfile = open(ups_filename, 'wb')
+        pickle.dump(ups, pfile)
+        pfile.close()
+
+        print("time to create G_ups= ", time.time()-t, " seconds")
+    else:
+        pfile = open(graph_filename, 'rb')
+        G_ups = pickle.load(pfile)
+        pfile.close()
+
+        pfile = open(ups_filename, 'rb')
+        ups = pickle.load(pfile)
+        pfile.close()
+    
+    # Create features for the updates graph
+    # First check if this features dictionary has already been created. If so, load the pickle
+    # Else create it and save to a pickle
+    features = None
+    if not os.path.exists(features_filename):
+        features = create_features(G_ups, ups, ndim, feature_threshold,
+                                   total_samples, n_negatives, n_iterations, features_filename)
+    else:
+        pfile = open(features_filename, 'rb')
+        features = pickle.load(pfile)
+        pfile.close()  
+    
+
+    model0_filename = 'model0.pkl'
+    model = None
+    if not os.path.exist(model0_filename):
+        #Creating feature matrix A and vector of labels b
+        #for learning an edge weight model
+        t = time.time()
+
+        A,b = build_feat_label_data(G_ups, ups, features)
+
+        print(A.shape)
+        print(b.sum() / b.shape[0])
+
+        print("time to build feat label data = ", time.time()-t, " seconds")
+
+        t = time.time()
+        if modeltype == 'gboost':
+            model = GradientBoostingRegressor(random_state=1, n_estimators=25).fit(A, b)
+        else:
+            model = createNonlinearRegressionNeuralNet(A, b)
+        pfile = open(model0_filename, 'wb')
+        pickle.dump(model, pfile)
+        pfile.close()
+
+        print("time to fit model= ", time.time()-t, " seconds")
+    else:
+        pfile = open(model0_filename, 'rb')
+        model = pickle.load(pfile)
+        pfile.close()
+                
+    regions_filename = 'up_regions.pkl'
+    regions = None
+    sizes = None
+    int_weights = None
+    if not os.path.exists(regions_filename):
+        #Computing edge weights using multithreading
+        #and sorting the edges in increasing order.
+        #Not every edge in the the unique_edges file
+        #will be included in the new file.
+
+        t = time.time()
+
+        compute_edge_weights_multithread(G_ups, ups, model, features, features_filename, num_threads)
+        G_ups.sort_edges()
+
+        print("time to compute edge weights= ", time.time()-t, " seconds")
+
+        #Performing region segmentation on the update graph
+
+        t = time.time()
+
+        comp_assign, int_weights = region_segmentation(G_ups, ups, 0.8)
+        regions, sizes, int_weights = extract_regions(comp_assign, int_weights)
+
+        pfile = open(regions_filename, 'wb')
+        pickle.dump([regions, sizes, int_weights], pfile)
+        pfile.close()
+
+        print("num regions = ", len(regions), " max size region = ", np.max(sizes))
+
+        print("time to create regions= ", time.time()-t, " seconds")
+    else:
+        pfile = open(regions_filename, 'rb')
+        ups_region_info = pickle.load(pfile)
+        pfile.close()
+
+        regions = ups_region_info[0]
+        sizes = ups_region_info[1]
+        int_weights = ups_region_info[2]
+     
+    durations = compute_update_durations(ups)
+    for i in range(1, iterations):
+        reg_graph_filename = "reg_graph" + str(i) + ".pkl"
+        reg_features_filename = "features_regions" + str(i) + ".pkl"
+        reg_model_filename = 'model_regions' + str(i) + '.pkl'
+        super_regions_filename = 'super_regions' + str(i) + '.pkl'
+
+        G_reg = None
+        region_features = None
+
+        if not os.path.exists(reg_graph_filename):
+            t = time.time()
+
+            G_reg = build_region_graph(G_ups, regions, ups, .5, projects_to_remove)
+
+            pfile = open(reg_graph_filename, 'wb')
+            pickle.dump(G_reg, pfile)
+            pfile.close()
+
+            print("time to create reg_graph",i,"= ", time.time()-t, " seconds")
+        else:
+            pfile = open(reg_graph_filename, 'rb')
+            G_reg = pickle.load(pfile)
+            pfile.close()
+
+        if not os.path.exists(reg_features_filename):
+            region_features = create_superfeatures(
+                regions, int_weights, ups, features, durations, reg_features_filename)
+            
+        else:
+            #Reading existing feature data
+
+            pfile = open(reg_features_filename, 'rb')
+            region_features = pickle.load(pfile)
+            pfile.close()
+        
+        model = None
+
+        if not os.path.exists(reg_model_filename):
+            t = time.time()
+
+            A, b = build_feat_label_regions(G_reg, ups, region_features)
+
+            print(A.shape)
+            print(b.sum() / b.shape[0])
+
+            print("time to build feat label data",i,"= ", time.time()-t, " seconds")
+
+            #Learning region edge weight model using gradient boosting regression
+            #and saving model.
+
+            t = time.time()
+
+            if modeltype == 'gboost':
+                model = GradientBoostingRegressor(random_state=1, n_estimators=25).fit(A, b)
+            else:
+                model = createNonlinearRegressionNeuralNet(A, b)
+
+            pfile = open(reg_model_filename, 'wb')
+            pickle.dump(model, pfile)
+            pfile.close()
+
+            print("time to fit model", i, "= ", time.time()-t, " seconds")
+        else:
+            #Reading an existing region edge weight model
+
+            pfile = open(reg_model_filename, 'rb')
+            model = pickle.load(pfile)
+            pfile.close()
+
+        
+        #Computing region edge weights using multithreading
+        #and sorting the edges in increasing order.
+        super_region_sizes = None
+        super_region_assign = None
+        
+        if not os.path.exists(super_regions_filename):
+            t = time.time()
+
+            compute_edge_weights_multithread(G_reg, ups, model, region_features, 'features_regions.pkl', num_threads)
+            G_reg.sort_edges()
+
+            print("time compute edge weights",i,"= ", time.time()-t, " seconds")
+
+            #Performing segmentation on the region graph
+            t = time.time()
+
+            comp_assign_reg, int_weights_reg = region_segmentation(G_reg, regions, 0.55)
+            reg_regions, reg_sizes, int_weights = extract_regions(comp_assign_reg, int_weights_reg)
+            regions, super_region_sizes, super_region_assign = extract_super_region_info(reg_regions, regions)
+
+            pfile = open(super_regions_filename, 'wb')
+            pickle.dump([regions, super_region_sizes, super_region_assign, int_weights], pfile)
+            pfile.close()
+
+            print("time to create super regions",i,"= ", time.time()-t, " seconds")
+        else:
+            pfile = open(super_regions_filename, 'rb')
+            super_region_info = pickle.load(pfile)
+            pfile.close()
+
+            regions = super_region_info[0]
+            super_region_sizes = super_region_info[1]
+            super_region_assign = super_region_info[2]
+            int_weights = super_region_info[3]
+        
+        print("num regions = ", len(regions), " max size region = ", np.max(super_region_sizes))
+
+
+    return regions
+    
 
 
 def create_folds(min_x=0, min_y=0, max_x=1002, max_y=1002):
