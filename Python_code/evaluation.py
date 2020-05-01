@@ -37,6 +37,13 @@ def create_regions(iterations,
             updates.
             modeltype = 'gboost' will use a GradientBoostingRegressor
             modeltype = 'nn' will use a neural network
+
+
+
+        NOTE: This function saves several pkl files in order to avoid
+        recomputation in case of failure.
+        However, this also means that these pkl files must be manually deleted
+        if you want to regenerate the data structures.
     '''
 
     # Verify that the user selected a valid modeltype
@@ -92,7 +99,7 @@ def create_regions(iterations,
 
     model0_filename = 'model0.pkl'
     model = None
-    if not os.path.exist(model0_filename):
+    if not os.path.exists(model0_filename):
         #Creating feature matrix A and vector of labels b
         #for learning an edge weight model
         t = time.time()
