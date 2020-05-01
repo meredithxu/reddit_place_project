@@ -174,7 +174,6 @@ def create_regions(iterations,
         super_regions_filename = 'super_regions' + str(i) + '.pkl'
 
         G_reg = None
-        region_features = None
 
         if not os.path.exists(reg_graph_filename):
             t = time.time()
@@ -191,13 +190,13 @@ def create_regions(iterations,
             G_reg = pickle.load(pfile)
             pfile.close()
 
+        region_features = None
         if not os.path.exists(reg_features_filename):
             region_features = create_superfeatures(
                 regions, int_weights, ups, features, durations, reg_features_filename)
             
         else:
             #Reading existing feature data
-
             pfile = open(reg_features_filename, 'rb')
             region_features = pickle.load(pfile)
             pfile.close()

@@ -1182,23 +1182,23 @@ def region_label(region, ups, projects_to_remove, pixel=False):
 
     return max_proj, max_count / len(region)
 
-def build_region_graph(G, regions, ups, label_threshold, projects_to_remove):
+def build_region_graph(G, regions, ups, label_threshold, projects_to_remove, name='reg'):
     '''
         Builds graph of adjacent regions
     '''
     comp_assign = []
-    
+
     for u in ups:
         comp_assign.append(0)
-      
+
     region_labels = []
-    
+    n_labelled = 0
     for r in range(len(regions)):
         for u in regions[r]:
             comp_assign[u] = r
-            
+
         lb, ratio = region_label(regions[r], ups, projects_to_remove)
-        
+
         #If region membership is above threshold
         #assign region to project
         if ratio >= label_threshold:
@@ -1208,44 +1208,45 @@ def build_region_graph(G, regions, ups, label_threshold, projects_to_remove):
             region_labels.append(0)
 
     print("#labelled regions = ", n_labelled)
-    print("#unlabelled regions = ", len(regions)-n_labelled)        
+    print("#unlabelled regions = ", len(regions)-n_labelled)
 
-    G_reg = MyGraph('reg')
+    G_reg = MyGraph(name)
     G_reg.clear()
-    
+
     with open(G.unique_edges_file_name, 'r') as file_in:
         reader = csv.reader(file_in)
-    
+
         for r in reader:
             u = int(r[0])
             v = int(r[1])
             lb = r[2]
             type_edge = int(r[3])
-            
+
             reg_u = comp_assign[u]
             reg_v = comp_assign[v]
-            
+
             if reg_u != reg_v and type_edge > 0:
                 G_reg.add_edge(reg_u, reg_v, 0, 1)
-                
+
     G_reg.flush_edges()
     G_reg.remove_repeated_edges()
 
     true_edges = 0
     false_edges = 0
     unlabelled_edges = 0
+    
     with open(G_reg.unique_edges_file_name, 'r') as file_in:
         reader = csv.reader(file_in)
-    
+
         for r in reader:
             reg_u = int(r[0])
             reg_v = int(r[1])
             lb = r[2]
             type_edge = int(r[3])
-            
-            lb_u = region_labels[reg_u]         
-            lb_v = region_labels[reg_v]    
-            
+
+            lb_u = region_labels[reg_u]
+            lb_v = region_labels[reg_v]
+
             #add_edge(self, node1, node2, label, type_edge)
             if lb_u > 0 or lb_v > 0:
                 if lb_u == lb_v:
@@ -1257,15 +1258,16 @@ def build_region_graph(G, regions, ups, label_threshold, projects_to_remove):
             else:
                 G_reg.add_edge(reg_u, reg_v, 2, 1)
                 unlabelled_edges = unlabelled_edges + 1
-    
+
     G_reg.flush_edges()
     G_reg.remove_repeated_edges()
 
     print("#true edges = ", true_edges)
     print("#false edges = ", false_edges)
     print("#unlabelled edges = ", unlabelled_edges)
-    
+
     return G_reg
+
 
 def compute_user_vector_regions(regions, user_vec, user_index, ups):
 	'''
@@ -1456,7 +1458,7 @@ def build_feat_label_regions(G, ups, features):
                     else:
                         b[i] = float(1.)
 
-                    i = i + 1
+                i = i + 1
     return A, b
 
 def compute_region_weight(u, v, m, features):
