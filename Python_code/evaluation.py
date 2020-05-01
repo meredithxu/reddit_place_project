@@ -269,7 +269,7 @@ def create_regions(iterations,
         if not os.path.exists(super_regions_filename):
             t = time.time()
 
-            compute_edge_weights_multithread(G_reg, ups, model, region_features, 'features_regions.pkl', num_threads)
+            compute_edge_weights_multithread(G_reg, ups, model, region_features, reg_features_filename, num_threads)
             G_reg.sort_edges()
 
             print("time compute edge weights",i,"= ", time.time()-t, " seconds")
