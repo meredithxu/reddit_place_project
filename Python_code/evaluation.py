@@ -28,7 +28,7 @@ def create_regions(iterations,
                     max_x = 1002, 
                     min_y = 0, 
                     max_y = 1002,
-                   
+                    delete_pkl_files = False
                     ):
     '''
        Take all of the updates within input_file and cluster them into regions
@@ -37,6 +37,10 @@ def create_regions(iterations,
             updates.
             modeltype = 'gboost' will use a GradientBoostingRegressor
             modeltype = 'nn' will use a neural network
+        
+            - delete_pkl_files: boolean
+                If true, then all the saved pickle files will be deleted and regenerated
+                else the pickles will be loaded whenever possible
 
 
 
@@ -54,6 +58,20 @@ def create_regions(iterations,
     graph_filename = 'graph.pkl'
     ups_filename = 'ups.pkl'
     features_filename = 'features.pkl'
+    model0_filename = 'model0.pkl'
+    regions_filename = 'up_regions.pkl'
+
+    if delete_pkl_files:
+        if os.path.exists(graph_filename):
+            os.remove(graph_filename)
+        if os.path.exists(ups_filename):
+            os.remove(ups_filename)
+        if os.path.exists(features_filename):
+            os.remove(features_filename)
+        if os.path.exists(model0_filename):
+            os.remove(model0_filename)
+        if os.path.exists(regions_filename):
+            os.remove(regions_filename)
 
     # Create a graph of the updates where each update is one node
     # First check if this graph has already been created. If so, load the pickle
@@ -96,8 +114,6 @@ def create_regions(iterations,
         features = pickle.load(pfile)
         pfile.close()  
     
-
-    model0_filename = 'model0.pkl'
     model = None
     if not os.path.exists(model0_filename):
         #Creating feature matrix A and vector of labels b
@@ -126,7 +142,6 @@ def create_regions(iterations,
         model = pickle.load(pfile)
         pfile.close()
                 
-    regions_filename = 'up_regions.pkl'
     regions = None
     sizes = None
     int_weights = None
@@ -172,6 +187,16 @@ def create_regions(iterations,
         reg_features_filename = "features_regions" + str(i) + ".pkl"
         reg_model_filename = 'model_regions' + str(i) + '.pkl'
         super_regions_filename = 'super_regions' + str(i) + '.pkl'
+
+        if delete_pkl_files:
+            if os.path.exists(reg_graph_filename):
+                os.remove(reg_graph_filename)
+            if os.path.exists(reg_features_filename):
+                os.remove(reg_features_filename)
+            if os.path.exists(reg_model_filename):
+                os.remove(reg_model_filename)
+            if os.path.exists(super_regions_filename):
+                os.remove(super_regions_filename)
 
         G_reg = None
 
