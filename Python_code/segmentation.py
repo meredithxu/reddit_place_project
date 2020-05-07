@@ -183,7 +183,7 @@ def check_overlap(dur_i, dur_j):
         return True
     
 def create_graph(input_file_name, projects_to_remove, space_threshold=1, 
-                 min_x=0, max_x=1002, min_y=0, max_y=1002, file_prefix="ups"):
+                 min_x=0, max_x=1002, min_y=0, max_y=1002, file_prefix="ups", excluded_folds = []):
     '''
         Creates networkx graph of updates within a given frame (or time window) and associated 
         list of update info (timestamp, user, color etc.).
@@ -192,8 +192,17 @@ def create_graph(input_file_name, projects_to_remove, space_threshold=1,
         Updates are connected spatially based on the space threshold and temporally based
         on the time threshold (in seconds).
         min_x,max_x,min_y,max_y define the area of the canvas for which updates will be considered.
+        The graph is divided up into 10 folds. Do not consider updates that are within the folds
+        within exluded_folds
         It returns a networx graph for which node IDs are indexes for the list of updates.
     '''
+    folds = create_folds(num_folds = 10, min_x = min_x, min_y = min_y, max_x = max_x, max_y = max_y)
+
+    fold_boundaries = []
+    # List of dictionaries containing min_x, max_x, min_y, max_y for each fold
+    for fold in folds:
+        fold_boundaries.append(get_fold_border(fold))
+
     updates = []
     
     xy_index = []
@@ -250,6 +259,19 @@ def create_graph(input_file_name, projects_to_remove, space_threshold=1,
             for xj in range(xi-space_threshold, xi+space_threshold+1):
                 for yj in range(yi-space_threshold, yi+space_threshold+1):
                     if xj >= 0 and yj >= 0 and xj < 1001 and yj < 1001:
+                        
+                        # Check whether you need to exclude this edge
+                        if len(excluded_folds) > 0:
+                            # Check which fold this edge belongs to. If it belongs to an excluded fold, then skip it
+                            skip_edge = False
+                            for f_idx in excluded_folds:
+                                if is_within_fold(xi, yi, fold_boundaries[f_idx]) or is_within_fold(xj, yj, fold_boundaries[f_idx]):
+                                    skip_edge = True
+
+                            if skip_edge:
+                                continue
+
+
                         if xi == xj and yi == yj:
                             #Each update is connected at least to the previous update
                             #of the same pixel.
@@ -646,6 +668,30 @@ def extract_canvas_updates_region(updates, min_x=0, max_x=1000, min_y=0, max_y=1
 
     return data_color_code
 
+
+def create_folds(num_folds = 10, min_x=0, min_y=0, max_x=1002, max_y=1002):
+    # Partition the data into folds
+
+    num_yincrements = num_folds // 2
+    folds = []
+    for i in range(num_folds):
+        folds.append([])
+
+    halfway_x = int((min_x + max_x) // 2)
+    y_increment = int((max_y - min_y) // num_yincrements)
+
+    for j in range(num_yincrements):
+
+        for x in range(min_x, halfway_x):
+            for y in range((j * y_increment) + min_y, ((j + 1) * y_increment) + min_y):
+                folds[j].append((x, y))
+
+        for x in range(halfway_x, max_x):
+            for y in range((j * y_increment) + min_y, ((j + 1) * y_increment) + min_y):
+                folds[num_yincrements + j].append((x, y))
+
+    return folds
+
 	
 def get_fold_border(fold):
     '''
@@ -886,6 +932,7 @@ def compute_edge_weights_multithread(G, ups, model, features, features_file_name
 
 	Notice that edges with negative weight (one update remove another)
 	are not included in the output file!
+
     '''
 
     if os.path.exists(G.edges_file_name):
@@ -907,6 +954,7 @@ def compute_edge_weights_multithread(G, ups, model, features, features_file_name
             v = r[1]
             lb = r[2]
             type_edge = int(r[3])
+
 
             if type_edge > 0:
                 edge_buffer.append((int(u), int(v), lb, type_edge))
