@@ -1,6 +1,6 @@
 import math
 import operator
-import segmentation
+from segmentation import *
 
 def compute_updates_per_project(ups, pixel):
     '''
