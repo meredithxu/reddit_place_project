@@ -192,16 +192,9 @@ def create_graph(input_file_name, projects_to_remove, space_threshold=1,
         Updates are connected spatially based on the space threshold and temporally based
         on the time threshold (in seconds).
         min_x,max_x,min_y,max_y define the area of the canvas for which updates will be considered.
-        The graph is divided up into 10 folds. Do not consider updates that are within the folds
-        within exluded_folds
+
         It returns a networx graph for which node IDs are indexes for the list of updates.
     '''
-    folds = create_folds(num_folds = 10, min_x = min_x, min_y = min_y, max_x = max_x, max_y = max_y)
-
-    fold_boundaries = []
-    # List of dictionaries containing min_x, max_x, min_y, max_y for each fold
-    for fold in folds:
-        fold_boundaries.append(get_fold_border(fold))
 
     updates = []
     
