@@ -183,7 +183,7 @@ def check_overlap(dur_i, dur_j):
         return True
     
 def create_graph(input_file_name, projects_to_remove, space_threshold=1, 
-                 min_x=0, max_x=1002, min_y=0, max_y=1002, file_prefix="ups", excluded_folds = []):
+                 min_x=0, max_x=1002, min_y=0, max_y=1002, file_prefix="ups"):
     '''
         Creates networkx graph of updates within a given frame (or time window) and associated 
         list of update info (timestamp, user, color etc.).
@@ -259,18 +259,6 @@ def create_graph(input_file_name, projects_to_remove, space_threshold=1,
             for xj in range(xi-space_threshold, xi+space_threshold+1):
                 for yj in range(yi-space_threshold, yi+space_threshold+1):
                     if xj >= 0 and yj >= 0 and xj < 1001 and yj < 1001:
-                        
-                        # Check whether you need to exclude this edge
-                        if len(excluded_folds) > 0:
-                            # Check which fold this edge belongs to. If it belongs to an excluded fold, then skip it
-                            skip_edge = False
-                            for f_idx in excluded_folds:
-                                if is_within_fold(xi, yi, fold_boundaries[f_idx]) or is_within_fold(xj, yj, fold_boundaries[f_idx]):
-                                    skip_edge = True
-
-                            if skip_edge:
-                                continue
-
 
                         if xi == xj and yi == yj:
                             #Each update is connected at least to the previous update
@@ -336,8 +324,58 @@ def create_graph(input_file_name, projects_to_remove, space_threshold=1,
     G.flush_edges()
     G.remove_repeated_edges()
        
-    return G, updates    
+    return G, updates   
 
+def split_updates(ups, excluded_folds, fold_boundaries):
+    '''
+        folds_boundaries is a list of dictionaries, where each dictionary contains the following keys:
+            min_x, max_x, min_y, max_y
+        Excluded folds is a list of indexes for which folds should be excluded
+        All updates that fall within excluded_folds are going into ups_eval
+        All other updates will go into ups_training
+    '''
+    ups_training = []
+    ups_eval = []
+
+    # A set of all the project IDs that are being excluded
+    excluded_projects = set() 
+
+    for update in ups:
+        ts = update[0]
+        user = update[1]
+        x = update[2]
+        y = update[3]
+        color = update[4]
+        proj = update[5]
+        pixel = update[6]
+        pixel_color = update[7]
+
+        if proj != 0:
+            for f_idx in excluded_folds:
+                if is_within_fold(x, y, fold_boundaries[f_idx]):
+                    excluded_projects.add(proj)
+                    break
+    
+    for update in ups:
+        ts = update[0]
+        user = update[1]
+        x = update[2]
+        y = update[3]
+        color = update[4]
+        proj = update[5]
+        pixel = update[6]
+        pixel_color = update[7]
+        
+        if proj in excluded_projects:
+            ups_eval.append([ts, user, x, y, color, proj, pixel, pixel_color])
+            ups_training.append([ts, user, x, y, color, 0, 0, 0])
+        else:
+            ups_eval.append([ts, user, x, y, color, 0, 0, 0])
+            ups_training.append([ts, user, x, y, color, proj, pixel, pixel_color])
+       
+        return ups_training, ups_eval
+    
+            
 def compute_user_relations(G, ups, rel_type=1):
     '''
         Computes two matrices based on user neighborhood activity. 

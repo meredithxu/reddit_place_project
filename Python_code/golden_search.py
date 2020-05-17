@@ -191,7 +191,8 @@ def gss(f, args, a, b, tol=1e-5):
     else:
         return (c, b)
     
-def superv_reg_segm_ups(G, ups, min_kappa, max_kappa, updates_proj, metric, threshold=0.5, pixel=False, tol=1e-2):
+
+def superv_reg_segm_ups(G, ups, ups_eval, min_kappa, max_kappa, updates_proj, updates_proj_eval, metric, threshold=0.5, pixel=False, tol=1e-2):
     '''
         Returns segmentation that maximizes the metric by performing a 1-d search
         over kappa.
@@ -201,11 +202,12 @@ def superv_reg_segm_ups(G, ups, min_kappa, max_kappa, updates_proj, metric, thre
     comp_assign, int_weights = region_segmentation(G_ups, ups, kappa)
     regions, sizes, int_weights = extract_regions(comp_assign, int_weights)
     
-    print("score = ", metric(regions, updates_proj, ups, threshold, pixel))
+    print("score = ", metric(regions, updates_proj_eval, ups_eval, threshold, pixel))
     
     return regions, sizes, int_weights
 
-def superv_reg_segm_reg(G, ups, regions, min_kappa, max_kappa, updates_proj, metric, threshold=0.5, pixel=False, tol=1e-2):
+
+def superv_reg_segm_reg(G, ups, ups_eval, regions, min_kappa, max_kappa, updates_proj, metric, updates_proj_eval, threshold=0.5, pixel=False, tol=1e-2):
     '''
         Returns segmentation that maximizes the metric by performing a 1-d search
         over kappa.
@@ -217,7 +219,7 @@ def superv_reg_segm_reg(G, ups, regions, min_kappa, max_kappa, updates_proj, met
     reg_regions, reg_sizes, super_int_weights = extract_regions(comp_assign_reg, int_weights_reg)
     super_regions, super_region_sizes, super_region_assign = extract_super_region_info(reg_regions, regions)
     
-    print("score = ", metric(super_regions, updates_proj, ups, threshold, pixel))
+    print("score = ", metric(super_regions, updates_proj_eval, ups_eval, threshold, pixel))
     
     return super_regions, super_region_sizes, super_int_weights
 
