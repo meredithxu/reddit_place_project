@@ -245,4 +245,6 @@ def create_superfeatures(regions, int_weights, ups, features, durations, filenam
     pickle.dump(region_features, pfile)
     pfile.close()
 
-    print("time = ", time.time()-t, " seconds")
+    print("time to create region features= ", time.time()-t, " seconds")
+
+    return region_features
