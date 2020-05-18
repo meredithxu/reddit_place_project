@@ -222,7 +222,7 @@ def create_regions(iterations,
 
         # comp_assign, int_weights = region_segmentation(G_ups, ups, 0.8)
         # regions, sizes, int_weights = extract_regions(comp_assign, int_weights)
-        regions, sizes, int_weights = superv_reg_segm_ups(G_ups, ups, ups_eval, regions, 0., 2., updates_proj, updates_proj_eval, recall)
+        regions, sizes, int_weights = superv_reg_segm_ups(G_ups, ups, ups_eval, 0., 2., updates_proj, updates_proj_eval, recall)
 
         pfile = open(regions_filename, 'wb')
         pickle.dump([regions, sizes, int_weights], pfile)
