@@ -34,6 +34,7 @@ def max_intersection_over_union(region, updates_proj, ups, pixel):
         account only final updates as true positives, otherwise
         also takes into account updates with the same color as those.
     '''
+  
     inters = {}
     size_final = 0
     
@@ -119,7 +120,7 @@ def f_gss_ups(kappa, args):
     regions, sizes, int_weights = extract_regions(comp_assign, int_weights)
     
     m = metric(regions, updates_proj, ups, threshold, pixel)
-    
+
     print("kappa = ", kappa, " score = ", m)
     
     return -m
@@ -131,7 +132,7 @@ def f_gss_region(kappa, args):
         of kappa and returns the score using the given metric.
     '''
     G, ups, regions, updates_proj, threshold, pixel, metric = args
-    
+     
     comp_assign_reg, int_weights_reg = region_segmentation(G, regions, kappa)
     reg_regions, reg_sizes, super_int_weights = extract_regions(comp_assign_reg, int_weights_reg)
     super_regions, super_region_sizes, super_region_assign = extract_super_region_info(reg_regions, regions)
@@ -198,7 +199,7 @@ def superv_reg_segm_ups(G, ups, min_kappa, max_kappa, updates_proj, metric, thre
     '''
     kappa_range = gss(f_gss_ups, [G, ups, updates_proj, threshold, False, recall], 0., 1.)
     kappa = (kappa_range[0]+kappa_range[1]) / 2
-    comp_assign, int_weights = region_segmentation(G_ups, ups, kappa)
+    comp_assign, int_weights = region_segmentation(G, ups, kappa)
     regions, sizes, int_weights = extract_regions(comp_assign, int_weights)
     
     print("score = ", metric(regions, updates_proj, ups, threshold, pixel))
