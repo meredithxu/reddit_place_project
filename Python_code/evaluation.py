@@ -31,19 +31,37 @@ def create_regions(iterations,
                     min_y = 0, 
                     max_y = 1002,
                     excluded_folds = [],
-                    use_scalar = True,
+                    use_scalar = False,
                     delete_pkl_files = False,
                     ):
     '''
        Take all of the updates within input_file and cluster them into regions
        PARAMS:
+            - iterations must be >=1 and it determines how many times the super regions will run after
+            clustering the updates into their initial regions
+
             - modeltype indicated which type of model will be used to cluster the
             updates.
             modeltype = 'gboost' will use a GradientBoostingRegressor
             modeltype = 'nn' will use a neural network
             This will only affect the first iteration. All subsequent iterations will use GradientBoostingRegressor
 
+            num_threads is the number of threads that this function will use for computing weights
+
+            - These following parameters are for feature creation
+            -------
+            dist_threshold, 
+            ndim, 
+            feature_threshold, 
+            total_samples, 
+            n_negatives, 
+            n_iterations,
+            ---------
+
+            min_x, max_x, min_y, max_y determine what size of the canvas you evaluate over 
+
             - excluded_folds = list of values ranging between 0 to 9 inclusive
+            The reason we only allow between 0 to 9 is because this function is hardcoded to create 10 folds
             The folds indicted in this list will not be used to train models or generate regions
 
             - use_scalar will use a StandardScalar to scale the data that is being used to train the first iteration model
@@ -92,6 +110,8 @@ def create_regions(iterations,
 
     fold_boundaries = None
     if len(excluded_folds) > 0:
+        # create_folds only works with certain number of folds
+        # It needs to be an even number
         folds = create_folds(num_folds = 10, min_x = min_x, min_y = min_y, max_x = max_x, max_y = max_y)
 
         fold_boundaries = []
@@ -220,8 +240,6 @@ def create_regions(iterations,
 
         t = time.time()
 
-        # comp_assign, int_weights = region_segmentation(G_ups, ups, 0.8)
-        # regions, sizes, int_weights = extract_regions(comp_assign, int_weights)
         regions, sizes, int_weights = superv_reg_segm_ups(G_ups, ups, ups_eval, 0., 2., updates_proj, updates_proj_eval, recall)
 
         pfile = open(regions_filename, 'wb')
@@ -332,9 +350,6 @@ def create_regions(iterations,
             #Performing segmentation on the region graph
             t = time.time()
 
-            # comp_assign_reg, int_weights_reg = region_segmentation(G_reg, regions, 0.55)
-            # reg_regions, reg_sizes, int_weights = extract_regions(comp_assign_reg, int_weights_reg)
-            # regions, super_region_sizes, super_region_assign = extract_super_region_info(reg_regions, regions)
             regions, super_region_sizes, int_weights = superv_reg_segm_reg(G_reg, ups, ups_eval, regions, 0., 2., updates_proj, updates_proj_eval, recall)
 
             pfile = open(super_regions_filename, 'wb')
