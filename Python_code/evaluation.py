@@ -48,9 +48,10 @@ def create_regions(iterations,
 
             num_threads is the number of threads that this function will use for computing weights
 
+            dist_threshold is the threshold between points in the canvas to draw an edge in the graph G_ups
+
             - These following parameters are for feature creation
             -------
-            dist_threshold, 
             ndim, 
             feature_threshold, 
             total_samples, 
