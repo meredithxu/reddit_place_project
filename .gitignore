@@ -1,4 +1,5 @@
 *.gpickle
+*.pkl
 *.npy
 *.png
 *.svg
