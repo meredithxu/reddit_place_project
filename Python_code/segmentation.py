@@ -332,7 +332,7 @@ def split_updates(ups, excluded_folds, fold_boundaries):
 
     # A set of all the project IDs that are being excluded
     excluded_projects = set() 
-
+    
     for update in ups:
         ts = update[0]
         user = update[1]
@@ -342,13 +342,13 @@ def split_updates(ups, excluded_folds, fold_boundaries):
         proj = update[5]
         pixel = update[6]
         pixel_color = update[7]
-
-        if proj != 0:
+    
+        if proj != '0':
             for f_idx in excluded_folds:
                 if is_within_fold(x, y, fold_boundaries[f_idx]):
                     excluded_projects.add(proj)
                     break
-    
+
     for update in ups:
         ts = update[0]
         user = update[1]
@@ -365,8 +365,8 @@ def split_updates(ups, excluded_folds, fold_boundaries):
         else:
             ups_eval.append([ts, user, x, y, color, 0, 0, 0])
             ups_training.append([ts, user, x, y, color, proj, pixel, pixel_color])
-       
-        return ups_training, ups_eval
+        
+    return ups_training, ups_eval
     
             
 def compute_user_relations(G, ups, rel_type=1):
