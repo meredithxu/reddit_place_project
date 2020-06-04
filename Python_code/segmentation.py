@@ -754,6 +754,169 @@ def is_within_fold(x, y, boundary):
         return True
     return False
 
+
+def compute_feature_values(edge_buffer, ups, features):
+    '''
+    '''
+    feat_values = np.zeros((len(edge_buffer), len(features)))
+
+    for e in range(len(edge_buffer)):
+        u = edge_buffer[e][0]
+        v = edge_buffer[e][1]
+
+        for f in range(len(features)):
+            feat_values[e][f] = features[f]['func'](
+                u, v, ups, features[f]['data'])
+
+    return feat_values
+
+
+def compute_feature_values_wrapper(param):
+    '''
+        Simple wrapper for the compute_weight function
+    '''
+    #Loading pickled features
+    #Each thread has its own copy, which is quite inneficient
+    pfile = open(param[2], 'rb')
+    features = pickle.load(pfile)
+    pfile.close()
+
+    return compute_feature_values(param[0], param[1], features)
+
+
+def build_feat_label_data_multithread(G, ups, features, features_file_name, n_threads, fold_boundaries=None, excluded_folds=None):
+    '''
+        Extracts feature values and labels for edges in the graph.
+
+        features is a dictionary with both functions that compute
+        feature values and the data structures they require, used as:
+
+        A[i,f] = features[f]['func'](u, v, ups, features[f]['data'])
+
+
+        fold_boundaries is a list of dictionaries of the following format:
+        {"min_x": min_x, "min_y": min_y, "max_x": max_x, "max_y": max_y}
+        Each dictionary indicates the boundary of a fold.
+
+        excluded_folds is a list of indexes indicating which corresponding folds within fold_boundaries
+        are to be excluded from the feature and label data.
+        If fold_boundaries is None, then all folds are included.
+
+        Returns matrix A with feature values and vector b with labels
+    '''
+
+    #Pickling feature data to be shared with threads
+    if not os.path.exists(features_file_name):
+        pfile = open(features_file_name, 'wb')
+        pickle.dump(features, pfile)
+        pfile.close()
+
+    edge_buffer = []
+    b = []
+    A = []
+    n = 0
+    with open(G.unique_edges_file_name, 'r') as file_in:
+        reader = csv.reader(file_in)
+
+        for r in reader:
+            u = int(r[0])
+            v = int(r[1])
+            lb = int(r[2])
+            type_edge = int(r[3])
+
+            if fold_boundaries is not None:
+                x_u = ups[u][2]
+                y_u = ups[u][3]
+                x_v = ups[v][2]
+                y_v = ups[v][3]
+
+                # Check which fold this edge belongs to. If it belongs to an excluded fold, then skip it
+                skip_edge = False
+                for f_idx in excluded_folds:
+                    if is_within_fold(x_u, y_u, fold_boundaries[f_idx]) or is_within_fold(x_v, y_v, fold_boundaries[f_idx]):
+                        skip_edge = True
+
+                if skip_edge:
+                    continue
+
+            if lb in [0, 1]:
+                edge_buffer.append((u, v))
+
+                if lb == 1:
+                    b.append(0.)
+                else:
+                    b.append(1.)
+
+            if len(edge_buffer) > G.buffer_size:
+                edges_per_thread = int(len(edge_buffer) / n_threads)
+                edge_parts = []
+
+                for t in range(n_threads):
+                    edge_parts.append([])
+
+                e = 0
+                for e in range(len(edge_buffer)):
+                    t = e % n_threads
+                    edge_parts[t].append(edge_buffer[e])
+                    A.append(None)
+
+                futures = []
+
+                #Multithreading
+                with concurrent.futures.ProcessPoolExecutor(max_workers=n_threads) as executor:
+                    for t in range(n_threads):
+                        fut = executor.submit(
+                            compute_feature_values_wrapper, (edge_parts[t], ups, features_file_name))
+                        futures.append(fut)
+
+                #Collecting results
+                for t in range(n_threads):
+                    fut = futures[t]
+                    res = fut.result()
+                    for e in range(res.shape[0]):
+                        A[n+e*n_threads+t] = res[e]
+
+                n = n + len(edge_buffer)
+
+                edge_buffer = []
+
+    if len(edge_buffer) > 0:
+        edges_per_thread = int(len(edge_buffer) / n_threads)
+        edge_parts = []
+
+        for t in range(n_threads):
+            edge_parts.append([])
+
+        e = 0
+        for e in range(len(edge_buffer)):
+            t = e % n_threads
+            edge_parts[t].append(edge_buffer[e])
+            A.append(None)
+
+        futures = []
+
+        #Multithreading
+        with concurrent.futures.ProcessPoolExecutor(max_workers=n_threads) as executor:
+            for t in range(n_threads):
+                fut = executor.submit(
+                    compute_feature_values_wrapper, (edge_parts[t], ups, features_file_name))
+                futures.append(fut)
+
+        #Collecting results
+        for t in range(n_threads):
+            fut = futures[t]
+            res = fut.result()
+            for e in range(res.shape[0]):
+                A[n+e*n_threads+t] = res[e]
+
+        edge_buffer = []
+
+    b = np.array(b)
+    A = np.array(A)
+
+    return A, b
+
+
 def build_feat_label_data(G, ups, features, pixel=False, train_x_y=None, fold_boundaries=None, excluded_folds=None):
     '''
         Extracts feature values and labels for edges in the graph.

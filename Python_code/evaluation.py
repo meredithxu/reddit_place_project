@@ -33,6 +33,7 @@ def create_regions(iterations,
                     excluded_folds = [],
                     use_scalar = False,
                     delete_pkl_files = False,
+                    multithreadAB = False,   # TEMPORARY PARAMETER
                     ):
     '''
        Take all of the updates within input_file and cluster them into regions
@@ -175,7 +176,13 @@ def create_regions(iterations,
         #for learning an edge weight model
         t = time.time()
 
-        A,b = build_feat_label_data(G_ups, ups_training, features)
+        A = None
+        b = None
+
+        if multithreadAB:
+            A,b =  build_feat_label_data_multithread(G_ups, ups_training, features, features_filename, num_threads)
+        else:
+            A,b = build_feat_label_data(G_ups, ups_training, features)
 
         if use_scalar:
             scaler_A = StandardScaler()
