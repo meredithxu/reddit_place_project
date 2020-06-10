@@ -178,11 +178,11 @@ def create_regions(iterations,
 
         A = None
         b = None
-
         if multithreadAB:
             A,b =  build_feat_label_data_multithread(G_ups, ups_training, features, features_filename, num_threads)
         else:
             A,b = build_feat_label_data(G_ups, ups_training, features)
+
 
         if use_scalar:
             scaler_A = StandardScaler()
@@ -206,8 +206,9 @@ def create_regions(iterations,
 
 
 
-        print(A.shape)
-        print(b.sum() / b.shape[0])
+        print("A:", A.shape)
+        print("b:", b.sum() / b.shape[0])
+  
 
         print("time to build feat label data = ", time.time()-t, " seconds")
 
