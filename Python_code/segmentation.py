@@ -784,36 +784,41 @@ def compute_feature_values_wrapper(param):
     return compute_feature_values(param[0], param[1], features)
 
 
-def build_feat_label_data_multithread(G, ups, features, features_file_name, n_threads, fold_boundaries=None, excluded_folds=None):
+def build_feat_label_data_multithread(G, ups, features, features_file_name, n_threads, pixel=False):
     '''
-        Extracts feature values and labels for edges in the graph.
-
-        features is a dictionary with both functions that compute
-        feature values and the data structures they require, used as:
-
-        A[i,f] = features[f]['func'](u, v, ups, features[f]['data'])
-
-
-        fold_boundaries is a list of dictionaries of the following format:
-        {"min_x": min_x, "min_y": min_y, "max_x": max_x, "max_y": max_y}
-        Each dictionary indicates the boundary of a fold.
-
-        excluded_folds is a list of indexes indicating which corresponding folds within fold_boundaries
-        are to be excluded from the feature and label data.
-        If fold_boundaries is None, then all folds are included.
-
-        Returns matrix A with feature values and vector b with labels
     '''
-
     #Pickling feature data to be shared with threads
     if not os.path.exists(features_file_name):
         pfile = open(features_file_name, 'wb')
         pickle.dump(features, pfile)
         pfile.close()
 
+    n_labelled = 0
+    with open(G.unique_edges_file_name, 'r') as file_in:
+        reader = csv.reader(file_in)
+
+        for r in reader:
+            u = int(r[0])
+            v = int(r[1])
+            lb = r[2]
+            type_edge = int(r[3])
+
+            #updates.append([ts, user, x, y, color, proj, pixel, pixel_color])
+
+            if type_edge > 0:
+                if pixel is True:
+                    if int(ups[u][6]) == 1 and int(ups[v][6]) == 1:
+                        n_labelled = n_labelled + 1
+                else:
+                    if int(ups[u][7]) == 1 and int(ups[v][7]) == 1:
+                        n_labelled = n_labelled + 1
+
+    A = np.zeros((n_labelled, len(features)))
+    b = np.zeros(n_labelled)
+
     edge_buffer = []
-    b = []
-    A = []
+
+    i = 0
     n = 0
     with open(G.unique_edges_file_name, 'r') as file_in:
         reader = csv.reader(file_in)
@@ -824,28 +829,27 @@ def build_feat_label_data_multithread(G, ups, features, features_file_name, n_th
             lb = int(r[2])
             type_edge = int(r[3])
 
-            if fold_boundaries is not None:
-                x_u = ups[u][2]
-                y_u = ups[u][3]
-                x_v = ups[v][2]
-                y_v = ups[v][3]
+            if type_edge > 0:
+                if pixel is True:
+                    if int(ups[u][6]) == 1 and int(ups[v][6]) == 1:
+                        edge_buffer.append((u, v))
 
-                # Check which fold this edge belongs to. If it belongs to an excluded fold, then skip it
-                skip_edge = False
-                for f_idx in excluded_folds:
-                    if is_within_fold(x_u, y_u, fold_boundaries[f_idx]) or is_within_fold(x_v, y_v, fold_boundaries[f_idx]):
-                        skip_edge = True
+                        if lb == 1:
+                            b[i] = 0.
+                        else:
+                            b[i] = 1.
 
-                if skip_edge:
-                    continue
-
-            if lb in [0, 1]:
-                edge_buffer.append((u, v))
-
-                if lb == 1:
-                    b.append(0.)
+                        i = i + 1
                 else:
-                    b.append(1.)
+                    if int(ups[u][7]) == 1 and int(ups[v][7]) == 1:
+                        edge_buffer.append((u, v))
+
+                        if lb == 1:
+                            b[i] = 0.
+                        else:
+                            b[i] = 1.
+
+                        i = i + 1
 
             if len(edge_buffer) > G.buffer_size:
                 edges_per_thread = int(len(edge_buffer) / n_threads)
@@ -858,7 +862,6 @@ def build_feat_label_data_multithread(G, ups, features, features_file_name, n_th
                 for e in range(len(edge_buffer)):
                     t = e % n_threads
                     edge_parts[t].append(edge_buffer[e])
-                    A.append(None)
 
                 futures = []
 
@@ -891,7 +894,6 @@ def build_feat_label_data_multithread(G, ups, features, features_file_name, n_th
         for e in range(len(edge_buffer)):
             t = e % n_threads
             edge_parts[t].append(edge_buffer[e])
-            A.append(None)
 
         futures = []
 
@@ -909,13 +911,7 @@ def build_feat_label_data_multithread(G, ups, features, features_file_name, n_th
             for e in range(res.shape[0]):
                 A[n+e*n_threads+t] = res[e]
 
-        edge_buffer = []
-
-    b = np.array(b)
-    A = np.array(A)
-
     return A, b
-
 
 def build_feat_label_data(G, ups, features, pixel=False, train_x_y=None, fold_boundaries=None, excluded_folds=None):
     '''
@@ -962,15 +958,16 @@ def build_feat_label_data(G, ups, features, pixel=False, train_x_y=None, fold_bo
         
             if type_edge > 0 and (train_x_y is None or ((x_u,y_u) in train_x_y and (x_v,y_v) in train_x_y)):
                 
-                if fold_boundaries is not None:
-                    # Check which fold this edge belongs to. If it belongs to an excluded fold, then skip it
-                    skip_edge = False
-                    for f_idx in excluded_folds:
-                        if is_within_fold(x_u, y_u, fold_boundaries[f_idx]) or is_within_fold(x_v, y_v, fold_boundaries[f_idx]):
-                            skip_edge = True
+                # if fold_boundaries is not None:
+                #     # Check which fold this edge belongs to. If it belongs to an excluded fold, then skip it
+                #     skip_edge = False
+                #     for f_idx in excluded_folds:
+                #         if is_within_fold(x_u, y_u, fold_boundaries[f_idx]) or is_within_fold(x_v, y_v, fold_boundaries[f_idx]):
+                #             skip_edge = True
 
-                    if skip_edge:
-                        continue
+                #     if skip_edge:
+                #         continue
+                
 
                 if pixel is True:
                     if int(ups[u][6]) == 1 and int(ups[v][6]) == 1:
@@ -1050,7 +1047,6 @@ def compute_weight(edge_buffer, ups, m, features, scalerX= None, scalerY = None)
         for f in range(len(features)):
             feat_values[e][f] = features[f]['func'](u, v, ups, features[f]['data'])
         
-    print("Feature shape:", feat_values.shape)
     # Check if you need to scale the values
     results = None
     if scalerX == None or not os.path.exists(scalerX):
@@ -1059,7 +1055,6 @@ def compute_weight(edge_buffer, ups, m, features, scalerX= None, scalerY = None)
         sc = pickle.load(open(scalerX, 'rb'))
         results = m.predict(sc.transform(feat_values))
 
-    print("result shape:", results.shape)
     # Ensure that the dimensions of result is a 2d array
     if results.ndim == 1:
         results = results.reshape(-1, 1)
